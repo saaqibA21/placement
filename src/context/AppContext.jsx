@@ -1,4 +1,4 @@
-import React, { createContext, useContext, useState } from 'react';
+import React, { createContext, useContext, useState, useEffect } from 'react';
 import {
   jobs as initJobs,
   notices as initNotices,
@@ -9,8 +9,26 @@ import {
   surveys as initSurveys,
   requests as initRequests,
   calendarEvents as initCalendarEvents,
-  adminStats as initAdminStats,
 } from '../data/mockData';
+
+// ─── Helpers for LocalStorage Persistence ──────────────────────────────────────
+const getStorageItem = (key, fallback) => {
+  try {
+    const item = localStorage.getItem(key);
+    return item ? JSON.parse(item) : fallback;
+  } catch (err) {
+    console.error(`Error reading ${key} from localStorage:`, err);
+    return fallback;
+  }
+};
+
+const setStorageItem = (key, val) => {
+  try {
+    localStorage.setItem(key, JSON.stringify(val));
+  } catch (err) {
+    console.error(`Error saving ${key} to localStorage:`, err);
+  }
+};
 
 // ─── Credential Store ──────────────────────────────────────────────────────────
 const ACCOUNTS = [
@@ -24,29 +42,42 @@ const ACCOUNTS = [
 const AppContext = createContext();
 
 export const AppProvider = ({ children }) => {
-  // ── Auth ──────────────────────────────────────────────────────────────────
-  const [user, setUser]           = useState(null);
-  const [role, setRole]           = useState(null);
+  // ── Auth (rehydrated from localStorage so refresh never logs out) ────────────
+  const [user, setUser] = useState(() => getStorageItem('jeppiaar_user', null));
+  const [role, setRole] = useState(() => getStorageItem('jeppiaar_role', null));
   const [loginError, setLoginError] = useState('');
 
-  // ── Shared Global Data (admin writes → students read instantly) ────────────
-  const [jobs, setJobs]               = useState(initJobs);
-  const [notices, setNotices]         = useState(initNotices);
-  const [students, setStudents]       = useState(initStudents);
-  const [companies, setCompanies]     = useState(initCompanies);
-  const [applications, setApplications] = useState(initApplications);
-  const [trackerData, setTrackerData] = useState(initTracker);
-  const [surveys, setSurveys]         = useState(initSurveys);
-  const [requests, setRequests]       = useState(initRequests);
-  const [calendarEvents, setCalendarEvents] = useState(initCalendarEvents);
+  // ── Shared Global Data (persisted across refresh and tab changes) ───────────
+  const [jobs, setJobs] = useState(() => getStorageItem('jeppiaar_jobs', initJobs));
+  const [notices, setNotices] = useState(() => getStorageItem('jeppiaar_notices', initNotices));
+  const [students, setStudents] = useState(() => getStorageItem('jeppiaar_students', initStudents));
+  const [companies, setCompanies] = useState(() => getStorageItem('jeppiaar_companies', initCompanies));
+  const [applications, setApplications] = useState(() => getStorageItem('jeppiaar_applications', initApplications));
+  const [trackerData, setTrackerData] = useState(() => getStorageItem('jeppiaar_tracker', initTracker));
+  const [surveys, setSurveys] = useState(() => getStorageItem('jeppiaar_surveys', initSurveys));
+  const [requests, setRequests] = useState(() => getStorageItem('jeppiaar_requests', initRequests));
+  const [calendarEvents, setCalendarEvents] = useState(() => getStorageItem('jeppiaar_calendar', initCalendarEvents));
+
+  // Sync to localStorage
+  useEffect(() => { setStorageItem('jeppiaar_user', user); }, [user]);
+  useEffect(() => { setStorageItem('jeppiaar_role', role); }, [role]);
+  useEffect(() => { setStorageItem('jeppiaar_jobs', jobs); }, [jobs]);
+  useEffect(() => { setStorageItem('jeppiaar_notices', notices); }, [notices]);
+  useEffect(() => { setStorageItem('jeppiaar_students', students); }, [students]);
+  useEffect(() => { setStorageItem('jeppiaar_companies', companies); }, [companies]);
+  useEffect(() => { setStorageItem('jeppiaar_applications', applications); }, [applications]);
+  useEffect(() => { setStorageItem('jeppiaar_tracker', trackerData); }, [trackerData]);
+  useEffect(() => { setStorageItem('jeppiaar_surveys', surveys); }, [surveys]);
+  useEffect(() => { setStorageItem('jeppiaar_requests', requests); }, [requests]);
+  useEffect(() => { setStorageItem('jeppiaar_calendar', calendarEvents); }, [calendarEvents]);
 
   // Derived admin stats (always computed from real data)
   const adminStats = {
     totalStudents:    students.length,
     totalJobs:        jobs.length,
     totalApplications: applications.length,
-    offersExtended:   students.reduce((acc, s) => acc + s.offers, 0),
-    placementRate:    Math.round((students.filter((s) => s.offers > 0).length / students.length) * 100),
+    offersExtended:   students.reduce((acc, s) => acc + (s.offers || 0), 0),
+    placementRate:    students.length > 0 ? Math.round((students.filter((s) => (s.offers || 0) > 0).length / students.length) * 100) : 0,
     activeJobs:       jobs.filter((j) => j.status === 'open').length,
   };
 
@@ -67,7 +98,7 @@ export const AppProvider = ({ children }) => {
       const student = students.find((s) => s.id === account.studentId) || students[0];
       setUser(student);
     } else {
-      setUser({ name: 'Placement Admin', email: 'admin@jeppier.edu.in', role: 'admin' });
+      setUser({ name: 'Placement Admin', email: 'admin@jeppiaarcollege.org', role: 'admin' });
     }
     return true;
   };
@@ -76,6 +107,8 @@ export const AppProvider = ({ children }) => {
     setUser(null);
     setRole(null);
     setLoginError('');
+    localStorage.removeItem('jeppiaar_user');
+    localStorage.removeItem('jeppiaar_role');
   };
 
   // ── Job Actions (Admin → Students see instantly) ──────────────────────────
@@ -128,7 +161,7 @@ export const AppProvider = ({ children }) => {
         user, role, login, logout, loginError, setLoginError,
         // Data
         jobs, notices, students, companies, applications, trackerData, surveys, requests, calendarEvents, adminStats,
-        // Setters (for pages that need full control like Tracker)
+        // Setters
         setTrackerData, setSurveys, setRequests,
         // Actions
         addJob, updateJob, deleteJob, applyJob,
