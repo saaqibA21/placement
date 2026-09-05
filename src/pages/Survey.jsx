@@ -33,7 +33,7 @@ export default function Survey() {
       )}
 
       <div>
-        <h1 className="text-xl font-bold text-gray-900" style={{ fontFamily: 'Cinzel,serif' }}>
+        <h1 className="text-xl font-bold text-gray-900" style={{ fontFamily: "'Bebas Neue',sans-serif", letterSpacing:'0.03em' }}>
           Placement Assessment Surveys
         </h1>
         <p className="text-gray-500 text-xs mt-0.5">Please provide timely feedback to complete your placement compliance</p>
@@ -41,7 +41,7 @@ export default function Survey() {
 
       <div className="grid gap-3">
         {(surveys || []).map((s) => (
-          <div key={s.id} className="card-solid p-5 bg-white flex flex-col sm:flex-row items-start sm:items-center justify-between gap-4" style={{ borderColor: '#EDE0D0' }}>
+          <div key={s.id} className="card-solid p-5 bg-white flex flex-col sm:flex-row items-start sm:items-center justify-between gap-4" style={{ borderColor: '#D9E3E0' }}>
             <div className="flex items-center gap-4 min-w-0">
               <div
                 className={`w-11 h-11 rounded-2xl flex items-center justify-center flex-shrink-0 ${
@@ -80,10 +80,10 @@ export default function Survey() {
       {/* Survey Modal */}
       {activeSurvey && (
         <div className="fixed inset-0 bg-black/40 flex items-center justify-center p-4 z-50">
-          <div className="bg-white rounded-2xl p-6 w-full max-w-lg border shadow-2xl space-y-4" style={{ borderColor: '#EDE0D0' }}>
-            <div className="flex items-center justify-between pb-3 border-b" style={{ borderColor: '#EDE0D0' }}>
+          <div className="bg-white rounded-2xl p-6 w-full max-w-lg border shadow-2xl space-y-4" style={{ borderColor: '#D9E3E0' }}>
+            <div className="flex items-center justify-between pb-3 border-b" style={{ borderColor: '#D9E3E0' }}>
               <div>
-                <h3 className="text-base font-bold text-gray-900" style={{ fontFamily: 'Cinzel,serif' }}>
+                <h3 className="text-base font-bold text-gray-900" style={{ fontFamily: "'Bebas Neue',sans-serif", letterSpacing:'0.03em' }}>
                   {activeSurvey.title}
                 </h3>
                 <p className="text-xs text-gray-400 mt-0.5">Feedback Questionnaire</p>
@@ -94,7 +94,7 @@ export default function Survey() {
             </div>
 
             <div className="space-y-4 text-xs">
-              <div className="p-3.5 rounded-xl border space-y-2" style={{ background: '#FFFDF7', borderColor: '#EDE0D0' }}>
+              <div className="p-3.5 rounded-xl border space-y-2" style={{ background: '#EFF5F3', borderColor: '#D9E3E0' }}>
                 <p className="font-semibold text-gray-800">1. How prepared do you feel for upcoming technical campus rounds?</p>
                 <div className="flex gap-2">
                   {['Very Prepared', 'Somewhat', 'Needs Work'].map((opt) => (
@@ -111,7 +111,7 @@ export default function Survey() {
                 </div>
               </div>
 
-              <div className="p-3.5 rounded-xl border space-y-2" style={{ background: '#FFFDF7', borderColor: '#EDE0D0' }}>
+              <div className="p-3.5 rounded-xl border space-y-2" style={{ background: '#EFF5F3', borderColor: '#D9E3E0' }}>
                 <p className="font-semibold text-gray-800">2. Any topics or companies you would like mock interview training for?</p>
                 <textarea
                   className="input-solid h-20 text-xs py-2 resize-none"
@@ -122,7 +122,7 @@ export default function Survey() {
               </div>
             </div>
 
-            <div className="flex justify-end gap-2 pt-3 border-t" style={{ borderColor: '#EDE0D0' }}>
+            <div className="flex justify-end gap-2 pt-3 border-t" style={{ borderColor: '#D9E3E0' }}>
               <button onClick={() => setActiveSurvey(null)} className="btn-solid-secondary px-4 py-2 text-xs">
                 Cancel
               </button>

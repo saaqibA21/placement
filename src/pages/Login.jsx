@@ -29,69 +29,70 @@ export default function Login() {
 
   return (
     <div
-      className="min-h-screen flex flex-col bg-cover bg-center bg-no-repeat relative"
+      className="min-h-screen flex flex-col bg-cover bg-center bg-no-repeat relative overflow-hidden"
       style={{
-        backgroundImage: `linear-gradient(135deg, rgba(15, 33, 37, 0.82) 0%, rgba(22, 46, 52, 0.88) 50%, rgba(10, 22, 25, 0.94) 100%), url('/bg-hero.jpg')`,
+        backgroundImage: `linear-gradient(135deg, #0A0A1F 0%, #12122B 45%, #1B1B3D 75%, #0A0A1F 100%)`,
       }}
     >
+      {/* Retro film-grain / scanline overlay */}
+      <div className="retro-grain" />
+
       {/* Top Institutional Header */}
-      <div className="w-full py-3.5 px-6 flex items-center justify-between border-b border-white/10 backdrop-blur-md bg-black/20">
+      <div className="w-full py-3.5 px-6 flex items-center justify-between border-b border-white/10 backdrop-blur-md bg-black/30 relative z-10">
         <div className="flex items-center gap-3">
           <div
-            className="w-10 h-10 rounded-xl flex items-center justify-center text-amber-400 font-bold text-lg font-cinzel shadow-lg"
-            style={{ background: 'rgba(217, 130, 43, 0.25)', border: '1px solid rgba(217, 130, 43, 0.4)' }}
+            className="w-10 h-10 rounded-xl flex items-center justify-center text-amber-400 font-bold text-lg font-retro shadow-lg"
+            style={{ background: 'rgba(217, 100, 47, 0.22)', border: '1.5px solid rgba(217, 100, 47, 0.45)' }}
           >
             J
           </div>
           <div>
-            <p className="text-white font-bold text-sm tracking-wide" style={{ fontFamily: 'Cinzel,serif' }}>
+            <p className="text-white font-retro text-base leading-none">
               Jeppiaar Engineering College
             </p>
-            <p className="text-amber-300/80 text-[10px] tracking-widest uppercase font-semibold">
+            <p className="retro-tag text-amber-400/85 text-[10px] mt-1">
               Placement Cell Portal · AY 2026–27
             </p>
           </div>
         </div>
-        <span className="text-white/50 text-xs hidden sm:block font-medium">Semmancheri, Chennai – 600 119</span>
+        <span className="retro-tag text-white/40 text-[10px] hidden sm:block">Semmancheri, Chennai – 600 119</span>
       </div>
 
       {/* Hero & Login Section */}
-      <div className="flex-1 flex flex-col lg:flex-row items-center justify-center p-6 gap-8 max-w-6xl mx-auto w-full">
-        {/* Left Hero Text / Chalkboard Highlight */}
+      <div className="flex-1 flex flex-col lg:flex-row items-center justify-center p-6 gap-8 max-w-6xl mx-auto w-full relative z-10">
+        {/* Left Hero Text / Retro Poster Block */}
         <div className="text-center lg:text-left flex-1 max-w-lg text-white space-y-4">
           <div
-            className="inline-flex items-center gap-2 px-3 py-1 rounded-full text-xs font-semibold text-amber-300 border border-amber-400/30 backdrop-blur-md"
-            style={{ background: 'rgba(217, 130, 43, 0.15)' }}
+            className="inline-flex items-center gap-2 px-3 py-1 rounded-full retro-tag text-[11px] text-amber-300 border border-amber-400/30 backdrop-blur-md"
+            style={{ background: 'rgba(217, 100, 47, 0.15)' }}
           >
             <Sparkles size={14} className="text-amber-400" /> Official Placement Drive Hub
           </div>
 
-          <h1
-            className="text-3xl sm:text-4xl lg:text-5xl font-extrabold text-white leading-tight tracking-tight drop-shadow-md"
-            style={{ fontFamily: 'Cinzel,serif' }}
-          >
-            Your Journey <br />
-            <span className="text-amber-400 drop-shadow-[0_2px_10px_rgba(217,130,43,0.5)]">
+          <h1 className="text-5xl sm:text-6xl lg:text-7xl font-retro text-white leading-[0.95] drop-shadow-md">
+            Your Journey
+            <br />
+            <span className="text-amber-400 drop-shadow-[0_2px_16px_rgba(217,100,47,0.55)]">
               Starts Here!
             </span>
           </h1>
 
-          <p className="text-slate-200/80 text-sm sm:text-base leading-relaxed">
+          <p className="text-slate-200/80 text-sm sm:text-base leading-relaxed normal-case max-w-md mx-auto lg:mx-0">
             Your Journey Starts with the Right Choice. Access campus recruitment drives, upload your CV, track selection rounds, and secure top tier placements.
           </p>
 
-          <div className="hidden sm:flex items-center gap-6 pt-2 text-xs text-slate-300/80">
-            <div className="flex items-center gap-2">
+          <div className="hidden sm:flex items-center gap-6 pt-3 mt-1 retro-dashed text-xs text-slate-300/80">
+            <div className="flex items-center gap-2 pt-3">
               <div className="w-2 h-2 rounded-full bg-amber-400" />
-              <span>100+ Hiring Partners</span>
+              <span className="retro-tag text-[10px]">100+ Hiring Partners</span>
             </div>
-            <div className="flex items-center gap-2">
+            <div className="flex items-center gap-2 pt-3">
               <div className="w-2 h-2 rounded-full bg-emerald-400" />
-              <span>Live Drive Tracker</span>
+              <span className="retro-tag text-[10px]">Live Drive Tracker</span>
             </div>
-            <div className="flex items-center gap-2">
+            <div className="flex items-center gap-2 pt-3">
               <div className="w-2 h-2 rounded-full bg-cyan-400" />
-              <span>Direct Screening</span>
+              <span className="retro-tag text-[10px]">Direct Screening</span>
             </div>
           </div>
         </div>
@@ -99,8 +100,8 @@ export default function Login() {
         {/* Right Login Card */}
         <div className="w-full max-w-md">
           <div
-            className="bg-white/95 backdrop-blur-xl rounded-2xl shadow-2xl overflow-hidden border"
-            style={{ borderColor: 'rgba(217, 130, 43, 0.35)', boxShadow: '0 20px 40px -15px rgba(0,0,0,0.5)' }}
+            className="bg-white/95 backdrop-blur-xl rounded-2xl shadow-2xl overflow-hidden border-2"
+            style={{ borderColor: 'rgba(217, 100, 47, 0.4)', boxShadow: '0 20px 45px -15px rgba(0,0,0,0.6)' }}
           >
             {/* Tab Toggle */}
             <div className="flex border-b border-slate-200/80 bg-slate-50/80">
@@ -111,14 +112,14 @@ export default function Login() {
                 <button
                   key={key}
                   onClick={() => { setTab(key); setU(''); setP(''); setLoginError(''); }}
-                  className={`flex-1 flex items-center justify-center gap-2 py-3.5 text-xs sm:text-sm font-semibold transition-all ${
+                  className={`flex-1 flex items-center justify-center gap-2 py-3.5 retro-tag text-[11px] sm:text-xs transition-all ${
                     tab === key
                       ? 'text-white shadow-sm'
                       : 'text-slate-600 hover:bg-slate-100'
                   }`}
                   style={
                     tab === key
-                      ? { background: 'linear-gradient(135deg, #162E34 0%, #1F4047 100%)' }
+                      ? { background: 'linear-gradient(135deg, #1B1B3D 0%, #262654 100%)' }
                       : {}
                   }
                 >
@@ -175,10 +176,10 @@ export default function Login() {
 
               <button
                 type="submit"
-                className="w-full py-3 mt-2 text-xs sm:text-sm font-bold text-white rounded-xl shadow-lg transition-all"
+                className="w-full py-3 mt-2 retro-tag text-xs sm:text-sm text-white rounded-xl shadow-lg transition-all"
                 style={{
-                  background: 'linear-gradient(135deg, #D9822B 0%, #B86518 100%)',
-                  boxShadow: '0 4px 14px rgba(217, 130, 43, 0.4)',
+                  background: 'linear-gradient(135deg, #D9642F 0%, #A6461C 100%)',
+                  boxShadow: '0 4px 14px rgba(217, 100, 47, 0.4)',
                 }}
               >
                 Sign In to {tab === 'student' ? 'Student Portal' : 'Placement Admin'}
@@ -186,7 +187,7 @@ export default function Login() {
 
               {/* Demo Quick-fill */}
               <div className="pt-3 border-t border-slate-200/80">
-                <p className="text-[10px] font-bold uppercase tracking-wider text-slate-400 mb-2">
+                <p className="retro-tag text-[10px] text-slate-400 mb-2">
                   Quick Demo Access
                 </p>
                 <div className="flex flex-wrap gap-2">
@@ -207,9 +208,14 @@ export default function Login() {
             </form>
           </div>
 
-          <p className="text-center text-white/40 text-[11px] mt-4 font-medium">
-            © {new Date().getFullYear()} Jeppiaar Engineering College. All rights reserved.
-          </p>
+          <div className="flex items-center justify-between mt-4 px-1">
+            <p className="retro-tag text-white/35 text-[10px]">
+              © {new Date().getFullYear()} Jeppiaar Engineering
+            </p>
+            <p className="retro-tag text-amber-400/50 text-[10px]">
+              Drive Rec. No. 001 · AY 2026–27
+            </p>
+          </div>
         </div>
       </div>
     </div>

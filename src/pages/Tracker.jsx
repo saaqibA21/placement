@@ -47,13 +47,13 @@ export default function Tracker() {
   return (
     <div className="p-4 sm:p-6 max-w-4xl mx-auto space-y-5">
       <div>
-        <h1 className="text-xl font-bold text-gray-900" style={{fontFamily:'Cinzel,serif'}}>Application Round Tracker</h1>
+        <h1 className="text-xl font-bold text-gray-900" style={{fontFamily:"'Bebas Neue',sans-serif", letterSpacing:'0.03em'}}>Application Round Tracker</h1>
         <p className="text-gray-500 text-xs mt-0.5">Click any round to advance its status.</p>
       </div>
 
       <div className="grid grid-cols-2 sm:grid-cols-4 gap-3">
         {[
-          { label: 'Total Applied',    value: trackerData.length, color: '#8B1A1A' },
+          { label: 'Total Applied',    value: trackerData.length, color: '#D9642F' },
           { label: 'Stages Cleared',   value: stagesCleared,      color: '#15803d' },
           { label: 'In Active Review', value: activeReview,       color: '#b45309' },
           { label: 'Offers Received',  value: offersCount,        color: '#1d4ed8' },
@@ -93,7 +93,7 @@ export default function Tracker() {
                   <div className="flex flex-wrap items-center gap-2">
                     <p className="font-bold text-gray-900 text-sm">{c.company}</p>
                     <span className="text-[10px] px-2 py-0.5 rounded-full font-semibold"
-                          style={{ background: '#FFF8E7', color: '#7A5C00', border: '1px solid #E8D5B5' }}>
+                          style={{ background: '#F7ECDD', color: '#7A4A18', border: '1px solid #E3C9A8' }}>
                       {c.jobType}
                     </span>
                   </div>
@@ -101,7 +101,7 @@ export default function Tracker() {
                   <div className="mt-2 flex items-center gap-2">
                     <div className="flex-1 h-1.5 bg-gray-100 rounded-full overflow-hidden">
                       <div className="h-full rounded-full transition-all"
-                           style={{ width: `${pct}%`, background: pct === 100 ? '#15803d' : '#8B1A1A' }} />
+                           style={{ width: `${pct}%`, background: pct === 100 ? '#15803d' : '#D9642F' }} />
                     </div>
                     <span className="text-[10px] font-bold text-gray-500">{pct}%</span>
                   </div>
@@ -110,7 +110,7 @@ export default function Tracker() {
               </button>
 
               {isOpen && (
-                <div className="px-5 pb-5 border-t" style={{ borderColor: '#EDE0D0' }}>
+                <div className="px-5 pb-5 border-t" style={{ borderColor: '#D9E3E0' }}>
                   <p className="text-[10px] font-bold uppercase tracking-wider text-gray-400 mt-4 mb-3">
                     Selection Rounds — click to update status
                   </p>
@@ -118,7 +118,7 @@ export default function Tracker() {
                     {c.rounds.map((r, idx) => (
                       <button key={idx} onClick={() => advanceRound(c.id, idx)}
                         className="w-full flex items-center gap-4 p-3 rounded-xl border transition-all hover:border-red-200 hover:bg-red-50/30 text-left"
-                        style={{ borderColor: '#EDE0D0' }}>
+                        style={{ borderColor: '#D9E3E0' }}>
                         <div className="flex-shrink-0">
                           {r.status === 'cleared' ? (
                             <CheckCircle2 size={20} className="text-green-600" />

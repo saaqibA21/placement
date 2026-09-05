@@ -39,10 +39,10 @@ export default function Notice() {
   return (
     <div className="flex h-full overflow-hidden">
       {/* Left Category Rail */}
-      <div className="w-[140px] sm:w-[160px] flex-shrink-0 border-r flex flex-col bg-white" style={{ borderColor: '#EDE0D0' }}>
-        <div className="px-4 py-4 border-b" style={{ borderColor: '#EDE0D0' }}>
+      <div className="w-[140px] sm:w-[160px] flex-shrink-0 border-r flex flex-col bg-white" style={{ borderColor: '#D9E3E0' }}>
+        <div className="px-4 py-4 border-b" style={{ borderColor: '#D9E3E0' }}>
           <p className="text-[10px] font-bold uppercase tracking-widest text-gray-400">Categories</p>
-          {unreadCount > 0 && <p className="text-xs font-bold mt-1" style={{ color: '#8B1A1A' }}>{unreadCount} unread</p>}
+          {unreadCount > 0 && <p className="text-xs font-bold mt-1" style={{ color: '#D9642F' }}>{unreadCount} unread</p>}
         </div>
         <nav className="flex-1 p-2 space-y-0.5">
           {CATEGORIES.map(({ key, label, icon: Icon }) => {
@@ -52,7 +52,7 @@ export default function Notice() {
                 className={`w-full flex items-center gap-2 px-3 py-2.5 rounded-xl text-xs font-medium transition-all text-left ${
                   cat === key ? 'text-white' : 'text-gray-500 hover:bg-amber-50'
                 }`}
-                style={cat === key ? { background: '#8B1A1A' } : {}}>
+                style={cat === key ? { background: '#D9642F' } : {}}>
                 <Icon size={13} className="flex-shrink-0" />
                 <span className="flex-1 truncate">{label}</span>
                 <span className={`text-[10px] font-bold px-1.5 py-0.5 rounded-full ${cat === key ? 'bg-white/20 text-white' : 'bg-gray-100 text-gray-500'}`}>{count}</span>
@@ -63,8 +63,8 @@ export default function Notice() {
       </div>
 
       {/* Notice List */}
-      <div className="w-[260px] sm:w-[300px] flex-shrink-0 border-r flex flex-col bg-white" style={{ borderColor: '#EDE0D0' }}>
-        <div className="px-4 py-3 border-b" style={{ borderColor: '#EDE0D0' }}>
+      <div className="w-[260px] sm:w-[300px] flex-shrink-0 border-r flex flex-col bg-white" style={{ borderColor: '#D9E3E0' }}>
+        <div className="px-4 py-3 border-b" style={{ borderColor: '#D9E3E0' }}>
           <div className="relative">
             <Search size={13} className="absolute left-3 top-1/2 -translate-y-1/2 text-gray-400" />
             <input type="text" placeholder="Search notices..." value={search}
@@ -72,7 +72,7 @@ export default function Notice() {
             {search && <button onClick={() => setSearch('')} className="absolute right-3 top-1/2 -translate-y-1/2 text-gray-400"><X size={13} /></button>}
           </div>
         </div>
-        <div className="flex-1 overflow-y-auto divide-y" style={{ divideColor: '#EDE0D0' }}>
+        <div className="flex-1 overflow-y-auto divide-y" style={{ divideColor: '#D9E3E0' }}>
           {filtered.length === 0 ? (
             <div className="p-6 text-center text-gray-400 text-xs">No notices found</div>
           ) : filtered.map((n) => {
@@ -82,9 +82,9 @@ export default function Notice() {
                 className={`w-full text-left px-4 py-3.5 transition-colors ${
                   activeNotice?.id === n.id ? 'bg-red-50 border-l-4' : 'hover:bg-amber-50/50'
                 }`}
-                style={activeNotice?.id === n.id ? { borderLeftColor: '#8B1A1A' } : {}}>
+                style={activeNotice?.id === n.id ? { borderLeftColor: '#D9642F' } : {}}>
                 <div className="flex items-start gap-2">
-                  {isUnread && <div className="w-2 h-2 rounded-full mt-1.5 flex-shrink-0" style={{ background: '#8B1A1A' }} />}
+                  {isUnread && <div className="w-2 h-2 rounded-full mt-1.5 flex-shrink-0" style={{ background: '#D9642F' }} />}
                   <div className="flex-1 min-w-0">
                     <p className={`text-xs leading-snug line-clamp-2 ${isUnread ? 'font-bold text-gray-900' : 'font-medium text-gray-600'}`}>
                       {n.title}
@@ -104,7 +104,7 @@ export default function Notice() {
       </div>
 
       {/* Reader Pane */}
-      <div className="flex-1 overflow-y-auto" style={{ background: '#FFFDF7' }}>
+      <div className="flex-1 overflow-y-auto" style={{ background: '#EFF5F3' }}>
         {activeNotice ? (
           <div className="p-6 sm:p-8 max-w-2xl">
             <div className="flex flex-wrap items-center gap-2 mb-4">
@@ -113,8 +113,8 @@ export default function Notice() {
               ))}
               <span className="text-[10px] text-gray-400">{activeNotice.timeAgo}</span>
             </div>
-            <h2 className="text-lg font-bold text-gray-900 mb-3 leading-snug" style={{fontFamily:'Cinzel,serif'}}>{activeNotice.title}</h2>
-            <div className="flex items-center gap-2 mb-5 pb-5 border-b" style={{ borderColor: '#EDE0D0' }}>
+            <h2 className="text-lg font-bold text-gray-900 mb-3 leading-snug" style={{fontFamily:"'Bebas Neue',sans-serif", letterSpacing:'0.03em'}}>{activeNotice.title}</h2>
+            <div className="flex items-center gap-2 mb-5 pb-5 border-b" style={{ borderColor: '#D9E3E0' }}>
               <div className={`w-8 h-8 rounded-xl ${activeNotice.authorColor} flex items-center justify-center text-xs font-bold text-white flex-shrink-0`}>
                 {activeNotice.authorInitial}
               </div>

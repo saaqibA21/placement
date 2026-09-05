@@ -55,10 +55,10 @@ export default function AdminResumes() {
     <div className="flex h-full overflow-hidden flex-col md:flex-row">
       {/* Main Panel */}
       <div className={`flex flex-col overflow-hidden transition-all ${drawerData ? 'md:w-[55%]' : 'w-full'}`}>
-        <div className="p-4 sm:p-6 border-b bg-white" style={{ borderColor: '#EDE0D0' }}>
+        <div className="p-4 sm:p-6 border-b bg-white" style={{ borderColor: '#D9E3E0' }}>
           <div className="flex items-center justify-between mb-4 flex-wrap gap-3">
             <div>
-              <h1 className="text-xl font-bold text-gray-900" style={{fontFamily:'Cinzel,serif'}}>Resume Screening</h1>
+              <h1 className="text-xl font-bold text-gray-900" style={{fontFamily:"'Bebas Neue',sans-serif", letterSpacing:'0.03em'}}>Resume Screening</h1>
               <p className="text-gray-500 text-xs mt-0.5">Review and screen candidate applications</p>
             </div>
             <button onClick={exportCSV} className="btn-solid-secondary px-4 py-2 text-xs flex items-center gap-1.5">
@@ -72,18 +72,18 @@ export default function AdminResumes() {
               <button key={s} onClick={() => setStatusTab(s)}
                 className="p-3 rounded-xl border text-left cursor-pointer transition-all"
                 style={{
-                  borderColor: statusTab === s ? '#8B1A1A' : '#EDE0D0',
-                  background: statusTab === s ? '#FFF0F0' : '#fff',
+                  borderColor: statusTab === s ? '#D9642F' : '#D9E3E0',
+                  background: statusTab === s ? '#FBEEE2' : '#fff',
                 }}>
                 <p className="text-[10px] font-bold uppercase tracking-wider text-gray-400">{s}</p>
-                <p className="text-xl font-bold mt-0.5" style={{ color: statusTab === s ? '#8B1A1A' : '#1A0808' }}>{counts[s]}</p>
+                <p className="text-xl font-bold mt-0.5" style={{ color: statusTab === s ? '#D9642F' : '#171732' }}>{counts[s]}</p>
               </button>
             ))}
           </div>
         </div>
 
         {/* Search */}
-        <div className="px-4 sm:px-6 py-3 bg-white border-b" style={{ borderColor: '#EDE0D0' }}>
+        <div className="px-4 sm:px-6 py-3 bg-white border-b" style={{ borderColor: '#D9E3E0' }}>
           <div className="relative">
             <Search size={13} className="absolute left-3 top-1/2 -translate-y-1/2 text-gray-400" />
             <input type="text" placeholder="Search by name, roll number, or company..." value={search}
@@ -93,18 +93,18 @@ export default function AdminResumes() {
         </div>
 
         {/* Table */}
-        <div className="flex-1 overflow-y-auto" style={{ background: '#FFFDF7' }}>
+        <div className="flex-1 overflow-y-auto" style={{ background: '#EFF5F3' }}>
           <div className="overflow-x-auto">
             <table className="w-full text-xs min-w-[540px]">
               <thead className="sticky top-0 bg-white border-b text-gray-400 font-bold text-[10px] uppercase tracking-wider"
-                     style={{ borderColor: '#EDE0D0' }}>
+                     style={{ borderColor: '#D9E3E0' }}>
                 <tr>
                   {['Candidate', 'Branch / CGPA', 'Company & Role', 'Applied On', 'Status', ''].map((h) => (
                     <th key={h} className="text-left px-4 py-3">{h}</th>
                   ))}
                 </tr>
               </thead>
-              <tbody className="divide-y" style={{ divideColor: '#EDE0D0' }}>
+              <tbody className="divide-y" style={{ divideColor: '#D9E3E0' }}>
                 {filtered.length === 0 ? (
                   <tr><td colSpan={6} className="text-center py-16 text-gray-400">No applications match current filters</td></tr>
                 ) : filtered.map((app) => (
@@ -112,7 +112,7 @@ export default function AdminResumes() {
                     <td className="px-4 py-3.5">
                       <div className="flex items-center gap-2">
                         <div className="w-8 h-8 rounded-xl flex items-center justify-center text-xs font-bold text-white flex-shrink-0"
-                             style={{ background: '#8B1A1A' }}>
+                             style={{ background: '#D9642F' }}>
                           {app.studentName.charAt(0)}
                         </div>
                         <div>
@@ -123,7 +123,7 @@ export default function AdminResumes() {
                     </td>
                     <td className="px-4 py-3.5">
                       <p className="font-semibold text-gray-700">{app.branch}</p>
-                      <p className="font-bold" style={{ color: app.cgpa >= 9 ? '#15803d' : '#8B1A1A' }}>{app.cgpa}</p>
+                      <p className="font-bold" style={{ color: app.cgpa >= 9 ? '#15803d' : '#D9642F' }}>{app.cgpa}</p>
                     </td>
                     <td className="px-4 py-3.5">
                       <p className="font-bold text-gray-900 truncate max-w-[140px]">{app.company}</p>
@@ -142,10 +142,10 @@ export default function AdminResumes() {
 
       {/* Candidate Drawer */}
       {drawerData && (
-        <div className="flex-1 border-t md:border-t-0 md:border-l overflow-y-auto bg-white flex flex-col" style={{ borderColor: '#EDE0D0' }}>
-          <div className="px-5 py-4 border-b flex items-start justify-between" style={{ borderColor: '#EDE0D0', background: '#FFFDF7' }}>
+        <div className="flex-1 border-t md:border-t-0 md:border-l overflow-y-auto bg-white flex flex-col" style={{ borderColor: '#D9E3E0' }}>
+          <div className="px-5 py-4 border-b flex items-start justify-between" style={{ borderColor: '#D9E3E0', background: '#EFF5F3' }}>
             <div className="flex items-center gap-3">
-              <div className="w-10 h-10 rounded-xl flex items-center justify-center text-sm font-bold text-white" style={{ background: '#8B1A1A' }}>
+              <div className="w-10 h-10 rounded-xl flex items-center justify-center text-sm font-bold text-white" style={{ background: '#D9642F' }}>
                 {drawerData.studentName.charAt(0)}
               </div>
               <div>
@@ -157,7 +157,7 @@ export default function AdminResumes() {
           </div>
 
           <div className="flex-1 px-5 py-4 space-y-4">
-            <div className="p-4 rounded-xl border" style={{ background: '#FFFDF7', borderColor: '#EDE0D0' }}>
+            <div className="p-4 rounded-xl border" style={{ background: '#EFF5F3', borderColor: '#D9E3E0' }}>
               <p className="text-[10px] font-bold uppercase tracking-wider text-gray-400 mb-3">Application Details</p>
               <div className="space-y-2 text-xs">
                 {[
@@ -176,7 +176,7 @@ export default function AdminResumes() {
               </div>
             </div>
 
-            <div className="p-4 rounded-xl border" style={{ background: '#FFFDF7', borderColor: '#EDE0D0' }}>
+            <div className="p-4 rounded-xl border" style={{ background: '#EFF5F3', borderColor: '#D9E3E0' }}>
               <p className="text-[10px] font-bold uppercase tracking-wider text-gray-400 mb-2">Resume</p>
               <div className="flex items-center gap-2">
                 <User size={13} className="text-gray-400" />
@@ -185,7 +185,7 @@ export default function AdminResumes() {
             </div>
           </div>
 
-          <div className="px-5 py-4 border-t space-y-2" style={{ borderColor: '#EDE0D0' }}>
+          <div className="px-5 py-4 border-t space-y-2" style={{ borderColor: '#D9E3E0' }}>
             <p className="text-[10px] font-bold uppercase tracking-wider text-gray-400 mb-3">Screening Decision</p>
             <button onClick={() => handleUpdate(drawerData.id, 'shortlisted')}
               disabled={drawerData.status === 'shortlisted'}

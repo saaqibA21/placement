@@ -29,20 +29,20 @@ export default function Calendar() {
       {/* Calendar Header Bar */}
       <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-3">
         <div>
-          <h1 className="text-xl font-bold text-gray-900" style={{ fontFamily: 'Cinzel,serif' }}>
+          <h1 className="text-xl font-bold text-gray-900" style={{ fontFamily: "'Bebas Neue',sans-serif", letterSpacing:'0.03em' }}>
             Placement Drive Timetable
           </h1>
           <p className="text-gray-500 text-xs mt-0.5">Campus visit schedules, tests, and registration deadlines</p>
         </div>
 
-        <div className="flex items-center gap-2 bg-white p-1 rounded-xl border shadow-xs" style={{ borderColor: '#EDE0D0' }}>
+        <div className="flex items-center gap-2 bg-white p-1 rounded-xl border shadow-xs" style={{ borderColor: '#D9E3E0' }}>
           <button
             onClick={() => setCur(new Date(year, month - 1, 1))}
             className="p-2 rounded-lg text-gray-500 hover:text-gray-900 hover:bg-gray-50 transition-colors"
           >
             <ChevronLeft size={16} />
           </button>
-          <span className="text-xs font-bold text-gray-800 w-32 text-center" style={{ fontFamily: 'Cinzel,serif' }}>
+          <span className="text-xs font-bold text-gray-800 w-32 text-center" style={{ fontFamily: "'Bebas Neue',sans-serif", letterSpacing:'0.03em' }}>
             {MONTHS[month]} {year}
           </span>
           <button
@@ -55,9 +55,9 @@ export default function Calendar() {
       </div>
 
       {/* Main Month Grid Card */}
-      <div className="card-solid bg-white overflow-hidden border shadow-sm" style={{ borderColor: '#EDE0D0' }}>
+      <div className="card-solid bg-white overflow-hidden border shadow-sm" style={{ borderColor: '#D9E3E0' }}>
         {/* Day of Week Headers */}
-        <div className="grid grid-cols-7 border-b bg-gray-50" style={{ borderColor: '#EDE0D0' }}>
+        <div className="grid grid-cols-7 border-b bg-gray-50" style={{ borderColor: '#D9E3E0' }}>
           {DAYS.map((d) => (
             <div key={d} className="text-center py-2.5 text-gray-500 text-[11px] font-bold uppercase tracking-wider">
               {d}
@@ -66,21 +66,21 @@ export default function Calendar() {
         </div>
 
         {/* Day Cells */}
-        <div className="grid grid-cols-7 divide-x divide-y" style={{ borderColor: '#EDE0D0' }}>
+        <div className="grid grid-cols-7 divide-x divide-y" style={{ borderColor: '#D9E3E0' }}>
           {cells.map((day, idx) => {
             const ds = day ? `${year}-${String(month + 1).padStart(2, '0')}-${String(day).padStart(2, '0')}` : '';
             const evs = day ? evByDate[ds] || [] : [];
             const isToday = day === today.getDate() && month === today.getMonth() && year === today.getFullYear();
 
             return (
-              <div key={idx} className="min-h-[85px] sm:min-h-[105px] p-1.5 sm:p-2 bg-white flex flex-col justify-between" style={{ borderColor: '#EDE0D0' }}>
+              <div key={idx} className="min-h-[85px] sm:min-h-[105px] p-1.5 sm:p-2 bg-white flex flex-col justify-between" style={{ borderColor: '#D9E3E0' }}>
                 {day ? (
                   <>
                     <span
                       className={`inline-flex w-6 h-6 items-center justify-center rounded-full text-xs font-bold ${
                         isToday ? 'text-white shadow-xs' : 'text-gray-700'
                       }`}
-                      style={isToday ? { background: '#8B1A1A' } : {}}
+                      style={isToday ? { background: '#D9642F' } : {}}
                     >
                       {day}
                     </span>

@@ -21,7 +21,7 @@ export default function Companies() {
       {/* Header */}
       <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-4">
         <div>
-          <h1 className="text-xl font-bold text-gray-900" style={{ fontFamily: 'Cinzel,serif' }}>
+          <h1 className="text-xl font-bold text-gray-900" style={{ fontFamily: "'Bebas Neue',sans-serif", letterSpacing:'0.03em' }}>
             Visiting Recruitment Partners
           </h1>
           <p className="text-gray-500 text-xs mt-0.5">Corporate partners and schedule of campus hiring drives</p>
@@ -55,7 +55,7 @@ export default function Companies() {
       {/* Grid */}
       <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-4">
         {filtered.map((c) => (
-          <div key={c.id} className="card-solid card-solid-hover p-5 bg-white flex flex-col justify-between" style={{ borderColor: '#EDE0D0' }}>
+          <div key={c.id} className="card-solid card-solid-hover p-5 bg-white flex flex-col justify-between" style={{ borderColor: '#D9E3E0' }}>
             <div>
               {/* Logo & Category */}
               <div className="flex items-start justify-between mb-4">
@@ -80,7 +80,7 @@ export default function Companies() {
             </div>
 
             {/* Visit Date & Status Footer */}
-            <div className="pt-3 border-t flex items-center justify-between" style={{ borderColor: '#EDE0D0' }}>
+            <div className="pt-3 border-t flex items-center justify-between" style={{ borderColor: '#D9E3E0' }}>
               <span className="text-xs text-gray-400 flex items-center gap-1">
                 <Calendar size={12} />
                 {c.visitDate ? new Date(c.visitDate).toLocaleDateString('en-IN', { day: 'numeric', month: 'short' }) : 'TBD'}

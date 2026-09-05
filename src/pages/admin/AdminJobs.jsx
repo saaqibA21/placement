@@ -78,7 +78,7 @@ export default function AdminJobs() {
       {/* Header */}
       <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-4">
         <div>
-          <h1 className="text-xl font-bold text-gray-900" style={{fontFamily:'Cinzel,serif'}}>Manage Recruitment Drives</h1>
+          <h1 className="text-xl font-bold text-gray-900" style={{fontFamily:"'Bebas Neue',sans-serif", letterSpacing:'0.03em'}}>Manage Recruitment Drives</h1>
           <p className="text-gray-500 text-xs mt-0.5">{totalCount} drives · changes appear instantly for students</p>
         </div>
         <button onClick={openNew} className="btn-solid-primary px-4 py-2.5 text-xs font-bold flex items-center gap-1.5">
@@ -89,7 +89,7 @@ export default function AdminJobs() {
       {/* Status Counter Cards (clickable filters) */}
       <div className="grid grid-cols-2 sm:grid-cols-4 gap-3">
         {[
-          { key: 'All',         label: 'Total Drives',       value: totalCount,       color: '#8B1A1A' },
+          { key: 'All',         label: 'Total Drives',       value: totalCount,       color: '#D9642F' },
           { key: 'Open',        label: 'Open For Applying',  value: openCount,        color: '#15803d' },
           { key: 'In Progress', label: 'Interviews Active',  value: inProgressCount,  color: '#b45309' },
           { key: 'Closed',      label: 'Concluded',          value: closedCount,      color: '#be123c' },
@@ -98,7 +98,7 @@ export default function AdminJobs() {
             className={`p-3.5 rounded-xl border text-left transition-all ${
               statusFilter === s.key ? 'shadow-md' : 'bg-white hover:bg-amber-50/40'
             }`}
-            style={{ borderColor: statusFilter === s.key ? s.color : '#EDE0D0',
+            style={{ borderColor: statusFilter === s.key ? s.color : '#D9E3E0',
                      background: statusFilter === s.key ? `${s.color}10` : '#fff' }}>
             <p className="text-[10px] font-bold uppercase tracking-wider text-gray-400">{s.label}</p>
             <p className="text-xl font-bold mt-0.5" style={{ color: s.color }}>{s.value}</p>
@@ -117,18 +117,18 @@ export default function AdminJobs() {
       </div>
 
       {/* Table */}
-      <div className="card-solid bg-white overflow-hidden border" style={{ borderColor: '#EDE0D0' }}>
+      <div className="card-solid bg-white overflow-hidden border" style={{ borderColor: '#D9E3E0' }}>
         <div className="overflow-x-auto">
           <table className="w-full text-xs min-w-[600px]">
             <thead className="bg-gray-50 border-b text-gray-400 font-bold text-[10px] uppercase tracking-wider"
-                   style={{ borderColor: '#EDE0D0' }}>
+                   style={{ borderColor: '#D9E3E0' }}>
               <tr>
                 {['Company & Role', 'Type', 'Salary', 'Deadline', 'Status (Click)', 'Actions'].map((h) => (
                   <th key={h} className="text-left px-5 py-3.5 whitespace-nowrap">{h}</th>
                 ))}
               </tr>
             </thead>
-            <tbody className="divide-y" style={{ divideColor: '#EDE0D0' }}>
+            <tbody className="divide-y" style={{ divideColor: '#D9E3E0' }}>
               {filtered.length === 0 ? (
                 <tr>
                   <td colSpan={6} className="text-center py-16 text-gray-400">
@@ -168,9 +168,9 @@ export default function AdminJobs() {
       {/* Modal */}
       {show && (
         <div className="fixed inset-0 bg-black/40 flex items-center justify-center p-4 z-50">
-          <div className="bg-white rounded-2xl p-6 w-full max-w-2xl max-h-[90vh] overflow-y-auto border shadow-2xl" style={{ borderColor: '#EDE0D0' }}>
-            <div className="flex items-center justify-between pb-4 mb-5 border-b" style={{ borderColor: '#EDE0D0' }}>
-              <h3 className="text-base font-bold text-gray-900" style={{fontFamily:'Cinzel,serif'}}>
+          <div className="bg-white rounded-2xl p-6 w-full max-w-2xl max-h-[90vh] overflow-y-auto border shadow-2xl" style={{ borderColor: '#D9E3E0' }}>
+            <div className="flex items-center justify-between pb-4 mb-5 border-b" style={{ borderColor: '#D9E3E0' }}>
+              <h3 className="text-base font-bold text-gray-900" style={{fontFamily:"'Bebas Neue',sans-serif", letterSpacing:'0.03em'}}>
                 {editId ? 'Edit Recruitment Drive' : 'Launch New Campus Drive'}
               </h3>
               <button onClick={() => setShow(false)} className="text-gray-400 hover:text-gray-600"><X size={18} /></button>
@@ -178,7 +178,7 @@ export default function AdminJobs() {
 
             <div className="space-y-4 text-xs">
               {/* Company & Role */}
-              <div className="p-4 rounded-xl border space-y-3" style={{ background: '#FFFDF7', borderColor: '#EDE0D0' }}>
+              <div className="p-4 rounded-xl border space-y-3" style={{ background: '#EFF5F3', borderColor: '#D9E3E0' }}>
                 <p className="text-[10px] font-bold uppercase tracking-wider text-gray-400">Company & Designation</p>
                 <input className="input-solid text-xs py-2" value={form.company}
                   onChange={(e) => setForm({ ...form, company: e.target.value })} placeholder="Company Name *" />
@@ -187,7 +187,7 @@ export default function AdminJobs() {
               </div>
 
               {/* Compensation */}
-              <div className="p-4 rounded-xl border space-y-3" style={{ background: '#FFFDF7', borderColor: '#EDE0D0' }}>
+              <div className="p-4 rounded-xl border space-y-3" style={{ background: '#EFF5F3', borderColor: '#D9E3E0' }}>
                 <p className="text-[10px] font-bold uppercase tracking-wider text-gray-400">Compensation & Type</p>
                 <div className="grid grid-cols-3 gap-3">
                   <input className="input-solid text-xs py-2" value={form.salary}
@@ -202,7 +202,7 @@ export default function AdminJobs() {
               </div>
 
               {/* Eligibility & Dates */}
-              <div className="p-4 rounded-xl border space-y-3" style={{ background: '#FFFDF7', borderColor: '#EDE0D0' }}>
+              <div className="p-4 rounded-xl border space-y-3" style={{ background: '#EFF5F3', borderColor: '#D9E3E0' }}>
                 <p className="text-[10px] font-bold uppercase tracking-wider text-gray-400">Eligibility & Schedule</p>
                 <div className="grid grid-cols-3 gap-3">
                   <div>
@@ -243,7 +243,7 @@ export default function AdminJobs() {
                 placeholder="Role description, prerequisites, evaluation format..." />
             </div>
 
-            <div className="flex justify-end gap-2 pt-5 border-t mt-5" style={{ borderColor: '#EDE0D0' }}>
+            <div className="flex justify-end gap-2 pt-5 border-t mt-5" style={{ borderColor: '#D9E3E0' }}>
               <button type="button" onClick={() => setShow(false)} className="btn-solid-secondary px-4 py-2 text-xs">Cancel</button>
               <button type="button" onClick={save} className="btn-solid-primary px-5 py-2 text-xs font-bold flex items-center gap-1.5">
                 <CheckCircle2 size={13} /> {editId ? 'Save Changes' : 'Publish Drive'}

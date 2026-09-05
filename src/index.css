@@ -2,26 +2,26 @@
 @tailwind components;
 @tailwind utilities;
 
-/* ─── CSS Variables — Inspired by Academic Teal & Warm Oak Theme ───── */
+/* ─── CSS Variables — Retro Navy & Burnt-Orange Theme ───────────────── */
 :root {
-  --teal-deep:     #0F2125;
-  --teal-dark:     #162E34;
-  --teal-main:     #1F4047;
-  --teal-light:    #2C555E;
-  --teal-subtle:   #EAF1F2;
+  --teal-deep:     #12122B;
+  --teal-dark:     #1B1B3D;
+  --teal-main:     #262654;
+  --teal-light:    #5C6E86;
+  --teal-subtle:   #E7F2EF;
 
-  --amber-gold:    #D9822B;
-  --amber-bright:  #EFA03D;
-  --amber-glow:    rgba(217, 130, 43, 0.35);
-  --amber-pale:    #FEF6EC;
-  --amber-border:  #F4D3A4;
+  --amber-gold:    #D9642F;
+  --amber-bright:  #E67E3E;
+  --amber-glow:    rgba(217, 100, 47, 0.35);
+  --amber-pale:    #FBEEE2;
+  --amber-border:  #EBC49A;
 
   --canvas-bg:     #F3F6F6;
   --canvas-dark:   #E6EDED;
-  --text-dark:     #102226;
-  --text-mid:      #33535B;
-  --text-muted:    #698991;
-  --border:        #D6E3E5;
+  --text-dark:     #171732;
+  --text-mid:      #3E4E68;
+  --text-muted:    #6E8398;
+  --border:        #D9E3E0;
 
   /* Compatibility bindings */
   --maroon:        var(--teal-main);
@@ -52,14 +52,41 @@ body {
   -webkit-font-smoothing: antialiased;
 }
 
-h1, h2, h3, .font-cinzel {
-  font-family: 'Cinzel', Georgia, serif;
+h1, h2, h3, .font-retro {
+  font-family: 'Bebas Neue', 'Cinzel', Georgia, sans-serif;
+  letter-spacing: 0.03em;
+  text-transform: uppercase;
+}
+
+/* ─── Retro texture utilities ───────────────────────────────────────── */
+.retro-grain {
+  position: absolute;
+  inset: 0;
+  pointer-events: none;
+  background-image: repeating-linear-gradient(
+    0deg,
+    rgba(255, 255, 255, 0.035) 0px,
+    rgba(255, 255, 255, 0.035) 1px,
+    transparent 1px,
+    transparent 3px
+  );
+  mix-blend-mode: overlay;
+}
+
+.retro-tag {
+  font-family: 'Bebas Neue', sans-serif;
+  letter-spacing: 0.15em;
+  text-transform: uppercase;
+}
+
+.retro-dashed {
+  border-top: 2px dashed rgba(217, 100, 47, 0.35);
 }
 
 /* ─── Custom Scrollbar ──────────────────────────────────────────────── */
 ::-webkit-scrollbar { width: 5px; height: 5px; }
 ::-webkit-scrollbar-track { background: transparent; }
-::-webkit-scrollbar-thumb { background: rgba(31, 64, 71, 0.3); border-radius: 9999px; }
+::-webkit-scrollbar-thumb { background: rgba(38, 38, 84, 0.3); border-radius: 9999px; }
 ::-webkit-scrollbar-thumb:hover { background: var(--teal-main); }
 
 /* ─── Card & Surface ────────────────────────────────────────────────── */

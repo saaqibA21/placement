@@ -56,7 +56,7 @@ export default function AdminNotices() {
 
       <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-4">
         <div>
-          <h1 className="text-xl font-bold text-gray-900" style={{fontFamily:'Cinzel,serif'}}>Broadcast Circulars</h1>
+          <h1 className="text-xl font-bold text-gray-900" style={{fontFamily:"'Bebas Neue',sans-serif", letterSpacing:'0.03em'}}>Broadcast Circulars</h1>
           <p className="text-gray-500 text-xs mt-0.5">{notices.length} circulars · published notices appear instantly for students</p>
         </div>
         <button onClick={openNew} className="btn-solid-primary px-4 py-2 text-xs font-semibold flex items-center gap-1.5">
@@ -64,16 +64,16 @@ export default function AdminNotices() {
         </button>
       </div>
 
-      <div className="card-solid bg-white overflow-hidden flex flex-col md:flex-row" style={{ minHeight: '520px', borderColor: '#EDE0D0' }}>
+      <div className="card-solid bg-white overflow-hidden flex flex-col md:flex-row" style={{ minHeight: '520px', borderColor: '#D9E3E0' }}>
         {/* Notice List */}
-        <div className="w-full md:w-80 border-b md:border-b-0 md:border-r flex flex-col" style={{ borderColor: '#EDE0D0', background: '#FFFDF7' }}>
-          <div className="p-4 border-b flex items-center justify-between" style={{ borderColor: '#EDE0D0' }}>
+        <div className="w-full md:w-80 border-b md:border-b-0 md:border-r flex flex-col" style={{ borderColor: '#D9E3E0', background: '#EFF5F3' }}>
+          <div className="p-4 border-b flex items-center justify-between" style={{ borderColor: '#D9E3E0' }}>
             <span className="text-xs font-bold text-gray-700 uppercase tracking-wider">All Notices</span>
-            <span className="text-xs font-bold px-2 py-0.5 rounded-full" style={{ background: '#FFF0F0', color: '#8B1A1A' }}>
+            <span className="text-xs font-bold px-2 py-0.5 rounded-full" style={{ background: '#FBEEE2', color: '#D9642F' }}>
               {notices.length}
             </span>
           </div>
-          <div className="overflow-y-auto flex-1 divide-y" style={{ divideColor: '#EDE0D0' }}>
+          <div className="overflow-y-auto flex-1 divide-y" style={{ divideColor: '#D9E3E0' }}>
             {notices.length === 0 ? (
               <div className="p-6 text-center text-gray-400 text-xs">No notices yet. Publish one!</div>
             ) : notices.map((n) => (
@@ -81,11 +81,11 @@ export default function AdminNotices() {
                 className={`p-4 cursor-pointer transition-all flex items-start justify-between gap-2 ${
                   selected?.id === n.id ? 'border-l-4 bg-red-50' : 'hover:bg-amber-50/50 border-l-4 border-l-transparent'
                 }`}
-                style={selected?.id === n.id ? { borderLeftColor: '#8B1A1A' } : {}}>
+                style={selected?.id === n.id ? { borderLeftColor: '#D9642F' } : {}}>
                 <div className="min-w-0 flex-1">
                   <div className="flex items-center gap-1.5 mb-1">
                     <span className="text-[10px] font-bold px-2 py-0.5 rounded"
-                          style={{ background: '#FFF0F0', color: '#8B1A1A' }}>
+                          style={{ background: '#FBEEE2', color: '#D9642F' }}>
                       {n.tags[0] || 'Notice'}
                     </span>
                     <span className="text-[10px] text-gray-400">{n.timeAgo}</span>
@@ -111,7 +111,7 @@ export default function AdminNotices() {
         <div className="flex-1 p-6 overflow-y-auto bg-white">
           {selected ? (
             <div className="max-w-2xl">
-              <div className="flex items-center gap-3 pb-4 mb-4 border-b" style={{ borderColor: '#EDE0D0' }}>
+              <div className="flex items-center gap-3 pb-4 mb-4 border-b" style={{ borderColor: '#D9E3E0' }}>
                 <div className={`w-10 h-10 rounded-xl ${selected.authorColor} text-white font-bold text-sm flex items-center justify-center flex-shrink-0`}>
                   {selected.authorInitial}
                 </div>
@@ -122,13 +122,13 @@ export default function AdminNotices() {
                 <div className="flex gap-1.5 flex-wrap">
                   {selected.tags.map((t) => (
                     <span key={t} className="text-[10px] font-bold px-2.5 py-1 rounded-full"
-                          style={{ background: '#FFF0F0', color: '#8B1A1A', border: '1px solid #F5CCCC' }}>
+                          style={{ background: '#FBEEE2', color: '#D9642F', border: '1px solid #EFC7A8' }}>
                       {t}
                     </span>
                   ))}
                 </div>
               </div>
-              <h2 className="text-lg font-bold text-gray-900 mb-4 leading-snug" style={{fontFamily:'Cinzel,serif'}}>{selected.title}</h2>
+              <h2 className="text-lg font-bold text-gray-900 mb-4 leading-snug" style={{fontFamily:"'Bebas Neue',sans-serif", letterSpacing:'0.03em'}}>{selected.title}</h2>
               <p className="text-xs text-gray-700 leading-relaxed whitespace-pre-wrap">{selected.body}</p>
             </div>
           ) : (
@@ -145,10 +145,10 @@ export default function AdminNotices() {
       {/* Modal */}
       {showForm && (
         <div className="fixed inset-0 bg-black/40 flex items-center justify-center p-4 z-50">
-          <div className="bg-white rounded-2xl p-6 w-full max-w-xl max-h-[90vh] overflow-y-auto border shadow-2xl" style={{ borderColor: '#EDE0D0' }}>
-            <div className="flex items-center justify-between pb-4 mb-5 border-b" style={{ borderColor: '#EDE0D0' }}>
-              <h3 className="text-base font-bold text-gray-900 flex items-center gap-2" style={{fontFamily:'Cinzel,serif'}}>
-                <Bell size={16} style={{ color: '#8B1A1A' }} />
+          <div className="bg-white rounded-2xl p-6 w-full max-w-xl max-h-[90vh] overflow-y-auto border shadow-2xl" style={{ borderColor: '#D9E3E0' }}>
+            <div className="flex items-center justify-between pb-4 mb-5 border-b" style={{ borderColor: '#D9E3E0' }}>
+              <h3 className="text-base font-bold text-gray-900 flex items-center gap-2" style={{fontFamily:"'Bebas Neue',sans-serif", letterSpacing:'0.03em'}}>
+                <Bell size={16} style={{ color: '#D9642F' }} />
                 {editingId ? 'Edit Circular' : 'Broadcast New Circular'}
               </h3>
               <button onClick={() => setShowForm(false)} className="text-gray-400 hover:text-gray-600"><X size={18} /></button>
@@ -184,7 +184,7 @@ export default function AdminNotices() {
               </div>
             </div>
 
-            <div className="flex justify-end gap-2 pt-5 border-t mt-5" style={{ borderColor: '#EDE0D0' }}>
+            <div className="flex justify-end gap-2 pt-5 border-t mt-5" style={{ borderColor: '#D9E3E0' }}>
               <button type="button" onClick={() => setShowForm(false)} className="btn-solid-secondary px-4 py-2 text-xs">Cancel</button>
               <button type="button" onClick={save} className="btn-solid-primary px-5 py-2 text-xs font-bold flex items-center gap-1.5">
                 <Send size={13} /> {editingId ? 'Save Changes' : 'Broadcast Notice'}

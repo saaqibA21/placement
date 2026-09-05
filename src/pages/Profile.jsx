@@ -9,7 +9,7 @@ const SKILL_CATEGORIES = [
   {
     label: 'Programming Languages',
     icon: Code2,
-    color: '#8B1A1A',
+    color: '#D9642F',
     skills: ['Python', 'C++', 'Java', 'JavaScript', 'TypeScript', 'SQL'],
   },
   {
@@ -122,19 +122,19 @@ export default function Profile() {
           {/* Photo Upload */}
           <div className="relative flex-shrink-0">
             <div className="w-24 h-24 rounded-2xl overflow-hidden border-4"
-                 style={{ borderColor: '#8B1A1A' }}>
+                 style={{ borderColor: '#D9642F' }}>
               {photo ? (
                 <img src={photo} alt="Profile" className="w-full h-full object-cover" />
               ) : (
                 <div className="w-full h-full flex items-center justify-center text-3xl font-bold text-white"
-                     style={{ background: '#8B1A1A' }}>
+                     style={{ background: '#D9642F' }}>
                   {user?.name?.charAt(0)}
                 </div>
               )}
             </div>
             <button onClick={() => photoRef.current?.click()}
               className="absolute -bottom-2 -right-2 w-7 h-7 rounded-full flex items-center justify-center text-white shadow-md"
-              style={{ background: '#C9A84C' }} title="Change photo">
+              style={{ background: '#C98B4A' }} title="Change photo">
               <Camera size={13} />
             </button>
             <input ref={photoRef} type="file" accept="image/*" className="hidden" onChange={handlePhotoChange} />
@@ -145,11 +145,11 @@ export default function Profile() {
             <div className="flex items-start justify-between gap-3 flex-wrap">
               <div>
                 <div className="flex items-center gap-2 flex-wrap">
-                  <h1 className="text-xl font-bold text-gray-900" style={{fontFamily:'Cinzel,serif'}}>
+                  <h1 className="text-xl font-bold text-gray-900" style={{fontFamily:"'Bebas Neue',sans-serif", letterSpacing:'0.03em'}}>
                     {user?.name}
                   </h1>
                   <span className="flex items-center gap-1 text-[10px] font-bold px-2.5 py-0.5 rounded-full"
-                        style={{ background: '#FFF0F0', color: '#8B1A1A', border: '1px solid #F5CCCC' }}>
+                        style={{ background: '#FBEEE2', color: '#D9642F', border: '1px solid #EFC7A8' }}>
                     <CheckCircle2 size={10} /> Verified Student
                   </span>
                 </div>
@@ -172,7 +172,7 @@ export default function Profile() {
                 { label: 'CGPA',    value: user?.cgpa || '—'        },
               ].map((s) => (
                 <div key={s.label} className="px-3 py-1.5 rounded-xl border text-xs"
-                     style={{ borderColor: '#EDE0D0', background: '#FFFDF7' }}>
+                     style={{ borderColor: '#D9E3E0', background: '#EFF5F3' }}>
                   <span className="text-gray-400">{s.label}:</span>{' '}
                   <span className="font-bold text-gray-900">{s.value}</span>
                 </div>
@@ -183,13 +183,13 @@ export default function Profile() {
             <div className="mt-4">
               <div className="flex items-center justify-between mb-1">
                 <span className="text-[10px] font-bold uppercase tracking-wider text-gray-400">Profile Completion</span>
-                <span className="text-xs font-bold" style={{ color: completion >= 80 ? '#15803d' : '#8B1A1A' }}>
+                <span className="text-xs font-bold" style={{ color: completion >= 80 ? '#15803d' : '#D9642F' }}>
                   {completion}%
                 </span>
               </div>
               <div className="h-2 bg-gray-100 rounded-full overflow-hidden">
                 <div className="h-full rounded-full transition-all"
-                     style={{ width: `${completion}%`, background: completion >= 80 ? '#15803d' : '#8B1A1A' }} />
+                     style={{ width: `${completion}%`, background: completion >= 80 ? '#15803d' : '#D9642F' }} />
               </div>
             </div>
           </div>
@@ -198,7 +198,7 @@ export default function Profile() {
         {/* Editable Contact Fields */}
         {editing && (
           <div className="mt-5 pt-5 border-t grid grid-cols-1 sm:grid-cols-3 gap-3"
-               style={{ borderColor: '#EDE0D0' }}>
+               style={{ borderColor: '#D9E3E0' }}>
             {[
               { label: 'Phone Number', key: 'phone',    placeholder: '+91 98765 43210', icon: Phone    },
               { label: 'LinkedIn URL', key: 'linkedin', placeholder: 'linkedin.com/in/…', icon: Linkedin },
@@ -255,7 +255,7 @@ export default function Profile() {
       <div className="card-solid bg-white p-6">
         <div className="flex items-center justify-between mb-4">
           <div>
-            <h2 className="text-sm font-bold text-gray-900" style={{fontFamily:'Cinzel,serif'}}>
+            <h2 className="text-sm font-bold text-gray-900" style={{fontFamily:"'Bebas Neue',sans-serif", letterSpacing:'0.03em'}}>
               Resume / CV
             </h2>
             <p className="text-xs text-gray-400 mt-0.5">Upload your latest resume for placement applications</p>
@@ -264,10 +264,10 @@ export default function Profile() {
 
         {resume ? (
           /* Uploaded Resume Card */
-          <div className="flex items-center gap-4 p-4 rounded-xl border" style={{ background: '#FFFDF7', borderColor: '#EDE0D0' }}>
+          <div className="flex items-center gap-4 p-4 rounded-xl border" style={{ background: '#EFF5F3', borderColor: '#D9E3E0' }}>
             <div className="w-12 h-12 rounded-xl flex items-center justify-center flex-shrink-0"
-                 style={{ background: '#FFF0F0', border: '1px solid #F5CCCC' }}>
-              <FileText size={22} style={{ color: '#8B1A1A' }} />
+                 style={{ background: '#FBEEE2', border: '1px solid #EFC7A8' }}>
+              <FileText size={22} style={{ color: '#D9642F' }} />
             </div>
             <div className="flex-1 min-w-0">
               <p className="font-bold text-gray-900 text-sm truncate">{resume.name}</p>
@@ -295,11 +295,11 @@ export default function Profile() {
             onDrop={handleDrop}
             onClick={() => resumeRef.current?.click()}
             className="flex flex-col items-center justify-center p-8 rounded-xl border-2 border-dashed cursor-pointer transition-all"
-            style={{ borderColor: '#C9A84C', background: '#FFF8E7' }}
+            style={{ borderColor: '#C98B4A', background: '#F7ECDD' }}
           >
             <div className="w-14 h-14 rounded-2xl flex items-center justify-center mb-3"
-                 style={{ background: 'rgba(139,26,26,0.08)' }}>
-              <Upload size={26} style={{ color: '#8B1A1A' }} />
+                 style={{ background: 'rgba(217,100,47,0.08)' }}>
+              <Upload size={26} style={{ color: '#D9642F' }} />
             </div>
             <p className="font-bold text-gray-800 text-sm">Drop your resume here or click to browse</p>
             <p className="text-xs text-gray-400 mt-1">Supported: PDF, DOC, DOCX · Max size: 5 MB</p>
@@ -311,8 +311,8 @@ export default function Profile() {
         {/* Replace Confirmation Modal */}
         {replaceModal && (
           <div className="fixed inset-0 bg-black/40 flex items-center justify-center z-50 p-4">
-            <div className="bg-white rounded-2xl shadow-2xl p-6 w-full max-w-sm border" style={{ borderColor: '#EDE0D0' }}>
-              <h3 className="font-bold text-gray-900 mb-2" style={{fontFamily:'Cinzel,serif'}}>Replace Resume?</h3>
+            <div className="bg-white rounded-2xl shadow-2xl p-6 w-full max-w-sm border" style={{ borderColor: '#D9E3E0' }}>
+              <h3 className="font-bold text-gray-900 mb-2" style={{fontFamily:"'Bebas Neue',sans-serif", letterSpacing:'0.03em'}}>Replace Resume?</h3>
               <p className="text-xs text-gray-500 mb-4">
                 Your current resume will be replaced. Make sure your new resume is up to date before uploading.
               </p>
@@ -321,8 +321,8 @@ export default function Profile() {
                 onDrop={handleDrop}
                 onClick={() => newResumeRef.current?.click()}
                 className="flex flex-col items-center justify-center p-6 rounded-xl border-2 border-dashed cursor-pointer mb-4"
-                style={{ borderColor: '#C9A84C', background: '#FFF8E7' }}>
-                <Upload size={20} style={{ color: '#8B1A1A' }} />
+                style={{ borderColor: '#C98B4A', background: '#F7ECDD' }}>
+                <Upload size={20} style={{ color: '#D9642F' }} />
                 <p className="text-xs font-semibold text-gray-600 mt-1">Click or drop new resume file</p>
               </div>
               <input ref={newResumeRef} type="file" accept=".pdf,.doc,.docx" className="hidden"
@@ -340,34 +340,34 @@ export default function Profile() {
         {/* GPA Trend */}
         <div className="card-solid bg-white p-5">
           <div className="flex items-center gap-2 mb-4">
-            <BookOpen size={15} style={{ color: '#8B1A1A' }} />
-            <h2 className="text-sm font-bold text-gray-900" style={{fontFamily:'Cinzel,serif'}}>Semester GPA Trend</h2>
+            <BookOpen size={15} style={{ color: '#D9642F' }} />
+            <h2 className="text-sm font-bold text-gray-900" style={{fontFamily:"'Bebas Neue',sans-serif", letterSpacing:'0.03em'}}>Semester GPA Trend</h2>
           </div>
           <div className="grid grid-cols-3 gap-2">
             {GPA_DATA.map((g) => (
               <div key={g.sem} className="p-3 rounded-xl text-center border"
-                   style={{ background: '#FFFDF7', borderColor: '#EDE0D0' }}>
-                <p className="text-lg font-bold" style={{ color: g.gpa >= 8.5 ? '#15803d' : '#8B1A1A' }}>{g.gpa}</p>
+                   style={{ background: '#EFF5F3', borderColor: '#D9E3E0' }}>
+                <p className="text-lg font-bold" style={{ color: g.gpa >= 8.5 ? '#15803d' : '#D9642F' }}>{g.gpa}</p>
                 <p className="text-[10px] text-gray-400 font-semibold">{g.sem}</p>
                 <div className="mt-1.5 h-1 bg-gray-100 rounded-full overflow-hidden">
                   <div className="h-full rounded-full" style={{
                     width: `${((g.gpa - 7) / 3) * 100}%`,
-                    background: g.gpa >= 8.5 ? '#15803d' : '#8B1A1A'
+                    background: g.gpa >= 8.5 ? '#15803d' : '#D9642F'
                   }} />
                 </div>
               </div>
             ))}
           </div>
           <div className="mt-3 pt-3 border-t flex items-center justify-between text-xs"
-               style={{ borderColor: '#EDE0D0' }}>
+               style={{ borderColor: '#D9E3E0' }}>
             <span className="text-gray-400">Overall CGPA</span>
-            <span className="font-bold text-lg" style={{ color: '#8B1A1A' }}>{user?.cgpa || '8.5'}</span>
+            <span className="font-bold text-lg" style={{ color: '#D9642F' }}>{user?.cgpa || '8.5'}</span>
           </div>
         </div>
 
         {/* Skills */}
         <div className="card-solid bg-white p-5">
-          <h2 className="text-sm font-bold text-gray-900 mb-4" style={{fontFamily:'Cinzel,serif'}}>Technical Skills</h2>
+          <h2 className="text-sm font-bold text-gray-900 mb-4" style={{fontFamily:"'Bebas Neue',sans-serif", letterSpacing:'0.03em'}}>Technical Skills</h2>
           <div className="space-y-4">
             {SKILL_CATEGORIES.map((cat) => {
               const Icon = cat.icon;
@@ -382,7 +382,7 @@ export default function Profile() {
                   <div className="flex flex-wrap gap-1.5">
                     {cat.skills.map((s) => (
                       <span key={s} className="text-[11px] px-2.5 py-1 rounded-full font-medium border"
-                            style={{ background: '#FFFDF7', color: '#4A2020', borderColor: '#EDE0D0' }}>
+                            style={{ background: '#EFF5F3', color: '#2A2A4A', borderColor: '#D9E3E0' }}>
                         {s}
                       </span>
                     ))}

@@ -34,7 +34,7 @@ export default function AdminStudents() {
       <div>
         <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-4 mb-4">
           <div>
-            <h1 className="text-xl font-bold text-gray-900" style={{fontFamily:'Cinzel,serif'}}>Student Placement Directory</h1>
+            <h1 className="text-xl font-bold text-gray-900" style={{fontFamily:"'Bebas Neue',sans-serif", letterSpacing:'0.03em'}}>Student Placement Directory</h1>
             <p className="text-gray-500 text-xs mt-0.5">{totalStudents} enrolled candidates</p>
           </div>
         </div>
@@ -42,14 +42,14 @@ export default function AdminStudents() {
         {/* Summary Stats */}
         <div className="grid grid-cols-2 sm:grid-cols-4 gap-3">
           {[
-            { label: 'Total Enrolled',      value: totalStudents, color: '#8B1A1A', icon: Layers       },
+            { label: 'Total Enrolled',      value: totalStudents, color: '#D9642F', icon: Layers       },
             { label: 'Offers Extended',     value: placedCount,   color: '#15803d', icon: Trophy       },
             { label: 'Active Candidates',   value: activeCount,   color: '#1d4ed8', icon: CheckCircle2 },
             { label: 'Frozen Eligibility',  value: frozenCount,   color: '#b45309', icon: Snowflake    },
           ].map((s) => {
             const Icon = s.icon;
             return (
-              <div key={s.label} className="p-3.5 bg-white rounded-xl border flex items-center justify-between" style={{ borderColor: '#EDE0D0' }}>
+              <div key={s.label} className="p-3.5 bg-white rounded-xl border flex items-center justify-between" style={{ borderColor: '#D9E3E0' }}>
                 <div>
                   <span className="text-[10px] font-bold uppercase tracking-wider text-gray-400 block">{s.label}</span>
                   <p className="text-xl font-bold" style={{ color: s.color }}>{s.value}</p>
@@ -64,7 +64,7 @@ export default function AdminStudents() {
       </div>
 
       {/* Toolbar */}
-      <div className="card-solid p-4 bg-white space-y-3" style={{ borderColor: '#EDE0D0' }}>
+      <div className="card-solid p-4 bg-white space-y-3" style={{ borderColor: '#D9E3E0' }}>
         <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-3">
           <div className="relative flex-1 max-w-sm">
             <Search size={14} className="absolute left-3 top-1/2 -translate-y-1/2 text-gray-400" />
@@ -78,7 +78,7 @@ export default function AdminStudents() {
                 className={`px-2.5 py-1 rounded-lg transition-colors ${
                   cgpaFilter === cg ? 'bg-white font-bold shadow-sm' : 'text-gray-600 hover:text-gray-900'
                 }`}
-                style={cgpaFilter === cg ? { color: '#8B1A1A' } : {}}>
+                style={cgpaFilter === cg ? { color: '#D9642F' } : {}}>
                 {cg}
               </button>
             ))}
@@ -95,18 +95,18 @@ export default function AdminStudents() {
       </div>
 
       {/* Table */}
-      <div className="card-solid bg-white overflow-hidden" style={{ borderColor: '#EDE0D0' }}>
+      <div className="card-solid bg-white overflow-hidden" style={{ borderColor: '#D9E3E0' }}>
         <div className="overflow-x-auto">
           <table className="w-full text-xs min-w-[640px]">
             <thead className="bg-gray-50 border-b text-gray-400 font-bold text-[10px] uppercase tracking-wider"
-                   style={{ borderColor: '#EDE0D0' }}>
+                   style={{ borderColor: '#D9E3E0' }}>
               <tr>
                 {['Student', 'Roll Number', 'Branch', 'CGPA', 'Applied', 'Offers', 'Status', 'Actions'].map((h) => (
                   <th key={h} className="text-left px-4 py-3.5 whitespace-nowrap">{h}</th>
                 ))}
               </tr>
             </thead>
-            <tbody className="divide-y" style={{ divideColor: '#EDE0D0' }}>
+            <tbody className="divide-y" style={{ divideColor: '#D9E3E0' }}>
               {filtered.length === 0 ? (
                 <tr><td colSpan={8} className="text-center text-gray-400 py-16">No students match current filters.</td></tr>
               ) : filtered.map((student) => (
@@ -114,7 +114,7 @@ export default function AdminStudents() {
                   <td className="px-4 py-4">
                     <div className="flex items-center gap-3">
                       <div className="w-9 h-9 rounded-xl flex items-center justify-center text-xs font-bold text-white flex-shrink-0"
-                           style={{ background: '#8B1A1A' }}>
+                           style={{ background: '#D9642F' }}>
                         {student.name.charAt(0)}
                       </div>
                       <div>
@@ -126,7 +126,7 @@ export default function AdminStudents() {
                   <td className="px-4 py-4 text-xs text-gray-600 font-mono whitespace-nowrap">{student.rollNo}</td>
                   <td className="px-4 py-4 text-xs font-medium text-gray-700 whitespace-nowrap">{student.branch}</td>
                   <td className="px-4 py-4 whitespace-nowrap">
-                    <span className="text-xs font-bold" style={{ color: student.cgpa >= 9.0 ? '#15803d' : student.cgpa >= 8.0 ? '#1d4ed8' : '#8B1A1A' }}>
+                    <span className="text-xs font-bold" style={{ color: student.cgpa >= 9.0 ? '#15803d' : student.cgpa >= 8.0 ? '#1d4ed8' : '#D9642F' }}>
                       {student.cgpa}
                     </span>
                   </td>

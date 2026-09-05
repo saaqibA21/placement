@@ -48,7 +48,7 @@ export default function AdminCompanies() {
 
       <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-4">
         <div>
-          <h1 className="text-xl font-bold text-gray-900" style={{fontFamily:'Cinzel,serif'}}>Corporate Partners</h1>
+          <h1 className="text-xl font-bold text-gray-900" style={{fontFamily:"'Bebas Neue',sans-serif", letterSpacing:'0.03em'}}>Corporate Partners</h1>
           <p className="text-gray-500 text-xs mt-0.5">{companies.length} partners registered for campus hiring</p>
         </div>
         <div className="flex items-center gap-3 flex-wrap">
@@ -84,7 +84,7 @@ export default function AdminCompanies() {
                 ))}
               </div>
             </div>
-            <div className="pt-3 border-t flex items-center justify-between" style={{ borderColor: '#EDE0D0' }}>
+            <div className="pt-3 border-t flex items-center justify-between" style={{ borderColor: '#D9E3E0' }}>
               <span className="text-xs text-gray-400 flex items-center gap-1">
                 <Calendar size={11} />
                 {company.visitDate ? new Date(company.visitDate).toLocaleDateString('en-IN', { day:'numeric', month:'short' }) : 'TBD'}
@@ -97,10 +97,10 @@ export default function AdminCompanies() {
 
       {showForm && (
         <div className="fixed inset-0 bg-black/40 flex items-center justify-center p-4 z-50">
-          <div className="bg-white rounded-2xl p-6 w-full max-w-md max-h-[90vh] overflow-y-auto border shadow-2xl" style={{ borderColor: '#EDE0D0' }}>
-            <div className="flex items-center justify-between pb-4 mb-5 border-b" style={{ borderColor: '#EDE0D0' }}>
-              <h3 className="text-base font-bold text-gray-900 flex items-center gap-2" style={{fontFamily:'Cinzel,serif'}}>
-                <Building2 size={16} style={{ color: '#8B1A1A' }} />
+          <div className="bg-white rounded-2xl p-6 w-full max-w-md max-h-[90vh] overflow-y-auto border shadow-2xl" style={{ borderColor: '#D9E3E0' }}>
+            <div className="flex items-center justify-between pb-4 mb-5 border-b" style={{ borderColor: '#D9E3E0' }}>
+              <h3 className="text-base font-bold text-gray-900 flex items-center gap-2" style={{fontFamily:"'Bebas Neue',sans-serif", letterSpacing:'0.03em'}}>
+                <Building2 size={16} style={{ color: '#D9642F' }} />
                 {editingId ? 'Edit Partner' : 'Add Corporate Partner'}
               </h3>
               <button onClick={() => setShowForm(false)} className="text-gray-400 hover:text-gray-600"><X size={18} /></button>
@@ -146,7 +146,7 @@ export default function AdminCompanies() {
                 </select>
               </div>
             </div>
-            <div className="flex justify-end gap-2 pt-5 border-t mt-5" style={{ borderColor: '#EDE0D0' }}>
+            <div className="flex justify-end gap-2 pt-5 border-t mt-5" style={{ borderColor: '#D9E3E0' }}>
               <button type="button" onClick={() => setShowForm(false)} className="btn-solid-secondary px-4 py-2 text-xs">Cancel</button>
               <button type="button" onClick={save} className="btn-solid-primary px-5 py-2 text-xs font-bold">{editingId ? 'Save' : 'Add Partner'}</button>
             </div>

@@ -42,17 +42,17 @@ export default function Sidebar() {
 
   return (
     <aside className="flex flex-col w-[235px] flex-shrink-0 h-full select-none"
-           style={{ background: 'linear-gradient(180deg, #0E2024 0%, #162E34 60%, #0B191C 100%)', borderRight: '1px solid rgba(255,255,255,0.06)' }}>
+           style={{ background: 'linear-gradient(180deg, #12122B 0%, #1B1B3D 60%, #0D0D22 100%)', borderRight: '1px solid rgba(255,255,255,0.06)' }}>
 
       {/* College Identity */}
       <div className="px-5 pt-5 pb-4 border-b border-white/10">
         <div className="flex items-center gap-3">
           <div className="w-9 h-9 rounded-xl flex items-center justify-center flex-shrink-0"
-               style={{ background: 'rgba(217,130,43,0.25)', border: '1px solid rgba(217,130,43,0.45)' }}>
+               style={{ background: 'rgba(217,100,47,0.25)', border: '1px solid rgba(217,100,47,0.45)' }}>
             <GraduationCap size={18} className="text-amber-400" />
           </div>
           <div className="min-w-0">
-            <p className="text-white text-[11px] font-bold leading-tight truncate" style={{fontFamily:'Cinzel,serif'}}>
+            <p className="text-white text-[11px] font-bold leading-tight truncate" style={{fontFamily:"'Bebas Neue',sans-serif", letterSpacing:'0.03em'}}>
               Jeppiaar College
             </p>
             <p className="text-amber-400/80 text-[9.5px] tracking-wider uppercase mt-0.5 font-semibold">Placement Cell</p>
@@ -64,7 +64,7 @@ export default function Sidebar() {
           <div className="mt-3 p-2.5 rounded-xl border border-white/5" style={{ background: 'rgba(0,0,0,0.3)' }}>
             <div className="flex items-center gap-2">
               <div className="w-7 h-7 rounded-lg flex items-center justify-center text-xs font-bold text-amber-300 flex-shrink-0"
-                   style={{ background: 'rgba(217,130,43,0.3)' }}>
+                   style={{ background: 'rgba(217,100,47,0.3)' }}>
                 {user.name?.charAt(0)}
               </div>
               <div className="min-w-0">
@@ -81,7 +81,7 @@ export default function Sidebar() {
         {GROUPS.map((group) => (
           <div key={group.label}>
             <p className="text-[9px] font-bold uppercase tracking-widest px-2 mb-1.5"
-               style={{ color: 'rgba(217,130,43,0.8)' }}>
+               style={{ color: 'rgba(217,100,47,0.8)' }}>
               {group.label}
             </p>
             <div className="space-y-0.5">

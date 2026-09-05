@@ -50,15 +50,15 @@ export default function Chat() {
   return (
     <div className="flex h-full overflow-hidden flex-col md:flex-row">
       {/* Messages List Sidebar */}
-      <div className="w-full md:w-80 bg-white border-b md:border-b-0 md:border-r flex flex-col flex-shrink-0" style={{ borderColor: '#EDE0D0' }}>
-        <div className="p-4 border-b flex items-center justify-between" style={{ borderColor: '#EDE0D0' }}>
-          <h2 className="text-sm font-bold text-gray-900" style={{ fontFamily: 'Cinzel,serif' }}>Placement Helpdesk</h2>
+      <div className="w-full md:w-80 bg-white border-b md:border-b-0 md:border-r flex flex-col flex-shrink-0" style={{ borderColor: '#D9E3E0' }}>
+        <div className="p-4 border-b flex items-center justify-between" style={{ borderColor: '#D9E3E0' }}>
+          <h2 className="text-sm font-bold text-gray-900" style={{ fontFamily: "'Bebas Neue',sans-serif", letterSpacing:'0.03em' }}>Placement Helpdesk</h2>
           <span className="text-[10px] font-semibold text-green-700 bg-green-50 px-2 py-0.5 rounded-full border border-green-200">
             ● Active
           </span>
         </div>
 
-        <div className="overflow-y-auto flex-1 divide-y" style={{ divideColor: '#EDE0D0' }}>
+        <div className="overflow-y-auto flex-1 divide-y" style={{ divideColor: '#D9E3E0' }}>
           {CONVOS.map((c) => (
             <button
               key={c.id}
@@ -68,7 +68,7 @@ export default function Chat() {
                   ? 'bg-red-50/70 border-l-4'
                   : 'hover:bg-amber-50/40 border-l-4 border-l-transparent'
               }`}
-              style={active?.id === c.id ? { borderLeftColor: '#8B1A1A' } : {}}
+              style={active?.id === c.id ? { borderLeftColor: '#D9642F' } : {}}
             >
               <div className={`w-9 h-9 rounded-xl ${c.color} text-white font-bold text-xs flex items-center justify-center flex-shrink-0`}>
                 {c.initial}
@@ -81,7 +81,7 @@ export default function Chat() {
                 <p className="text-xs text-gray-500 truncate mt-0.5">{c.lastMsg}</p>
               </div>
               {c.unread > 0 && (
-                <span className="w-4 h-4 rounded-full text-white text-[10px] font-bold flex items-center justify-center flex-shrink-0" style={{ background: '#8B1A1A' }}>
+                <span className="w-4 h-4 rounded-full text-white text-[10px] font-bold flex items-center justify-center flex-shrink-0" style={{ background: '#D9642F' }}>
                   {c.unread}
                 </span>
               )}
@@ -91,9 +91,9 @@ export default function Chat() {
       </div>
 
       {/* Conversation Pane */}
-      <div className="flex-1 flex flex-col" style={{ background: '#FFFDF7' }}>
+      <div className="flex-1 flex flex-col" style={{ background: '#EFF5F3' }}>
         {/* Chat Header */}
-        <div className="p-3.5 bg-white border-b flex items-center gap-3 shadow-2xs flex-shrink-0" style={{ borderColor: '#EDE0D0' }}>
+        <div className="p-3.5 bg-white border-b flex items-center gap-3 shadow-2xs flex-shrink-0" style={{ borderColor: '#D9E3E0' }}>
           <div className={`w-9 h-9 rounded-xl ${active?.color} text-white font-bold text-xs flex items-center justify-center`}>
             {active?.initial}
           </div>
@@ -115,8 +115,8 @@ export default function Chat() {
                 }`}
                 style={
                   m.from === 'me'
-                    ? { background: '#8B1A1A' }
-                    : { borderColor: '#EDE0D0', background: '#FFFFFF' }
+                    ? { background: '#D9642F' }
+                    : { borderColor: '#D9E3E0', background: '#FFFFFF' }
                 }
               >
                 <p>{m.text}</p>
@@ -129,7 +129,7 @@ export default function Chat() {
         </div>
 
         {/* Message Input Box */}
-        <div className="p-3 bg-white border-t flex-shrink-0" style={{ borderColor: '#EDE0D0' }}>
+        <div className="p-3 bg-white border-t flex-shrink-0" style={{ borderColor: '#D9E3E0' }}>
           <div className="flex items-center gap-2 max-w-4xl mx-auto">
             <input
               type="text"

@@ -28,7 +28,7 @@ export default function Requests() {
     <div className="p-4 sm:p-6 max-w-4xl mx-auto space-y-5">
       <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-4">
         <div>
-          <h1 className="text-xl font-bold text-gray-900" style={{ fontFamily: 'Cinzel,serif' }}>
+          <h1 className="text-xl font-bold text-gray-900" style={{ fontFamily: "'Bebas Neue',sans-serif", letterSpacing:'0.03em' }}>
             Placement Cell Requests
           </h1>
           <p className="text-gray-500 text-xs mt-0.5">Submit appeals for profile amendments, documents, and exemptions</p>
@@ -43,11 +43,11 @@ export default function Requests() {
 
       <div className="grid gap-3">
         {(requests || []).map((r) => (
-          <div key={r.id} className="card-solid p-5 bg-white border" style={{ borderColor: '#EDE0D0' }}>
+          <div key={r.id} className="card-solid p-5 bg-white border" style={{ borderColor: '#D9E3E0' }}>
             <div className="flex items-start justify-between gap-4">
               <div>
                 <span className="text-xs font-bold px-2.5 py-0.5 rounded-full mb-2 inline-block"
-                      style={{ background: '#FFF0F0', color: '#8B1A1A', border: '1px solid #F5CCCC' }}>
+                      style={{ background: '#FBEEE2', color: '#D9642F', border: '1px solid #EFC7A8' }}>
                   {r.type}
                 </span>
                 <h3 className="text-sm font-semibold text-gray-900 mt-1">{r.description}</h3>
@@ -64,9 +64,9 @@ export default function Requests() {
       {/* Modal */}
       {showForm && (
         <div className="fixed inset-0 bg-black/40 flex items-center justify-center p-4 z-50">
-          <div className="bg-white rounded-2xl p-6 w-full max-w-md border shadow-2xl" style={{ borderColor: '#EDE0D0' }}>
-            <div className="flex items-center justify-between pb-4 mb-5 border-b" style={{ borderColor: '#EDE0D0' }}>
-              <h3 className="text-base font-bold text-gray-900" style={{ fontFamily: 'Cinzel,serif' }}>Raise Formal Request</h3>
+          <div className="bg-white rounded-2xl p-6 w-full max-w-md border shadow-2xl" style={{ borderColor: '#D9E3E0' }}>
+            <div className="flex items-center justify-between pb-4 mb-5 border-b" style={{ borderColor: '#D9E3E0' }}>
+              <h3 className="text-base font-bold text-gray-900" style={{ fontFamily: "'Bebas Neue',sans-serif", letterSpacing:'0.03em' }}>Raise Formal Request</h3>
               <button onClick={() => setShowForm(false)} className="text-gray-400 hover:text-gray-600">
                 <X size={18} />
               </button>
@@ -100,7 +100,7 @@ export default function Requests() {
                 />
               </div>
 
-              <div className="flex justify-end gap-2 pt-3 border-t mt-4" style={{ borderColor: '#EDE0D0' }}>
+              <div className="flex justify-end gap-2 pt-3 border-t mt-4" style={{ borderColor: '#D9E3E0' }}>
                 <button
                   type="button"
                   onClick={() => setShowForm(false)}

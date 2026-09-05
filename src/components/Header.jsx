@@ -64,7 +64,7 @@ export default function Header({ onMenuToggle }) {
       <div className="flex items-center gap-2 sm:gap-3">
         {/* Academic Year chip */}
         <span className="hidden md:block text-[10px] font-bold px-2.5 py-1 rounded-full tracking-wider"
-              style={{ background: 'var(--amber-pale)', color: '#944E0E', border: '1px solid var(--amber-border)' }}>
+              style={{ background: 'var(--amber-pale)', color: '#8C4419', border: '1px solid var(--amber-border)' }}>
           AY 2026–27
         </span>
 
@@ -107,7 +107,7 @@ export default function Header({ onMenuToggle }) {
           <button onClick={() => { setProfileOpen(!profileOpen); setNotifOpen(false); }}
             className="flex items-center gap-2 px-2 sm:px-3 py-1.5 rounded-xl hover:bg-slate-100 transition-colors">
             <div className="w-7 h-7 rounded-lg flex items-center justify-center text-xs font-bold text-white flex-shrink-0"
-                 style={{ background: 'linear-gradient(135deg, #162E34 0%, #1F4047 100%)' }}>
+                 style={{ background: 'linear-gradient(135deg, #1B1B3D 0%, #262654 100%)' }}>
               {user?.name?.charAt(0) || 'U'}
             </div>
             <span className="text-xs font-semibold text-slate-700 hidden sm:block max-w-[100px] truncate">
