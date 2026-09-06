@@ -1,0 +1,13 @@
+﻿services:
+  - type: web
+    name: jeppiaar-placement-backend
+    env: node
+    plan: free
+    rootDir: server
+    buildCommand: npm install
+    startCommand: node server.js
+    envVars:
+      - key: NODE_ENV
+        value: production
+      - key: PORT
+        value: 5000

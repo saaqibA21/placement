@@ -1,5 +1,6 @@
 import { useState } from 'react';
 import { useApp } from '../../context/AppContext';
+import { API_HOST_URL } from '../../services/api';
 import { Search, Download, X, FileText, CheckCircle2, XCircle, ChevronRight, Eye } from 'lucide-react';
 import StatusBadge from '../../components/StatusBadge';
 
@@ -195,7 +196,7 @@ export default function AdminResumes() {
                 </div>
                 {drawerData.resumeUrl ? (
                   <a
-                    href={drawerData.resumeUrl.startsWith('http') || drawerData.resumeUrl.startsWith('blob:') ? drawerData.resumeUrl : `http://localhost:5000${drawerData.resumeUrl}`}
+                    href={drawerData.resumeUrl.startsWith('http') || drawerData.resumeUrl.startsWith('blob:') ? drawerData.resumeUrl : `${API_HOST_URL}${drawerData.resumeUrl}`}
                     target="_blank"
                     rel="noopener noreferrer"
                     className="btn-solid-secondary px-3 py-1.5 text-xs flex items-center gap-1 font-semibold flex-shrink-0"
