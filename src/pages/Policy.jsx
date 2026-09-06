@@ -30,7 +30,7 @@ const SECTIONS = [
   },
   {
     title: '5. Grievance & Inquiries',
-    body: `• For discrepancies or placement queries, email the Placement Officer at placements@jeppiaarcollege.org.
+    body: `• For discrepancies or placement queries, email the Placement Officer at placements@jeppiaaruniversity.ac.in.
 • Official communications are dispatched via the portal notice board and institutional email.`,
   },
 ];
@@ -39,17 +39,17 @@ export default function Policy() {
   return (
     <div className="p-4 sm:p-6 max-w-4xl mx-auto space-y-5">
       <div>
-        <h1 className="text-xl font-bold text-gray-900" style={{ fontFamily: "'Bebas Neue',sans-serif", letterSpacing:'0.03em' }}>
+        <h1 className="text-xl font-bold text-gray-900" style={{ fontFamily: 'Cinzel,serif' }}>
           Placement Regulations & Guidelines
         </h1>
-        <p className="text-gray-500 text-xs mt-0.5">Jeppiaar Engineering College · Department of Placement & Corporate Relations</p>
+        <p className="text-gray-500 text-xs mt-0.5">Jeppiaar University · Department of Placement & Corporate Relations</p>
       </div>
 
       <div className="space-y-3">
         {SECTIONS.map((s, idx) => (
-          <div key={idx} className="card-solid p-5 bg-white border" style={{ borderColor: '#D9E3E0' }}>
-            <h2 className="text-xs font-bold text-gray-900 mb-2 flex items-center gap-2" style={{ fontFamily: "'Bebas Neue',sans-serif", letterSpacing:'0.03em' }}>
-              <BookOpen size={14} style={{ color: '#D9642F' }} />
+          <div key={idx} className="card-solid p-5 bg-white border" style={{ borderColor: 'var(--border)' }}>
+            <h2 className="text-sm font-bold text-gray-900 mb-2 flex items-center gap-2" style={{ fontFamily: 'Cinzel,serif' }}>
+              <BookOpen size={15} style={{ color: 'var(--amber-gold)' }} />
               {s.title}
             </h2>
             <p className="text-xs text-gray-600 leading-relaxed whitespace-pre-line font-normal">
@@ -59,7 +59,7 @@ export default function Policy() {
         ))}
       </div>
 
-      <div className="p-4 rounded-xl border flex items-start gap-3" style={{ background: '#F7ECDD', borderColor: '#E3C9A8' }}>
+      <div className="p-4 rounded-xl border flex items-start gap-3" style={{ background: 'var(--amber-pale)', borderColor: 'var(--amber-border)' }}>
         <ShieldAlert size={18} className="flex-shrink-0 mt-0.5 text-amber-800" />
         <p className="text-xs text-amber-900 leading-relaxed">
           <strong>Official Note:</strong> Placement policies are ratified annually by the Academic Council. Candidates are expected to review this document regularly.

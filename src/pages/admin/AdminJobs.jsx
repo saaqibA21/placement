@@ -12,7 +12,7 @@ const EMPTY = {
 const ALL_BRANCHES = ['CS', 'CS-AI&ML', 'IT', 'ECE', 'EEE', 'MECH', 'CIVIL'];
 
 export default function AdminJobs() {
-  const { jobs, addJob, updateJob, deleteJob } = useApp();   // ← shared context
+  const { jobs, addJob, updateJob, deleteJob } = useApp();
   const [show, setShow]     = useState(false);
   const [editId, setEditId] = useState(null);
   const [form, setForm]     = useState(EMPTY);
@@ -78,8 +78,10 @@ export default function AdminJobs() {
       {/* Header */}
       <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-4">
         <div>
-          <h1 className="text-xl font-bold text-gray-900" style={{fontFamily:"'Bebas Neue',sans-serif", letterSpacing:'0.03em'}}>Manage Recruitment Drives</h1>
-          <p className="text-gray-500 text-xs mt-0.5">{totalCount} drives · changes appear instantly for students</p>
+          <h1 className="text-xl font-bold text-slate-900" style={{ fontFamily: 'Cinzel,serif' }}>
+            Manage Recruitment Drives
+          </h1>
+          <p className="text-slate-500 text-xs mt-0.5">{totalCount} drives · changes appear instantly for students</p>
         </div>
         <button onClick={openNew} className="btn-solid-primary px-4 py-2.5 text-xs font-bold flex items-center gap-1.5">
           <Plus size={15} /> Launch New Drive
@@ -89,49 +91,49 @@ export default function AdminJobs() {
       {/* Status Counter Cards (clickable filters) */}
       <div className="grid grid-cols-2 sm:grid-cols-4 gap-3">
         {[
-          { key: 'All',         label: 'Total Drives',       value: totalCount,       color: '#D9642F' },
+          { key: 'All',         label: 'Total Drives',       value: totalCount,       color: '#162E34' },
           { key: 'Open',        label: 'Open For Applying',  value: openCount,        color: '#15803d' },
           { key: 'In Progress', label: 'Interviews Active',  value: inProgressCount,  color: '#b45309' },
           { key: 'Closed',      label: 'Concluded',          value: closedCount,      color: '#be123c' },
         ].map((s) => (
           <button key={s.key} onClick={() => setStatusFilter(s.key)}
             className={`p-3.5 rounded-xl border text-left transition-all ${
-              statusFilter === s.key ? 'shadow-md' : 'bg-white hover:bg-amber-50/40'
+              statusFilter === s.key ? 'shadow-md' : 'bg-white hover:bg-slate-50'
             }`}
-            style={{ borderColor: statusFilter === s.key ? s.color : '#D9E3E0',
+            style={{ borderColor: statusFilter === s.key ? s.color : 'var(--border)',
                      background: statusFilter === s.key ? `${s.color}10` : '#fff' }}>
-            <p className="text-[10px] font-bold uppercase tracking-wider text-gray-400">{s.label}</p>
+            <p className="text-[10px] font-bold uppercase tracking-wider text-slate-400">{s.label}</p>
             <p className="text-xl font-bold mt-0.5" style={{ color: s.color }}>{s.value}</p>
           </button>
         ))}
       </div>
 
       {/* Search */}
-      <div className="card-solid p-3 bg-white border border-gray-100 flex items-center gap-3">
+      <div className="card-solid p-3 bg-white border flex items-center gap-3" style={{ borderColor: 'var(--border)' }}>
         <div className="relative flex-1">
-          <Search size={13} className="absolute left-3 top-1/2 -translate-y-1/2 text-gray-400" />
+          <Search size={13} className="absolute left-3 top-1/2 -translate-y-1/2 text-slate-400" />
           <input type="text" placeholder="Search by company or role..." value={search}
             onChange={(e) => setSearch(e.target.value)} className="input-solid pl-8 py-2 text-xs" />
         </div>
-        <span className="text-xs text-gray-400 whitespace-nowrap">{filtered.length} shown</span>
+        <span className="text-xs text-slate-400 whitespace-nowrap">{filtered.length} shown</span>
       </div>
 
       {/* Table */}
-      <div className="card-solid bg-white overflow-hidden border" style={{ borderColor: '#D9E3E0' }}>
+      <div className="card-solid bg-white overflow-hidden border" style={{ borderColor: 'var(--border)' }}>
         <div className="overflow-x-auto">
           <table className="w-full text-xs min-w-[600px]">
-            <thead className="bg-gray-50 border-b text-gray-400 font-bold text-[10px] uppercase tracking-wider"
-                   style={{ borderColor: '#D9E3E0' }}>
+            <thead className="bg-slate-50 border-b text-slate-400 font-bold text-[10px] uppercase tracking-wider"
+                   style={{ borderColor: 'var(--border)' }}>
               <tr>
                 {['Company & Role', 'Type', 'Salary', 'Deadline', 'Status (Click)', 'Actions'].map((h) => (
                   <th key={h} className="text-left px-5 py-3.5 whitespace-nowrap">{h}</th>
                 ))}
               </tr>
             </thead>
-            <tbody className="divide-y" style={{ divideColor: '#D9E3E0' }}>
+            <tbody className="divide-y" style={{ divideColor: 'var(--border)' }}>
               {filtered.length === 0 ? (
                 <tr>
-                  <td colSpan={6} className="text-center py-16 text-gray-400">
+                  <td colSpan={6} className="text-center py-16 text-slate-400">
                     <Briefcase size={28} className="mx-auto mb-2 opacity-20" />
                     No drives found
                   </td>
@@ -139,12 +141,12 @@ export default function AdminJobs() {
               ) : filtered.map((j) => (
                 <tr key={j.id} className="table-row-light">
                   <td className="px-5 py-4">
-                    <p className="font-bold text-gray-900 truncate max-w-[200px]">{j.company}</p>
-                    <p className="text-gray-400 truncate max-w-[200px]">{j.role}</p>
+                    <p className="font-bold text-slate-900 truncate max-w-[200px]">{j.company}</p>
+                    <p className="text-slate-400 truncate max-w-[200px]">{j.role}</p>
                   </td>
-                  <td className="px-5 py-4 whitespace-nowrap font-semibold text-gray-600">{j.jobType}</td>
-                  <td className="px-5 py-4 whitespace-nowrap font-bold text-gray-900">{j.salary || '—'}</td>
-                  <td className="px-5 py-4 whitespace-nowrap text-gray-400 font-mono">
+                  <td className="px-5 py-4 whitespace-nowrap font-semibold text-slate-600">{j.jobType}</td>
+                  <td className="px-5 py-4 whitespace-nowrap font-bold text-slate-900">{j.salary || '—'}</td>
+                  <td className="px-5 py-4 whitespace-nowrap text-slate-400 font-mono">
                     {j.applyBefore ? <span className="flex items-center gap-1"><Clock size={10} />{j.applyBefore}</span> : '—'}
                   </td>
                   <td className="px-5 py-4 whitespace-nowrap">
@@ -154,8 +156,8 @@ export default function AdminJobs() {
                   </td>
                   <td className="px-5 py-4 whitespace-nowrap">
                     <div className="flex items-center gap-2">
-                      <button onClick={() => openEdit(j)} className="p-1.5 rounded-lg text-gray-400 hover:text-indigo-600 hover:bg-indigo-50 transition-colors"><Pencil size={14} /></button>
-                      <button onClick={() => remove(j.id)} className="p-1.5 rounded-lg text-gray-400 hover:text-red-600 hover:bg-red-50 transition-colors"><Trash2 size={14} /></button>
+                      <button onClick={() => openEdit(j)} className="p-1.5 rounded-lg text-slate-400 hover:text-indigo-600 hover:bg-indigo-50 transition-colors"><Pencil size={14} /></button>
+                      <button onClick={() => remove(j.id)} className="p-1.5 rounded-lg text-slate-400 hover:text-red-600 hover:bg-red-50 transition-colors"><Trash2 size={14} /></button>
                     </div>
                   </td>
                 </tr>
@@ -168,18 +170,18 @@ export default function AdminJobs() {
       {/* Modal */}
       {show && (
         <div className="fixed inset-0 bg-black/40 flex items-center justify-center p-4 z-50">
-          <div className="bg-white rounded-2xl p-6 w-full max-w-2xl max-h-[90vh] overflow-y-auto border shadow-2xl" style={{ borderColor: '#D9E3E0' }}>
-            <div className="flex items-center justify-between pb-4 mb-5 border-b" style={{ borderColor: '#D9E3E0' }}>
-              <h3 className="text-base font-bold text-gray-900" style={{fontFamily:"'Bebas Neue',sans-serif", letterSpacing:'0.03em'}}>
+          <div className="bg-white rounded-2xl p-6 w-full max-w-2xl max-h-[90vh] overflow-y-auto border shadow-2xl" style={{ borderColor: 'var(--border)' }}>
+            <div className="flex items-center justify-between pb-4 mb-5 border-b" style={{ borderColor: 'var(--border)' }}>
+              <h3 className="text-base font-bold text-slate-900" style={{ fontFamily: 'Cinzel,serif' }}>
                 {editId ? 'Edit Recruitment Drive' : 'Launch New Campus Drive'}
               </h3>
-              <button onClick={() => setShow(false)} className="text-gray-400 hover:text-gray-600"><X size={18} /></button>
+              <button onClick={() => setShow(false)} className="text-slate-400 hover:text-slate-600"><X size={18} /></button>
             </div>
 
             <div className="space-y-4 text-xs">
               {/* Company & Role */}
-              <div className="p-4 rounded-xl border space-y-3" style={{ background: '#EFF5F3', borderColor: '#D9E3E0' }}>
-                <p className="text-[10px] font-bold uppercase tracking-wider text-gray-400">Company & Designation</p>
+              <div className="p-4 rounded-xl border space-y-3" style={{ background: 'var(--canvas-bg)', borderColor: 'var(--border)' }}>
+                <p className="text-[10px] font-bold uppercase tracking-wider text-slate-400">Company & Designation</p>
                 <input className="input-solid text-xs py-2" value={form.company}
                   onChange={(e) => setForm({ ...form, company: e.target.value })} placeholder="Company Name *" />
                 <input className="input-solid text-xs py-2" value={form.role}
@@ -187,8 +189,8 @@ export default function AdminJobs() {
               </div>
 
               {/* Compensation */}
-              <div className="p-4 rounded-xl border space-y-3" style={{ background: '#EFF5F3', borderColor: '#D9E3E0' }}>
-                <p className="text-[10px] font-bold uppercase tracking-wider text-gray-400">Compensation & Type</p>
+              <div className="p-4 rounded-xl border space-y-3" style={{ background: 'var(--canvas-bg)', borderColor: 'var(--border)' }}>
+                <p className="text-[10px] font-bold uppercase tracking-wider text-slate-400">Compensation & Type</p>
                 <div className="grid grid-cols-3 gap-3">
                   <input className="input-solid text-xs py-2" value={form.salary}
                     onChange={(e) => setForm({ ...form, salary: e.target.value })} placeholder="Salary (e.g. 15L)" />
@@ -202,34 +204,34 @@ export default function AdminJobs() {
               </div>
 
               {/* Eligibility & Dates */}
-              <div className="p-4 rounded-xl border space-y-3" style={{ background: '#EFF5F3', borderColor: '#D9E3E0' }}>
-                <p className="text-[10px] font-bold uppercase tracking-wider text-gray-400">Eligibility & Schedule</p>
+              <div className="p-4 rounded-xl border space-y-3" style={{ background: 'var(--canvas-bg)', borderColor: 'var(--border)' }}>
+                <p className="text-[10px] font-bold uppercase tracking-wider text-slate-400">Eligibility & Schedule</p>
                 <div className="grid grid-cols-3 gap-3">
                   <div>
-                    <label className="text-[10px] font-bold text-gray-500 block mb-1">Min CGPA</label>
+                    <label className="text-[10px] font-bold text-slate-500 block mb-1">Min CGPA</label>
                     <input className="input-solid text-xs py-2" type="number" step="0.1" value={form.minCGPA}
                       onChange={(e) => setForm({ ...form, minCGPA: parseFloat(e.target.value) || 0 })} />
                   </div>
                   <div>
-                    <label className="text-[10px] font-bold text-gray-500 block mb-1">Application Deadline</label>
+                    <label className="text-[10px] font-bold text-slate-500 block mb-1">Application Deadline</label>
                     <input className="input-solid text-xs py-2" type="date" value={form.applyBefore}
                       onChange={(e) => setForm({ ...form, applyBefore: e.target.value })} />
                   </div>
                   <div>
-                    <label className="text-[10px] font-bold text-gray-500 block mb-1">Campus Visit Date</label>
+                    <label className="text-[10px] font-bold text-slate-500 block mb-1">Campus Visit Date</label>
                     <input className="input-solid text-xs py-2" type="date" value={form.dateOfVisit}
                       onChange={(e) => setForm({ ...form, dateOfVisit: e.target.value })} />
                   </div>
                 </div>
                 <div>
-                  <label className="text-[10px] font-bold text-gray-500 block mb-2">Eligible Branches</label>
+                  <label className="text-[10px] font-bold text-slate-500 block mb-2">Eligible Branches</label>
                   <div className="flex flex-wrap gap-2">
                     {ALL_BRANCHES.map((b) => (
                       <button key={b} type="button" onClick={() => toggleBranch(b)}
                         className={`px-3 py-1 rounded-lg text-xs font-semibold transition-colors border ${
                           form.branches?.includes(b)
-                            ? 'bg-red-50 text-red-800 border-red-200'
-                            : 'bg-white text-gray-600 border-gray-200 hover:bg-gray-50'
+                            ? 'bg-amber-50 text-amber-800 border-amber-300'
+                            : 'bg-white text-slate-600 border-slate-200 hover:bg-slate-50'
                         }`}>
                         {b}
                       </button>
@@ -243,7 +245,7 @@ export default function AdminJobs() {
                 placeholder="Role description, prerequisites, evaluation format..." />
             </div>
 
-            <div className="flex justify-end gap-2 pt-5 border-t mt-5" style={{ borderColor: '#D9E3E0' }}>
+            <div className="flex justify-end gap-2 pt-5 border-t mt-5" style={{ borderColor: 'var(--border)' }}>
               <button type="button" onClick={() => setShow(false)} className="btn-solid-secondary px-4 py-2 text-xs">Cancel</button>
               <button type="button" onClick={save} className="btn-solid-primary px-5 py-2 text-xs font-bold flex items-center gap-1.5">
                 <CheckCircle2 size={13} /> {editId ? 'Save Changes' : 'Publish Drive'}
