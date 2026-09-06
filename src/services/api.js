@@ -1,4 +1,8 @@
-export const API_BASE_URL = import.meta.env.VITE_API_URL || 'http://localhost:5000/api';
+export const API_BASE_URL =
+  import.meta.env.VITE_API_URL ||
+  (import.meta.env.PROD
+    ? 'https://placement-801a.onrender.com/api'
+    : 'http://localhost:5000/api');
 export const API_HOST_URL = API_BASE_URL.replace(/\/api\/?$/, '');
 
 // Helper for generic JSON API calls
