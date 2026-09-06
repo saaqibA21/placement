@@ -12,11 +12,18 @@ import {
   calendarEvents as initCalendarEvents,
 } from '../data/mockData';
 
-// ─── Helpers for LocalStorage Persistence ──────────────────────────────────────
+// ─── Rock-Solid LocalStorage Persistence Helpers ──────────────────────────────
 const getStorageItem = (key, fallback) => {
   try {
     const item = localStorage.getItem(key);
-    return item ? JSON.parse(item) : fallback;
+    if (!item || item === 'undefined' || item === 'null') return fallback;
+    try {
+      const parsed = JSON.parse(item);
+      return parsed !== null && parsed !== undefined ? parsed : fallback;
+    } catch {
+      // Handles unquoted raw strings like "student" or "admin"
+      return item;
+    }
   } catch (err) {
     console.error(`Error reading ${key} from localStorage:`, err);
     return fallback;
@@ -25,7 +32,11 @@ const getStorageItem = (key, fallback) => {
 
 const setStorageItem = (key, val) => {
   try {
-    localStorage.setItem(key, JSON.stringify(val));
+    if (val === null || val === undefined) {
+      localStorage.removeItem(key);
+    } else {
+      localStorage.setItem(key, JSON.stringify(val));
+    }
   } catch (err) {
     console.error(`Error saving ${key} to localStorage:`, err);
   }
@@ -34,7 +45,7 @@ const setStorageItem = (key, val) => {
 const AppContext = createContext();
 
 export const AppProvider = ({ children }) => {
-  // ── Auth (rehydrated from localStorage so refresh never logs out) ────────────
+  // ── Auth (rehydrated instantly from localStorage on refresh) ─────────────────
   const [user, setUser] = useState(() => getStorageItem('jeppiaar_user', null));
   const [role, setRole] = useState(() => getStorageItem('jeppiaar_role', null));
   const [loginError, setLoginError] = useState('');
@@ -51,9 +62,9 @@ export const AppProvider = ({ children }) => {
   const [requests, setRequests] = useState(() => getStorageItem('jeppiaar_requests', initRequests));
   const [calendarEvents, setCalendarEvents] = useState(() => getStorageItem('jeppiaar_calendar', initCalendarEvents));
 
-  // Sync to localStorage
-  useEffect(() => { setStorageItem('jeppiaar_user', user); }, [user]);
-  useEffect(() => { setStorageItem('jeppiaar_role', role); }, [role]);
+  // Sync to localStorage safely
+  useEffect(() => { if (user) setStorageItem('jeppiaar_user', user); }, [user]);
+  useEffect(() => { if (role) setStorageItem('jeppiaar_role', role); }, [role]);
   useEffect(() => { setStorageItem('jeppiaar_jobs', jobs); }, [jobs]);
   useEffect(() => { setStorageItem('jeppiaar_notices', notices); }, [notices]);
   useEffect(() => { setStorageItem('jeppiaar_students', students); }, [students]);
@@ -100,7 +111,7 @@ export const AppProvider = ({ children }) => {
       if (requestsRes.status === 'fulfilled' && requestsRes.value?.data) setRequests(requestsRes.value.data);
       if (calendarRes.status === 'fulfilled' && calendarRes.value?.data) setCalendarEvents(calendarRes.value.data);
     } catch (err) {
-      console.warn('Backend sync failed, using persistent client cache:', err);
+      console.warn('Backend sync fallback to cached data:', err);
     } finally {
       setIsLoadingData(false);
     }
@@ -128,6 +139,8 @@ export const AppProvider = ({ children }) => {
         setLoginError('');
         setRole(response.user.role);
         setUser(response.user);
+        setStorageItem('jeppiaar_role', response.user.role);
+        setStorageItem('jeppiaar_user', response.user);
         return true;
       }
     } catch (err) {
@@ -156,12 +169,15 @@ export const AppProvider = ({ children }) => {
 
     setLoginError('');
     setRole(account.role);
+    let activeUser;
     if (account.role === 'student') {
-      const student = students.find((s) => s.id === account.studentId) || students[0];
-      setUser(student);
+      activeUser = students.find((s) => s.id === account.studentId) || students[0];
     } else {
-      setUser({ name: 'Placement Officer', email: 'placements@jeppiaaruniversity.ac.in', role: 'admin' });
+      activeUser = { name: 'Placement Officer', email: 'placements@jeppiaaruniversity.ac.in', role: 'admin' };
     }
+    setUser(activeUser);
+    setStorageItem('jeppiaar_role', account.role);
+    setStorageItem('jeppiaar_user', activeUser);
     return true;
   };
 
@@ -169,8 +185,12 @@ export const AppProvider = ({ children }) => {
     setUser(null);
     setRole(null);
     setLoginError('');
-    localStorage.removeItem('jeppiaar_user');
-    localStorage.removeItem('jeppiaar_role');
+    try {
+      localStorage.removeItem('jeppiaar_user');
+      localStorage.removeItem('jeppiaar_role');
+    } catch (e) {
+      console.error(e);
+    }
   };
 
   // ── Job Actions (Admin → Students see instantly across backend) ────────────
@@ -186,7 +206,6 @@ export const AppProvider = ({ children }) => {
       batch: null,
     };
 
-    // Optimistic local state update
     setJobs((prev) => [newJobPayload, ...prev]);
 
     try {
@@ -225,10 +244,8 @@ export const AppProvider = ({ children }) => {
     const job = jobs.find((j) => j.id === jobId);
     if (!job) return;
 
-    // 1. Mark job as applied in jobs list
     setJobs((prev) => prev.map((j) => (j.id === jobId ? { ...j, applied: true } : j)));
 
-    // 2. Prepare candidate details
     const activeStudent = user || students[0];
     const resumeFileName = customResume?.name || (activeStudent?.name ? `Resume_${activeStudent.name.replace(/\s+/g, '_')}.pdf` : 'Candidate_Resume.pdf');
     const appliedDate = new Date().toLocaleDateString('en-IN', { day: '2-digit', month: 'short', year: 'numeric' });
@@ -252,7 +269,6 @@ export const AppProvider = ({ children }) => {
 
     setApplications((prev) => [localApp, ...prev]);
 
-    // 3. Add to live student trackerData
     const newTrackerEntry = {
       id: Date.now(),
       company: job.company,
@@ -269,7 +285,6 @@ export const AppProvider = ({ children }) => {
     };
     setTrackerData((prev) => [newTrackerEntry, ...prev]);
 
-    // 4. Send to Backend API with FormData
     try {
       const formData = new FormData();
       formData.append('jobId', job.id);
@@ -288,7 +303,6 @@ export const AppProvider = ({ children }) => {
 
       const res = await api.submitApplication(formData);
       if (res && res.data) {
-        // Update local application with server response (e.g. static uploaded resume URL)
         setApplications((prev) => prev.map((a) => (a.id === localApp.id ? res.data : a)));
         return res.data;
       }
