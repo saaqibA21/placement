@@ -38,6 +38,7 @@ export default function Jobs() {
       return;
     }
     setCustomResume({
+      file,
       name: file.name,
       size: `${(file.size / 1024).toFixed(0)} KB`,
       url: URL.createObjectURL(file),

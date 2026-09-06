@@ -195,7 +195,7 @@ export default function AdminResumes() {
                 </div>
                 {drawerData.resumeUrl ? (
                   <a
-                    href={drawerData.resumeUrl}
+                    href={drawerData.resumeUrl.startsWith('http') || drawerData.resumeUrl.startsWith('blob:') ? drawerData.resumeUrl : `http://localhost:5000${drawerData.resumeUrl}`}
                     target="_blank"
                     rel="noopener noreferrer"
                     className="btn-solid-secondary px-3 py-1.5 text-xs flex items-center gap-1 font-semibold flex-shrink-0"
