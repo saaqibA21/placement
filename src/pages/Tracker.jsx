@@ -2,32 +2,11 @@ import { useState } from 'react';
 import { useApp } from '../context/AppContext';
 import { ChevronDown, ChevronUp, CheckCircle2, Clock, Circle, Search } from 'lucide-react';
 
-const STAGE_CYCLE = ['upcoming', 'pending', 'cleared'];
-
 export default function Tracker() {
-  const { trackerData, setTrackerData } = useApp();
+  const { trackerData } = useApp();
   const [expanded, setExpanded] = useState(null);
   const [search, setSearch]     = useState('');
   const [filter, setFilter]     = useState('All');
-
-  const advanceRound = (companyId, roundIdx) => {
-    setTrackerData((prev) =>
-      prev.map((c) => {
-        if (c.id !== companyId) return c;
-        const rounds = c.rounds.map((r, i) => {
-          if (i !== roundIdx) return r;
-          const next = STAGE_CYCLE[(STAGE_CYCLE.indexOf(r.status) + 1) % STAGE_CYCLE.length];
-          return {
-            ...r, status: next,
-            date: next !== 'upcoming'
-              ? new Date().toLocaleDateString('en-IN', { day:'2-digit', month:'short', year:'2-digit' })
-              : null,
-          };
-        });
-        return { ...c, rounds };
-      })
-    );
-  };
 
   const getProgress = (rounds) =>
     Math.round((rounds.filter((r) => r.status === 'cleared').length / rounds.length) * 100);
@@ -113,13 +92,16 @@ export default function Tracker() {
 
               {isOpen && (
                 <div className="px-5 pb-5 border-t" style={{ borderColor: 'var(--border)' }}>
-                  <p className="text-[10px] font-bold uppercase tracking-wider text-slate-400 mt-4 mb-3">
-                    Selection Rounds — click to update status
-                  </p>
+                  <div className="flex items-center justify-between mt-4 mb-3">
+                    <p className="text-[10px] font-bold uppercase tracking-wider text-slate-400">
+                      Official Recruitment Stages & Evaluation
+                    </p>
+                    <span className="text-[10px] text-slate-400 font-medium">Verified by Placement Cell</span>
+                  </div>
                   <div className="space-y-2">
                     {c.rounds.map((r, idx) => (
-                      <button key={idx} onClick={() => advanceRound(c.id, idx)}
-                        className="w-full flex items-center gap-4 p-3 rounded-xl border transition-all hover:border-amber-300 hover:bg-amber-50/30 text-left"
+                      <div key={idx}
+                        className="w-full flex items-center gap-4 p-3 rounded-xl border transition-all bg-slate-50/40 text-left"
                         style={{ borderColor: 'var(--border)' }}>
                         <div className="flex-shrink-0">
                           {r.status === 'cleared' ? (
@@ -131,7 +113,7 @@ export default function Tracker() {
                           )}
                         </div>
                         <div className="flex-1 min-w-0">
-                          <p className={`text-xs font-semibold ${r.status === 'cleared' ? 'text-green-700' : r.status === 'pending' ? 'text-amber-700' : 'text-slate-400'}`}>
+                          <p className={`text-xs font-semibold ${r.status === 'cleared' ? 'text-green-700' : r.status === 'pending' ? 'text-amber-700' : 'text-slate-500'}`}>
                             {r.name}
                           </p>
                           {r.date && <p className="text-[10px] text-slate-400 mt-0.5">{r.date}</p>}
@@ -139,10 +121,10 @@ export default function Tracker() {
                         <span className={`text-[10px] px-2.5 py-1 rounded-full font-bold whitespace-nowrap ${
                           r.status === 'cleared' ? 'bg-green-50 text-green-700 border border-green-200'
                           : r.status === 'pending' ? 'bg-amber-50 text-amber-700 border border-amber-200'
-                          : 'bg-slate-50 text-slate-400 border border-slate-200'}`}>
+                          : 'bg-slate-100 text-slate-400 border border-slate-200'}`}>
                           {r.status === 'cleared' ? 'Cleared ✓' : r.status === 'pending' ? 'In Progress' : 'Upcoming'}
                         </span>
-                      </button>
+                      </div>
                     ))}
                   </div>
                 </div>
