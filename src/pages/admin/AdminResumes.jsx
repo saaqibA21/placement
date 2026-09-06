@@ -1,6 +1,6 @@
 import { useState } from 'react';
 import { useApp } from '../../context/AppContext';
-import { Search, Download, X, User, CheckCircle2, XCircle, ChevronRight } from 'lucide-react';
+import { Search, Download, X, FileText, CheckCircle2, XCircle, ChevronRight, Eye } from 'lucide-react';
 import StatusBadge from '../../components/StatusBadge';
 
 const STATUS_TABS = ['All', 'Pending', 'Shortlisted', 'Rejected'];
@@ -178,11 +178,35 @@ export default function AdminResumes() {
               </div>
             </div>
 
-            <div className="p-4 rounded-xl border" style={{ background: 'var(--canvas-bg)', borderColor: 'var(--border)' }}>
-              <p className="text-[10px] font-bold uppercase tracking-wider text-slate-400 mb-2">Resume Document</p>
-              <div className="flex items-center gap-2">
-                <User size={13} className="text-slate-400" />
-                <span className="text-xs text-slate-500 italic">Verified Jeppiaar University candidate resume</span>
+            {/* Candidate Resume Card */}
+            <div className="p-4 rounded-xl border space-y-2" style={{ background: 'var(--amber-pale)', borderColor: 'var(--amber-border)' }}>
+              <p className="text-[10px] font-bold uppercase tracking-wider text-slate-500">Candidate Resume</p>
+              <div className="flex items-center justify-between gap-3">
+                <div className="flex items-center gap-2.5 min-w-0">
+                  <div className="w-8 h-8 rounded-lg bg-white flex items-center justify-center shadow-xs flex-shrink-0">
+                    <FileText size={16} className="text-amber-700" />
+                  </div>
+                  <div className="min-w-0">
+                    <p className="text-xs font-bold text-slate-900 truncate">
+                      {drawerData.resumeName || `Resume_${drawerData.studentName.replace(/\s+/g, '_')}.pdf`}
+                    </p>
+                    <p className="text-[10px] text-slate-400">Submitted with application</p>
+                  </div>
+                </div>
+                {drawerData.resumeUrl ? (
+                  <a
+                    href={drawerData.resumeUrl}
+                    target="_blank"
+                    rel="noopener noreferrer"
+                    className="btn-solid-secondary px-3 py-1.5 text-xs flex items-center gap-1 font-semibold flex-shrink-0"
+                  >
+                    <Eye size={12} /> View File
+                  </a>
+                ) : (
+                  <span className="text-[10px] font-semibold text-slate-500 bg-white px-2.5 py-1 rounded-lg border border-slate-200 flex-shrink-0">
+                    Verified Profile CV
+                  </span>
+                )}
               </div>
             </div>
           </div>

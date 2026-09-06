@@ -1,6 +1,6 @@
 import { useState } from 'react';
 import { useApp } from '../context/AppContext';
-import { Eye, EyeOff, GraduationCap, ShieldCheck, Sparkles } from 'lucide-react';
+import { Eye, EyeOff, GraduationCap, ShieldCheck, Building2 } from 'lucide-react';
 
 const DEMO_CREDS = [
   { label: 'Student — Saaqib', u: 'saaqib', p: 'student123' },
@@ -64,7 +64,7 @@ export default function Login() {
             className="inline-flex items-center gap-2 px-3 py-1 rounded-full text-xs font-semibold text-amber-300 border border-amber-400/30 backdrop-blur-md"
             style={{ background: 'rgba(217, 130, 43, 0.18)' }}
           >
-            <Sparkles size={14} className="text-amber-400" /> Official Placement Drive Hub
+            <Building2 size={13} className="text-amber-400" /> Department of Placement & Corporate Relations
           </div>
 
           <h1
@@ -78,7 +78,7 @@ export default function Login() {
           </h1>
 
           <p className="text-slate-200/85 text-sm sm:text-base leading-relaxed max-w-md mx-auto lg:mx-0">
-            Welcome to the Jeppiaar University Placement & Career Development Portal. Explore campus recruitment drives, upload your CV, track selection rounds, and secure placements with industry-leading corporate partners.
+            Welcome to the Jeppiaar University Placement & Career Development Portal. Explore campus recruitment drives, submit your CV, track selection rounds, and secure placements with industry-leading corporate partners.
           </p>
 
           <div className="hidden sm:flex items-center gap-6 pt-3 text-xs text-slate-300/80">

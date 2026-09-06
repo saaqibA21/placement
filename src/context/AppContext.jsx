@@ -98,7 +98,7 @@ export const AppProvider = ({ children }) => {
       const student = students.find((s) => s.id === account.studentId) || students[0];
       setUser(student);
     } else {
-      setUser({ name: 'Placement Admin', email: 'admin@jeppiaarcollege.org', role: 'admin' });
+      setUser({ name: 'Placement Officer', email: 'placements@jeppiaaruniversity.ac.in', role: 'admin' });
     }
     return true;
   };
@@ -112,17 +112,79 @@ export const AppProvider = ({ children }) => {
   };
 
   // ── Job Actions (Admin → Students see instantly) ──────────────────────────
-  const addJob = (job) =>
-    setJobs((prev) => [{ ...job, id: Date.now(), status: 'open', jobPosted: new Date().toISOString().split('T')[0], eligible: true, applied: false, batch: null }, ...prev]);
+  const addJob = (job) => {
+    const newJob = {
+      ...job,
+      id: Date.now(),
+      status: 'open',
+      jobPosted: new Date().toISOString().split('T')[0],
+      eligible: true,
+      applied: false,
+      batch: null,
+    };
+    setJobs((prev) => [newJob, ...prev]);
+    return newJob;
+  };
 
   const updateJob = (id, updates) =>
     setJobs((prev) => prev.map((j) => (j.id === id ? { ...j, ...updates } : j)));
 
-  const deleteJob = (id) =>
+  const deleteJob = (id) => {
     setJobs((prev) => prev.filter((j) => j.id !== id));
+    setApplications((prev) => prev.filter((a) => a.jobId !== id));
+  };
 
-  const applyJob = (jobId) =>
+  // ── Student Apply Flow (Student applies → Admin receives application & resume) ──
+  const applyJob = (jobId, customResume = null) => {
+    const job = jobs.find((j) => j.id === jobId);
+    if (!job) return;
+
+    // 1. Mark job as applied in jobs list
     setJobs((prev) => prev.map((j) => (j.id === jobId ? { ...j, applied: true } : j)));
+
+    // 2. Create official application record for Admin Resume Screening
+    const activeStudent = user || students[0];
+    const resumeFileName = customResume?.name || (activeStudent?.name ? `Resume_${activeStudent.name.replace(/\s+/g, '_')}.pdf` : 'Candidate_Resume.pdf');
+    const appliedDate = new Date().toLocaleDateString('en-IN', { day: '2-digit', month: 'short', year: 'numeric' });
+
+    const newApplication = {
+      id: Date.now(),
+      jobId: job.id,
+      studentId: activeStudent.id || 1,
+      studentName: activeStudent.name || 'Candidate',
+      rollNo: activeStudent.rollNo || '21CS001',
+      branch: activeStudent.branch || 'Computer Science',
+      cgpa: activeStudent.cgpa || 8.5,
+      company: job.company,
+      role: job.role,
+      appliedOn: appliedDate,
+      round: 'Round 1: Screening',
+      status: 'pending',
+      resumeName: resumeFileName,
+      resumeUrl: customResume?.url || null,
+    };
+
+    setApplications((prev) => [newApplication, ...prev]);
+
+    // 3. Add to live student trackerData
+    const newTrackerEntry = {
+      id: Date.now(),
+      company: job.company,
+      initial: job.company.charAt(0).toUpperCase(),
+      color: 'bg-emerald-700',
+      jobType: job.jobType || 'FTE',
+      date: `Applied ${appliedDate}`,
+      rounds: [
+        { name: 'Application & Resume Screening', status: 'pending', date: appliedDate },
+        { name: 'Online Assessment / Aptitude', status: 'upcoming', date: null },
+        { name: 'Technical Interview Round', status: 'upcoming', date: null },
+        { name: 'HR & Final Offer Rollout', status: 'upcoming', date: null },
+      ],
+    };
+
+    setTrackerData((prev) => [newTrackerEntry, ...prev]);
+    return newApplication;
+  };
 
   // ── Notice Actions ────────────────────────────────────────────────────────
   const addNotice = (notice) =>
@@ -134,9 +196,19 @@ export const AppProvider = ({ children }) => {
   const deleteNotice = (id) =>
     setNotices((prev) => prev.filter((n) => n.id !== id));
 
-  // ── Application Actions ────────────────────────────────────────────────────
-  const updateApplicationStatus = (id, status) =>
-    setApplications((prev) => prev.map((a) => (a.id === id ? { ...a, status } : a)));
+  // ── Application Actions (Admin updates → status syncs live) ────────────────
+  const updateApplicationStatus = (id, status) => {
+    setApplications((prev) =>
+      prev.map((a) => {
+        if (a.id !== id) return a;
+        return {
+          ...a,
+          status,
+          round: status === 'shortlisted' ? 'Round 2: Online Assessment' : status === 'rejected' ? 'Application Rejected' : a.round,
+        };
+      })
+    );
+  };
 
   // ── Student Actions ────────────────────────────────────────────────────────
   const toggleStudentFreeze = (id) =>
