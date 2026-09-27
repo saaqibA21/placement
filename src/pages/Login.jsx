@@ -3,9 +3,10 @@ import { useApp } from '../context/AppContext';
 import { Eye, EyeOff, GraduationCap, ShieldCheck, Building2 } from 'lucide-react';
 
 const DEMO_CREDS = [
-  { label: 'Student — Saaqib', u: 'saaqib', p: 'student123' },
-  { label: 'Student — Priya',  u: 'priya',  p: 'student123' },
-  { label: 'Admin',            u: 'admin',  p: 'admin123'   },
+  { label: 'Student — Saaqib',      u: 'saaqib',     p: 'student123',   role: 'student' },
+  { label: 'Student — Priya',       u: 'priya',      p: 'student123',   role: 'student' },
+  { label: 'Admin — Chief Officer', u: 'admin',      p: 'admin123',     role: 'admin'   },
+  { label: 'Admin — K. Karthick',   u: 'k.karthick', p: 'karthick@123', role: 'admin'   },
 ];
 
 export default function Login() {
@@ -204,7 +205,7 @@ export default function Login() {
                 </p>
                 <div className="flex flex-wrap gap-2">
                   {DEMO_CREDS.filter(c =>
-                    tab === 'admin' ? c.u === 'admin' : c.u !== 'admin'
+                    c.role === tab
                   ).map((c) => (
                     <button
                       key={c.u}

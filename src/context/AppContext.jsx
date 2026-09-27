@@ -147,13 +147,14 @@ export const AppProvider = ({ children }) => {
       console.warn('Backend auth call failed, checking local credentials:', err);
     }
 
-    // Local fallback for offline/direct access
+    // Local fallback for offline/direct access (kept in sync with server/database.js seed accounts)
     const ACCOUNTS = [
       { username: 'saaqib', password: 'student123', role: 'student', studentId: 1 },
       { username: 'priya',  password: 'student123', role: 'student', studentId: 2 },
       { username: 'sneha',  password: 'student123', role: 'student', studentId: 4 },
       { username: 'ananya', password: 'student123', role: 'student', studentId: 8 },
-      { username: 'admin',  password: 'admin123',   role: 'admin' },
+      { username: 'admin',      password: 'admin123',     role: 'admin', adminId: 1, name: 'Placement Officer', email: 'placements@jeppiaaruniversity.ac.in', designation: 'Chief Placement Officer' },
+      { username: 'k.karthick', password: 'karthick@123', role: 'admin', adminId: 2, name: 'Mr. K. Karthick', email: 'k.karthick@jeppiaaruniversity.ac.in', designation: 'Assistant Placement Officer' },
     ];
 
     const account = ACCOUNTS.find(
@@ -173,7 +174,7 @@ export const AppProvider = ({ children }) => {
     if (account.role === 'student') {
       activeUser = students.find((s) => s.id === account.studentId) || students[0];
     } else {
-      activeUser = { name: 'Placement Officer', email: 'placements@jeppiaaruniversity.ac.in', role: 'admin' };
+      activeUser = { id: account.adminId, name: account.name, email: account.email, designation: account.designation, role: 'admin' };
     }
     setUser(activeUser);
     setStorageItem('jeppiaar_role', account.role);
@@ -196,6 +197,8 @@ export const AppProvider = ({ children }) => {
   // ── Job Actions (Admin → Students see instantly across backend) ────────────
   const addJob = async (job) => {
     const tempId = Date.now();
+    const actorId = role === 'admin' ? user?.id : undefined;
+    const actorName = role === 'admin' ? user?.name : undefined;
     const newJobPayload = {
       ...job,
       id: tempId,
@@ -204,12 +207,14 @@ export const AppProvider = ({ children }) => {
       eligible: true,
       applied: false,
       batch: null,
+      createdBy: actorId, createdByName: actorName, updatedBy: actorId, updatedByName: actorName,
+      createdAt: new Date().toISOString(), updatedAt: new Date().toISOString(),
     };
 
     setJobs((prev) => [newJobPayload, ...prev]);
 
     try {
-      const res = await api.createJob(job);
+      const res = await api.createJob({ ...job, actorId });
       if (res && res.data) {
         setJobs((prev) => prev.map((j) => (j.id === tempId ? res.data : j)));
         return res.data;
@@ -221,11 +226,28 @@ export const AppProvider = ({ children }) => {
   };
 
   const updateJob = async (id, updates) => {
-    setJobs((prev) => prev.map((j) => (j.id === id ? { ...j, ...updates } : j)));
+    const actorId = role === 'admin' ? user?.id : undefined;
+    const actorName = role === 'admin' ? user?.name : undefined;
+    setJobs((prev) => prev.map((j) => (j.id === id ? { ...j, ...updates, updatedBy: actorId, updatedByName: actorName, updatedAt: new Date().toISOString() } : j)));
     try {
-      await api.updateJob(id, updates);
+      await api.updateJob(id, { ...updates, actorId });
     } catch (err) {
       console.error(`Failed to update job ${id} on backend:`, err);
+    }
+  };
+
+  const duplicateJob = async (id) => {
+    const source = jobs.find((j) => j.id === id);
+    if (!source) return;
+    const actorId = role === 'admin' ? user?.id : undefined;
+    try {
+      const res = await api.duplicateJob(id, actorId);
+      if (res?.data) {
+        setJobs((prev) => [res.data, ...prev]);
+        return res.data;
+      }
+    } catch (err) {
+      console.error(`Failed to duplicate job ${id}:`, err);
     }
   };
 
@@ -240,7 +262,7 @@ export const AppProvider = ({ children }) => {
   };
 
   // ── Student Apply Flow (Student applies with resume → Admin receives live) ──
-  const applyJob = async (jobId, customResume = null) => {
+  const applyJob = async (jobId, customResume = null, answers = []) => {
     const job = jobs.find((j) => j.id === jobId);
     if (!job) return;
 
@@ -261,14 +283,22 @@ export const AppProvider = ({ children }) => {
       company: job.company,
       role: job.role,
       appliedOn: appliedDate,
-      round: 'Round 1: Screening',
+      round: `Round 1: ${(job.pipeline?.[0]?.name) || 'Screening'}`,
+      stageIndex: 0,
       status: 'pending',
       resumeName: resumeFileName,
       resumeUrl: customResume?.url || null,
+      answers,
     };
 
     setApplications((prev) => [localApp, ...prev]);
 
+    const pipeline = (job.pipeline && job.pipeline.length > 0) ? job.pipeline : [
+      { name: 'Application & Resume Screening' },
+      { name: 'Online Assessment / Aptitude' },
+      { name: 'Technical Interview Round' },
+      { name: 'HR & Final Offer Rollout' },
+    ];
     const newTrackerEntry = {
       id: Date.now(),
       company: job.company,
@@ -276,12 +306,11 @@ export const AppProvider = ({ children }) => {
       color: 'bg-emerald-700',
       jobType: job.jobType || 'FTE',
       date: `Applied ${appliedDate}`,
-      rounds: [
-        { name: 'Application & Resume Screening', status: 'pending', date: appliedDate },
-        { name: 'Online Assessment / Aptitude', status: 'upcoming', date: null },
-        { name: 'Technical Interview Round', status: 'upcoming', date: null },
-        { name: 'HR & Final Offer Rollout', status: 'upcoming', date: null },
-      ],
+      rounds: pipeline.map((stage, i) => ({
+        name: stage.name,
+        status: i === 0 ? 'pending' : 'upcoming',
+        date: i === 0 ? appliedDate : null,
+      })),
     };
     setTrackerData((prev) => [newTrackerEntry, ...prev]);
 
@@ -296,6 +325,7 @@ export const AppProvider = ({ children }) => {
       formData.append('company', job.company);
       formData.append('role', job.role);
       formData.append('resumeName', resumeFileName);
+      formData.append('answers', JSON.stringify(answers));
 
       if (customResume?.file) {
         formData.append('resume', customResume.file);
@@ -345,11 +375,17 @@ export const AppProvider = ({ children }) => {
     setApplications((prev) =>
       prev.map((a) => {
         if (a.id !== id) return a;
-        return {
-          ...a,
-          status,
-          round: status === 'shortlisted' ? 'Round 2: Online Assessment' : status === 'rejected' ? 'Application Rejected' : a.round,
-        };
+        const job = jobs.find((j) => j.id === a.jobId);
+        const pipeline = job?.pipeline || [];
+        let stageIndex = a.stageIndex ?? 0;
+        let round = a.round;
+        if (status === 'shortlisted') {
+          stageIndex = Math.min(stageIndex + 1, Math.max(pipeline.length - 1, 0));
+          round = pipeline[stageIndex] ? `Round ${stageIndex + 1}: ${pipeline[stageIndex].name}` : a.round;
+        } else if (status === 'rejected') {
+          round = 'Application Rejected';
+        }
+        return { ...a, status, stageIndex, round };
       })
     );
     try {
@@ -410,7 +446,7 @@ export const AppProvider = ({ children }) => {
         // Setters
         setTrackerData, setSurveys, setRequests,
         // Actions
-        addJob, updateJob, deleteJob, applyJob,
+        addJob, updateJob, deleteJob, duplicateJob, applyJob,
         addNotice, updateNotice, deleteNotice,
         updateApplicationStatus,
         toggleStudentFreeze,

@@ -1,4 +1,5 @@
 import { useApp } from '../context/AppContext';
+import { evaluateEligibility } from '../utils/eligibility';
 import { Briefcase, CheckCircle2, Activity, Bell, ArrowRight, GraduationCap } from 'lucide-react';
 import { useNavigate } from 'react-router-dom';
 
@@ -6,7 +7,7 @@ export default function Home() {
   const { user, jobs, notices, trackerData } = useApp();
   const navigate = useNavigate();
 
-  const openJobs     = jobs.filter((j) => j.status === 'open' && j.eligible);
+  const openJobs     = jobs.filter((j) => j.status === 'open' && evaluateEligibility(j, user).eligible);
   const appliedJobs  = jobs.filter((j) => j.applied);
   const activeRounds = trackerData.filter((c) => c.rounds.some((r) => r.status === 'pending'));
   const recentNotices = notices.slice(0, 3);

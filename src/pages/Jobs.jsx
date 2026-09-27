@@ -1,5 +1,6 @@
 import { useState, useMemo, useRef } from 'react';
 import { useApp } from '../context/AppContext';
+import { evaluateEligibility } from '../utils/eligibility';
 import {
   Search, X, ChevronRight, Clock, MapPin, Briefcase,
   CheckCircle2, XCircle, ArrowUpDown, FileText, Upload, Send, User,
@@ -18,15 +19,19 @@ export default function Jobs() {
   const [showApplyModal, setShowApplyModal] = useState(false);
   const [jobToApply, setJobToApply] = useState(null);
   const [customResume, setCustomResume] = useState(null);
+  const [answers, setAnswers]   = useState({});
   const [toast, setToast]       = useState('');
 
   const resumeInputRef = useRef();
 
   const showToast = (msg) => { setToast(msg); setTimeout(() => setToast(''), 3000); };
 
+  const eligibilityFor = (job) => evaluateEligibility(job, user);
+
   const startApply = (job) => {
     setJobToApply(job);
     setCustomResume(null);
+    setAnswers({});
     setShowApplyModal(true);
   };
 
@@ -47,7 +52,8 @@ export default function Jobs() {
 
   const submitApplication = () => {
     if (!jobToApply) return;
-    applyJob(jobToApply.id, customResume);
+    const answerList = (jobToApply.questions || []).map((q) => ({ questionId: q.id, question: q.text, answer: answers[q.id] || '' }));
+    applyJob(jobToApply.id, customResume, answerList);
     if (selected?.id === jobToApply.id) {
       setSelected((prev) => ({ ...prev, applied: true }));
     }
@@ -57,7 +63,7 @@ export default function Jobs() {
 
   const filtered = useMemo(() => {
     let list = [...jobs];
-    if (tab === 'Eligible') list = list.filter((j) => j.eligible);
+    if (tab === 'Eligible') list = list.filter((j) => eligibilityFor(j).eligible);
     else if (tab === 'Applied') list = list.filter((j) => j.applied);
     else if (['Intern', 'FTE', 'GET'].includes(tab)) list = list.filter((j) => j.jobType === tab);
     if (search) {
@@ -74,10 +80,10 @@ export default function Jobs() {
       list.sort((a, b) => a.company.localeCompare(b.company));
     }
     return list;
-  }, [jobs, tab, search, sort]);
+  }, [jobs, tab, search, sort, user]);
 
   const totalCount    = jobs.length;
-  const eligibleCount = jobs.filter((j) => j.eligible).length;
+  const eligibleCount = jobs.filter((j) => eligibilityFor(j).eligible).length;
   const appliedCount  = jobs.filter((j) => j.applied).length;
   const openCount     = jobs.filter((j) => j.status === 'open').length;
 
@@ -141,7 +147,9 @@ export default function Jobs() {
               <p className="text-xs mt-1">Admin hasn't posted any matching drives yet</p>
             </div>
           ) : (
-            filtered.map((job) => (
+            filtered.map((job) => {
+            const jobElig = eligibilityFor(job);
+            return (
               <div key={job.id} onClick={() => { setSelected(job); setDrawerTab('overview'); }}
                 className="card-solid card-solid-hover p-4 cursor-pointer transition-all"
                 style={{
@@ -168,7 +176,7 @@ export default function Jobs() {
                             <CheckCircle2 size={10} /> Applied
                           </span>
                         )}
-                        {!job.eligible && (
+                        {!jobElig.eligible && (
                           <span className="flex items-center gap-1 text-[10px] font-bold text-slate-500 bg-slate-50 border border-slate-200 px-2 py-0.5 rounded-full">
                             <XCircle size={10} /> Not Eligible
                           </span>
@@ -183,7 +191,7 @@ export default function Jobs() {
                   </div>
                 </div>
               </div>
-            ))
+            );})
           )}
         </div>
       </div>
@@ -255,15 +263,26 @@ export default function Jobs() {
                 )}
               </div>
             )}
-            {drawerTab === 'eligibility' && (
+            {drawerTab === 'eligibility' && (() => {
+              const elig = eligibilityFor(selectedJob);
+              const pipeline = (selectedJob.pipeline && selectedJob.pipeline.length > 0)
+                ? selectedJob.pipeline
+                : ['Application Screening', 'Online Assessment / Aptitude Test', 'Technical Interview', 'HR Interview', 'Offer Rollout'].map((name) => ({ name }));
+              return (
               <div className="space-y-4">
                 <div className="p-4 rounded-xl border" style={{ background: 'var(--canvas-bg)', borderColor: 'var(--border)' }}>
                   <p className="text-[10px] font-bold uppercase tracking-wider text-slate-400 mb-3">Eligibility Criteria</p>
                   <div className="space-y-2">
                     <div className="flex items-center justify-between text-xs">
-                      <span className="text-slate-500">Minimum CGPA</span>
-                      <span className="font-bold text-slate-900">{selectedJob.minCGPA} and above</span>
+                      <span className="text-slate-500">CGPA Range</span>
+                      <span className="font-bold text-slate-900">{selectedJob.eligibility?.minCGPA ?? selectedJob.minCGPA ?? 0} – {selectedJob.eligibility?.maxCGPA ?? 10}</span>
                     </div>
+                    {selectedJob.eligibility?.maxCurrentArrears !== null && selectedJob.eligibility?.maxCurrentArrears !== undefined && (
+                      <div className="flex items-center justify-between text-xs">
+                        <span className="text-slate-500">Max Current Arrears</span>
+                        <span className="font-bold text-slate-900">{selectedJob.eligibility.maxCurrentArrears}</span>
+                      </div>
+                    )}
                     <div className="text-xs">
                       <span className="text-slate-500">Eligible Branches</span>
                       <div className="flex flex-wrap gap-1.5 mt-1.5">
@@ -276,23 +295,32 @@ export default function Jobs() {
                       </div>
                     </div>
                   </div>
+                  {!elig.eligible && (
+                    <div className="mt-3 pt-3 border-t space-y-1" style={{ borderColor: 'var(--amber-border)' }}>
+                      <p className="text-[10px] font-bold uppercase tracking-wider text-rose-500">Why you're not eligible</p>
+                      {elig.reasons.map((r, i) => (
+                        <p key={i} className="text-xs text-rose-600">• {r}</p>
+                      ))}
+                    </div>
+                  )}
                 </div>
                 <div className="p-4 rounded-xl border" style={{ background: 'var(--canvas-bg)', borderColor: 'var(--border)' }}>
                   <p className="text-[10px] font-bold uppercase tracking-wider text-slate-400 mb-3">Selection Process</p>
                   <div className="space-y-2.5">
-                    {['Application Screening', 'Online Assessment / Aptitude Test', 'Technical Interview', 'HR Interview', 'Offer Rollout'].map((r, i) => (
-                      <div key={r} className="flex items-center gap-3">
+                    {pipeline.map((r, i) => (
+                      <div key={r.id || r.name} className="flex items-center gap-3">
                         <div className="w-5 h-5 rounded-full flex items-center justify-center text-[10px] font-bold text-white flex-shrink-0"
-                             style={{ background: 'linear-gradient(135deg, #162E34 0%, #1F4047 100%)' }}>
+                             style={{ background: 'linear-gradient(135deg, #1B1B3D 0%, #262654 100%)' }}>
                           {i + 1}
                         </div>
-                        <span className="text-xs text-slate-700">{r}</span>
+                        <span className="text-xs text-slate-700">{r.name}</span>
                       </div>
                     ))}
                   </div>
                 </div>
               </div>
-            )}
+              );
+            })()}
           </div>
 
           <div className="px-5 py-4 border-t" style={{ borderColor: 'var(--border)' }}>
@@ -300,11 +328,11 @@ export default function Jobs() {
               <div className="flex items-center justify-center gap-2 py-3 rounded-xl text-sm font-bold text-green-700 bg-green-50 border border-green-200">
                 <CheckCircle2 size={16} /> Application Submitted
               </div>
-            ) : selectedJob.eligible && selectedJob.status === 'open' ? (
+            ) : eligibilityFor(selectedJob).eligible && selectedJob.status === 'open' ? (
               <button onClick={() => startApply(selectedJob)} className="btn-solid-primary w-full py-3 text-sm font-bold flex items-center justify-center gap-2">
                 <Send size={15} /> Apply for this Drive
               </button>
-            ) : !selectedJob.eligible ? (
+            ) : !eligibilityFor(selectedJob).eligible ? (
               <div className="flex items-center justify-center gap-2 py-3 rounded-xl text-sm font-medium text-slate-500 bg-slate-50 border border-slate-200">
                 <XCircle size={16} /> Not eligible for this drive
               </div>
@@ -375,6 +403,37 @@ export default function Jobs() {
                 <input ref={resumeInputRef} type="file" accept=".pdf,.doc,.docx" className="hidden" onChange={handleResumeFile} />
               </div>
             </div>
+
+            {/* Screening Questions (if the admin added any for this drive) */}
+            {jobToApply.questions && jobToApply.questions.length > 0 && (
+              <div className="space-y-3">
+                <label className="text-xs font-bold text-slate-700 uppercase tracking-wider block">
+                  Screening Questions
+                </label>
+                {jobToApply.questions.map((q, i) => (
+                  <div key={q.id}>
+                    <p className="text-xs text-slate-600 mb-1.5">{i + 1}. {q.text}</p>
+                    {q.type === 'yesno' ? (
+                      <div className="flex gap-2">
+                        {['Yes', 'No'].map((opt) => (
+                          <button key={opt} type="button"
+                            onClick={() => setAnswers((p) => ({ ...p, [q.id]: opt }))}
+                            className={`px-4 py-1.5 rounded-lg text-xs font-semibold border transition-colors ${
+                              answers[q.id] === opt ? 'bg-amber-50 text-amber-800 border-amber-300' : 'bg-white text-slate-600 border-slate-200 hover:bg-slate-50'
+                            }`}>
+                            {opt}
+                          </button>
+                        ))}
+                      </div>
+                    ) : (
+                      <input className="input-solid text-xs py-2" value={answers[q.id] || ''}
+                        onChange={(e) => setAnswers((p) => ({ ...p, [q.id]: e.target.value }))}
+                        placeholder="Your answer" />
+                    )}
+                  </div>
+                ))}
+              </div>
+            )}
 
             <div className="flex justify-end gap-2 pt-3 border-t mt-4" style={{ borderColor: 'var(--border)' }}>
               <button

@@ -58,10 +58,10 @@ async function requestMultipart(endpoint, formData, method = 'POST') {
 
 export const api = {
   // Auth
-  login: (email, password) =>
+  login: (username, password) =>
     request('/auth/login', {
       method: 'POST',
-      body: JSON.stringify({ email, password }),
+      body: JSON.stringify({ username, password }),
     }),
 
   // Jobs / Drives
@@ -79,6 +79,11 @@ export const api = {
   deleteJob: (id) =>
     request(`/jobs/${id}`, {
       method: 'DELETE',
+    }),
+  duplicateJob: (id, actorId) =>
+    request(`/jobs/${id}/duplicate`, {
+      method: 'POST',
+      body: JSON.stringify({ actorId }),
     }),
 
   // Applications

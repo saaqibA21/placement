@@ -1,5 +1,5 @@
 import { Router } from 'express';
-import { readDb } from '../database.js';
+import { readDb, comparePassword } from '../database.js';
 
 const router = Router();
 
@@ -11,12 +11,10 @@ router.post('/login', (req, res) => {
 
   const db = readDb();
   const account = db.accounts.find(
-    (a) =>
-      a.username.toLowerCase() === username.toLowerCase().trim() &&
-      a.password === password
+    (a) => a.username.toLowerCase() === username.toLowerCase().trim()
   );
 
-  if (!account) {
+  if (!account || !comparePassword(password, account.password)) {
     return res.status(401).json({ success: false, message: 'Invalid username or password.' });
   }
 
@@ -25,9 +23,12 @@ router.post('/login', (req, res) => {
     const student = db.students.find((s) => s.id === account.studentId) || db.students[0];
     userObj = { ...student, role: 'student' };
   } else {
+    const admin = db.admins.find((a) => a.id === account.adminId) || db.admins[0];
     userObj = {
-      name: 'Placement Officer',
-      email: 'placements@jeppiaaruniversity.ac.in',
+      id: admin?.id,
+      name: admin?.name || 'Placement Officer',
+      email: admin?.email || 'placements@jeppiaaruniversity.ac.in',
+      designation: admin?.designation || 'Placement Officer',
       role: 'admin',
     };
   }

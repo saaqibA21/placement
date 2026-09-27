@@ -54,10 +54,13 @@ router.get('/', (req, res) => {
 // POST submit new application (with optional resume file upload)
 router.post('/apply', upload.single('resume'), (req, res) => {
   const db = readDb();
-  const { jobId, studentId, studentName, rollNo, branch, cgpa, company, role, resumeName } = req.body;
+  const { jobId, studentId, studentName, rollNo, branch, cgpa, company, role, resumeName, answers } = req.body;
 
   const parsedJobId = parseInt(jobId, 10);
   const appliedDate = new Date().toLocaleDateString('en-IN', { day: '2-digit', month: 'short', year: 'numeric' });
+  const job = (db.jobs || []).find((j) => j.id === parsedJobId);
+  let parsedAnswers = [];
+  try { parsedAnswers = answers ? JSON.parse(answers) : []; } catch { parsedAnswers = []; }
 
   // If a physical file was uploaded via Multer
   let uploadedFileUrl = null;
@@ -79,10 +82,13 @@ router.post('/apply', upload.single('resume'), (req, res) => {
     company: company || 'Recruitment Partner',
     role: role || 'Candidate',
     appliedOn: appliedDate,
-    round: 'Round 1: Screening',
+    round: `Round 1: ${job?.pipeline?.[0]?.name || 'Screening'}`,
+    stageIndex: 0,
     status: 'pending',
     resumeName: finalResumeName,
     resumeUrl: uploadedFileUrl,
+    atsScore: null,
+    answers: parsedAnswers,
   };
 
   db.applications = [newApp, ...(db.applications || [])];
@@ -90,7 +96,13 @@ router.post('/apply', upload.single('resume'), (req, res) => {
   // Update job applied flag
   db.jobs = (db.jobs || []).map((j) => (j.id === parsedJobId ? { ...j, applied: true } : j));
 
-  // Add to trackerData
+  // Add to trackerData, mirroring the job's actual hiring pipeline
+  const pipelineStages = (job?.pipeline && job.pipeline.length > 0) ? job.pipeline : [
+    { name: 'Application & Resume Screening' },
+    { name: 'Online Assessment / Aptitude' },
+    { name: 'Technical Interview Round' },
+    { name: 'HR & Final Offer Rollout' },
+  ];
   const newTrackerEntry = {
     id: Date.now(),
     company: company || 'Recruitment Partner',
@@ -98,12 +110,11 @@ router.post('/apply', upload.single('resume'), (req, res) => {
     color: 'bg-emerald-700',
     jobType: 'FTE',
     date: `Applied ${appliedDate}`,
-    rounds: [
-      { name: 'Application & Resume Screening', status: 'pending', date: appliedDate },
-      { name: 'Online Assessment / Aptitude', status: 'upcoming', date: null },
-      { name: 'Technical Interview Round', status: 'upcoming', date: null },
-      { name: 'HR & Final Offer Rollout', status: 'upcoming', date: null },
-    ],
+    rounds: pipelineStages.map((stage, i) => ({
+      name: stage.name,
+      status: i === 0 ? 'pending' : 'upcoming',
+      date: i === 0 ? appliedDate : null,
+    })),
   };
   db.trackerData = [newTrackerEntry, ...(db.trackerData || [])];
 
@@ -116,7 +127,7 @@ router.post('/apply', upload.single('resume'), (req, res) => {
   });
 });
 
-// PATCH application status (Shortlist / Reject / Move)
+// PATCH application status (Shortlist / Reject / Advance to next round)
 router.patch('/:id/status', (req, res) => {
   const db = readDb();
   const id = parseInt(req.params.id, 10);
@@ -124,15 +135,21 @@ router.patch('/:id/status', (req, res) => {
 
   let found = false;
   db.applications = (db.applications || []).map((a) => {
-    if (a.id === id) {
-      found = true;
-      return {
-        ...a,
-        status,
-        round: status === 'shortlisted' ? 'Round 2: Online Assessment' : status === 'rejected' ? 'Application Rejected' : a.round,
-      };
+    if (a.id !== id) return a;
+    found = true;
+    const job = (db.jobs || []).find((j) => j.id === a.jobId);
+    const pipeline = job?.pipeline || [];
+    let stageIndex = a.stageIndex ?? 0;
+    let round = a.round;
+
+    if (status === 'shortlisted') {
+      stageIndex = Math.min(stageIndex + 1, Math.max(pipeline.length - 1, 0));
+      round = pipeline[stageIndex] ? `Round ${stageIndex + 1}: ${pipeline[stageIndex].name}` : a.round;
+    } else if (status === 'rejected') {
+      round = 'Application Rejected';
     }
-    return a;
+
+    return { ...a, status, stageIndex, round };
   });
 
   if (!found) {
