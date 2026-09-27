@@ -1,10 +1,23 @@
 import { useState } from 'react';
 import { useApp } from '../../context/AppContext';
 import { API_HOST_URL } from '../../services/api';
-import { Search, Download, X, FileText, CheckCircle2, XCircle, ChevronRight, Eye } from 'lucide-react';
+import { Search, Download, X, FileText, CheckCircle2, XCircle, ChevronRight, Eye, Sparkles, Info, ArrowUpDown } from 'lucide-react';
 import StatusBadge from '../../components/StatusBadge';
 
 const STATUS_TABS = ['All', 'Pending', 'Shortlisted', 'Rejected'];
+
+function ScorePill({ score }) {
+  if (score === null || score === undefined) {
+    return <span className="text-[10px] font-semibold text-slate-400">Not scored</span>;
+  }
+  const color = score >= 85 ? '#15803d' : score >= 70 ? '#0369a1' : score >= 55 ? '#b45309' : '#be123c';
+  return (
+    <span className="inline-flex items-center gap-1 text-xs font-bold px-2 py-0.5 rounded-full"
+          style={{ color, background: `${color}14`, border: `1px solid ${color}33` }}>
+      <Sparkles size={10} /> {score}
+    </span>
+  );
+}
 
 export default function AdminResumes() {
   const { applications, updateApplicationStatus } = useApp();
@@ -12,6 +25,8 @@ export default function AdminResumes() {
   const [search, setSearch]   = useState('');
   const [drawer, setDrawer]   = useState(null);
   const [toast, setToast]     = useState('');
+  const [sortByScore, setSortByScore] = useState(false);
+  const [showInfo, setShowInfo] = useState(false);
 
   const showToast = (msg) => { setToast(msg); setTimeout(() => setToast(''), 3000); };
 
@@ -28,21 +43,26 @@ export default function AdminResumes() {
     Rejected: applications.filter((a) => a.status === 'rejected').length,
   };
 
-  const filtered = applications.filter((a) => {
-    if (statusTab !== 'All' && a.status !== statusTab.toLowerCase()) return false;
-    if (search) {
-      const t = search.toLowerCase();
-      return a.studentName.toLowerCase().includes(t) || a.rollNo.toLowerCase().includes(t) || a.company.toLowerCase().includes(t);
-    }
-    return true;
-  });
+  const filtered = applications
+    .filter((a) => {
+      if (statusTab !== 'All' && a.status !== statusTab.toLowerCase()) return false;
+      if (search) {
+        const t = search.toLowerCase();
+        return a.studentName.toLowerCase().includes(t) || a.rollNo.toLowerCase().includes(t) || a.company.toLowerCase().includes(t);
+      }
+      return true;
+    })
+    .sort((a, b) => {
+      if (!sortByScore) return 0;
+      return (b.atsScore ?? -1) - (a.atsScore ?? -1);
+    });
 
   const drawerData = drawer ? applications.find((a) => a.id === drawer.id) || drawer : null;
 
   const exportCSV = () => {
-    const header = 'Name,Roll No,Branch,CGPA,Company,Role,Applied On,Status';
+    const header = 'Name,Roll No,Branch,CGPA,Company,Role,AI Score,Applied On,Status';
     const rows = applications.map((a) =>
-      `"${a.studentName}","${a.rollNo}","${a.branch}",${a.cgpa},"${a.company}","${a.role}","${a.appliedOn}","${a.status}"`
+      `"${a.studentName}","${a.rollNo}","${a.branch}",${a.cgpa},"${a.company}","${a.role}",${a.atsScore ?? ''},"${a.appliedOn}","${a.status}"`
     );
     const blob = new Blob([[header, ...rows].join('\n')], { type: 'text/csv' });
     const url = URL.createObjectURL(blob);
@@ -58,15 +78,41 @@ export default function AdminResumes() {
         <div className="p-4 sm:p-6 border-b bg-white" style={{ borderColor: 'var(--border)' }}>
           <div className="flex items-center justify-between mb-4 flex-wrap gap-3">
             <div>
-              <h1 className="text-xl font-bold text-slate-900" style={{ fontFamily: 'Cinzel,serif' }}>
-                Resume Screening & Evaluation
-              </h1>
+              <div className="flex items-center gap-2">
+                <h1 className="text-xl font-bold text-slate-900" style={{ fontFamily: 'Cinzel,serif' }}>
+                  Resume Screening & Evaluation
+                </h1>
+                <button onClick={() => setShowInfo((v) => !v)} title="About AI screening scores"
+                  className="text-slate-400 hover:text-slate-600"><Info size={15} /></button>
+              </div>
               <p className="text-slate-500 text-xs mt-0.5">Review, filter and screen candidate applications across active drives</p>
             </div>
-            <button onClick={exportCSV} className="btn-solid-secondary px-4 py-2 text-xs flex items-center gap-1.5">
-              <Download size={13} /> Export CSV
-            </button>
+            <div className="flex items-center gap-2">
+              <button onClick={() => setSortByScore((v) => !v)}
+                className={`px-3 py-2 rounded-xl text-xs font-semibold flex items-center gap-1.5 border transition-colors ${
+                  sortByScore ? 'text-white' : 'bg-white text-slate-600 hover:bg-slate-50'
+                }`}
+                style={sortByScore ? { background: 'var(--amber-gold)', borderColor: 'var(--amber-gold)' } : { borderColor: 'var(--border)' }}>
+                <ArrowUpDown size={13} /> Sort by AI Score
+              </button>
+              <button onClick={exportCSV} className="btn-solid-secondary px-4 py-2 text-xs flex items-center gap-1.5">
+                <Download size={13} /> Export CSV
+              </button>
+            </div>
           </div>
+
+          {showInfo && (
+            <div className="mb-4 p-3.5 rounded-xl border text-xs text-slate-600 flex items-start gap-2.5"
+                 style={{ background: 'var(--amber-pale)', borderColor: 'var(--amber-border)' }}>
+              <Sparkles size={15} className="text-amber-700 flex-shrink-0 mt-0.5" />
+              <p>
+                <strong>AI Score</strong> is generated automatically the moment a student applies: their PDF resume is scanned
+                for role-relevant keywords, measurable impact, structure, and action verbs against a benchmark for the drive's
+                role and company. It's a triage signal to help you sort a large applicant pool faster — not a hiring decision.
+                Non-PDF resumes currently can't be auto-scored. The same engine powers the student-facing AI Resume Review tool.
+              </p>
+            </div>
+          )}
 
           {/* Status Counter Cards */}
           <div className="grid grid-cols-2 sm:grid-cols-4 gap-3">
@@ -101,14 +147,14 @@ export default function AdminResumes() {
               <thead className="sticky top-0 bg-white border-b text-slate-400 font-bold text-[10px] uppercase tracking-wider"
                      style={{ borderColor: 'var(--border)' }}>
                 <tr>
-                  {['Candidate', 'Branch / CGPA', 'Company & Role', 'Applied On', 'Status', ''].map((h) => (
+                  {['Candidate', 'Branch / CGPA', 'Company & Role', 'AI Score', 'Applied On', 'Status', ''].map((h) => (
                     <th key={h} className="text-left px-4 py-3">{h}</th>
                   ))}
                 </tr>
               </thead>
               <tbody className="divide-y" style={{ divideColor: 'var(--border)' }}>
                 {filtered.length === 0 ? (
-                  <tr><td colSpan={6} className="text-center py-16 text-slate-400">No applications match current filters</td></tr>
+                  <tr><td colSpan={7} className="text-center py-16 text-slate-400">No applications match current filters</td></tr>
                 ) : filtered.map((app) => (
                   <tr key={app.id} className="table-row-light cursor-pointer" onClick={() => setDrawer(app)}>
                     <td className="px-4 py-3.5">
@@ -131,6 +177,7 @@ export default function AdminResumes() {
                       <p className="font-bold text-slate-900 truncate max-w-[140px]">{app.company}</p>
                       <p className="text-slate-400 truncate max-w-[140px]">{app.role}</p>
                     </td>
+                    <td className="px-4 py-3.5"><ScorePill score={app.atsScore} /></td>
                     <td className="px-4 py-3.5 text-slate-400 font-mono whitespace-nowrap">{app.appliedOn}</td>
                     <td className="px-4 py-3.5"><StatusBadge status={app.status} /></td>
                     <td className="px-4 py-3.5"><ChevronRight size={14} className="text-slate-300" /></td>
@@ -209,6 +256,43 @@ export default function AdminResumes() {
                   </span>
                 )}
               </div>
+            </div>
+
+            {/* AI Screening Report */}
+            <div className="p-4 rounded-xl border space-y-3" style={{ background: 'var(--canvas-bg)', borderColor: 'var(--border)' }}>
+              <div className="flex items-center justify-between">
+                <p className="text-[10px] font-bold uppercase tracking-wider text-slate-400 flex items-center gap-1.5">
+                  <Sparkles size={12} className="text-amber-700" /> AI Screening Report
+                </p>
+                <ScorePill score={drawerData.atsScore} />
+              </div>
+              {drawerData.atsReport?.pillars ? (
+                <>
+                  <div className="space-y-1.5">
+                    {Object.values(drawerData.atsReport.pillars).map((p) => (
+                      <div key={p.label} className="flex items-center gap-2">
+                        <span className="text-[10px] text-slate-500 w-32 flex-shrink-0 truncate">{p.label}</span>
+                        <div className="flex-1 h-1.5 rounded-full bg-slate-200 overflow-hidden">
+                          <div className="h-full rounded-full" style={{ width: `${p.score}%`, background: 'var(--amber-gold)' }} />
+                        </div>
+                        <span className="text-[10px] font-bold text-slate-700 w-7 text-right">{p.score}</span>
+                      </div>
+                    ))}
+                  </div>
+                  {drawerData.atsReport.missingKeywords?.length > 0 && (
+                    <div>
+                      <p className="text-[10px] font-bold uppercase tracking-wider text-slate-400 mb-1">Missing Keywords</p>
+                      <div className="flex flex-wrap gap-1">
+                        {drawerData.atsReport.missingKeywords.slice(0, 6).map((k) => (
+                          <span key={k} className="text-[10px] font-semibold px-2 py-0.5 rounded-full bg-rose-50 text-rose-600 border border-rose-200">{k}</span>
+                        ))}
+                      </div>
+                    </div>
+                  )}
+                </>
+              ) : (
+                <p className="text-xs text-slate-400 italic">{drawerData.atsReport?.note || 'No automatic score available for this application.'}</p>
+              )}
             </div>
           </div>
 

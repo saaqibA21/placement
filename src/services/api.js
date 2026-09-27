@@ -155,6 +155,11 @@ export const api = {
   // Calendar
   getCalendarEvents: () => request('/calendar'),
 
+  // Saved Resumes (Profile → Resume Library)
+  getResumes: (studentId) => request(`/resumes?studentId=${studentId}`),
+  uploadResume: (formData) => requestMultipart('/resumes/upload', formData, 'POST'),
+  deleteResume: (id) => request(`/resumes/${id}`, { method: 'DELETE' }),
+
   // AI Resume Review
   analyzeResume: (payload) => {
     if (payload instanceof FormData) {

@@ -1,5 +1,7 @@
 import { useState, useRef } from 'react';
+import { Link } from 'react-router-dom';
 import { useApp } from '../context/AppContext';
+import { API_HOST_URL } from '../services/api';
 import {
   Upload, FileText, Trash2, Eye, CheckCircle2, Camera, Pencil, X, Save,
   Linkedin, Github, Phone, Mail, BookOpen, Code2, Cloud, Cpu,
@@ -39,7 +41,8 @@ const GPA_DATA = [
 ];
 
 export default function Profile() {
-  const { user } = useApp();
+  const { user, resumes, addResume, removeResume } = useApp();
+  const resumeList = resumes || [];
 
   const [editing, setEditing]     = useState(false);
   const [profile, setProfile]     = useState({
@@ -49,13 +52,10 @@ export default function Profile() {
   });
   const [draft, setDraft]         = useState({ ...profile });
   const [photo, setPhoto]         = useState(null);
-  const [resume, setResume]       = useState(null);
-  const [replaceModal, setReplaceModal] = useState(false);
   const [toast, setToast]         = useState('');
 
   const photoRef  = useRef();
   const resumeRef = useRef();
-  const newResumeRef = useRef();
 
   const showToast = (msg) => { setToast(msg); setTimeout(() => setToast(''), 3000); };
 
@@ -67,7 +67,7 @@ export default function Profile() {
     reader.readAsDataURL(file);
   };
 
-  const handleResumeUpload = (file) => {
+  const handleResumeUpload = async (file) => {
     if (!file) return;
     if (!['application/pdf', 'application/msword',
           'application/vnd.openxmlformats-officedocument.wordprocessingml.document'].includes(file.type)) {
@@ -78,14 +78,12 @@ export default function Profile() {
       showToast('File must be under 5 MB.');
       return;
     }
-    setResume({
-      name: file.name,
-      size: (file.size / 1024).toFixed(0) + ' KB',
-      uploadedOn: new Date().toLocaleDateString('en-IN', { day:'2-digit', month:'short', year:'numeric' }),
-      url: URL.createObjectURL(file),
-    });
-    setReplaceModal(false);
-    showToast('Resume uploaded successfully!');
+    try {
+      await addResume(file, file.name);
+      showToast('Resume saved to your library!');
+    } catch {
+      showToast('Failed to upload resume. Please try again.');
+    }
   };
 
   const handleDrop = (e) => {
@@ -102,7 +100,7 @@ export default function Profile() {
 
   const completionFields = [
     !!user?.name, !!user?.email, !!user?.rollNo, !!user?.branch,
-    !!photo, !!resume, !!draft.linkedin, !!draft.phone,
+    !!photo, resumeList.length > 0, !!draft.linkedin, !!draft.phone,
   ];
   const completion = Math.round((completionFields.filter(Boolean).length / completionFields.length) * 100);
 
@@ -251,88 +249,69 @@ export default function Profile() {
         )}
       </div>
 
-      {/* ── Resume Upload Section ────────────────────────────────────── */}
+      {/* ── Resume Library ───────────────────────────────────────────── */}
       <div className="card-solid bg-white p-5 sm:p-6">
         <div className="flex items-center justify-between mb-4">
           <div>
             <h2 className="text-sm font-bold text-slate-900" style={{ fontFamily: 'Cinzel,serif' }}>
-              Resume / Curriculum Vitae
+              Resume Library
             </h2>
-            <p className="text-xs text-slate-400 mt-0.5">Upload your updated resume for recruitment screenings</p>
+            <p className="text-xs text-slate-400 mt-0.5">
+              Keep multiple resumes and pick the right one when you apply. PDF resumes are also auto-scored by the
+              placement cell's AI screening tool — see <Link to="/student/ai-resume" className="underline font-semibold" style={{ color: 'var(--amber-gold)' }}>AI Resume Review</Link> to check yours first.
+            </p>
           </div>
         </div>
 
-        {resume ? (
-          /* Uploaded Resume Card */
-          <div className="flex items-center gap-4 p-4 rounded-xl border" style={{ background: 'var(--canvas-bg)', borderColor: 'var(--border)' }}>
-            <div className="w-12 h-12 rounded-xl flex items-center justify-center flex-shrink-0"
-                 style={{ background: 'var(--amber-pale)', border: '1px solid var(--amber-border)' }}>
-              <FileText size={22} style={{ color: 'var(--amber-gold)' }} />
-            </div>
-            <div className="flex-1 min-w-0">
-              <p className="font-bold text-slate-900 text-sm truncate">{resume.name}</p>
-              <p className="text-xs text-slate-400 mt-0.5">{resume.size} · Uploaded {resume.uploadedOn}</p>
-            </div>
-            <div className="flex items-center gap-2 flex-shrink-0">
-              <a href={resume.url} target="_blank" rel="noopener noreferrer"
-                 className="btn-solid-secondary px-3 py-1.5 text-xs flex items-center gap-1.5">
-                <Eye size={13} /> View
-              </a>
-              <button onClick={() => setReplaceModal(true)}
-                className="btn-solid-primary px-3 py-1.5 text-xs flex items-center gap-1.5">
-                <Upload size={13} /> Replace
-              </button>
-              <button onClick={() => { setResume(null); showToast('Resume removed.'); }}
-                className="p-1.5 rounded-xl text-slate-400 hover:text-red-600 hover:bg-red-50 transition-colors">
-                <Trash2 size={15} />
-              </button>
-            </div>
-          </div>
-        ) : (
-          /* Upload Drop Zone */
-          <div
-            onDragOver={(e) => e.preventDefault()}
-            onDrop={handleDrop}
-            onClick={() => resumeRef.current?.click()}
-            className="flex flex-col items-center justify-center p-8 rounded-xl border-2 border-dashed cursor-pointer transition-all hover:bg-amber-50/40"
-            style={{ borderColor: 'var(--amber-gold)', background: 'var(--amber-pale)' }}
-          >
-            <div className="w-14 h-14 rounded-2xl flex items-center justify-center mb-3"
-                 style={{ background: 'rgba(217,130,43,0.15)' }}>
-              <Upload size={26} style={{ color: 'var(--amber-gold)' }} />
-            </div>
-            <p className="font-bold text-slate-800 text-sm">Drop your resume here or click to browse</p>
-            <p className="text-xs text-slate-500 mt-1">Supported: PDF, DOC, DOCX · Max size: 5 MB</p>
+        {resumeList.length > 0 && (
+          <div className="space-y-2.5 mb-4">
+            {resumeList.map((r) => (
+              <div key={r.id} className="flex items-center gap-4 p-3.5 rounded-xl border" style={{ background: 'var(--canvas-bg)', borderColor: 'var(--border)' }}>
+                <div className="w-10 h-10 rounded-xl flex items-center justify-center flex-shrink-0"
+                     style={{ background: 'var(--amber-pale)', border: '1px solid var(--amber-border)' }}>
+                  <FileText size={18} style={{ color: 'var(--amber-gold)' }} />
+                </div>
+                <div className="flex-1 min-w-0">
+                  <p className="font-bold text-slate-900 text-sm truncate">{r.label || r.fileName}</p>
+                  <p className="text-xs text-slate-400 mt-0.5">
+                    {r.size ? `${(r.size / 1024).toFixed(0)} KB · ` : ''}
+                    Uploaded {new Date(r.uploadedAt).toLocaleDateString('en-IN', { day: '2-digit', month: 'short', year: 'numeric' })}
+                  </p>
+                </div>
+                <div className="flex items-center gap-2 flex-shrink-0">
+                  <a href={`${API_HOST_URL}${r.url}`} target="_blank" rel="noopener noreferrer"
+                     className="btn-solid-secondary px-3 py-1.5 text-xs flex items-center gap-1.5">
+                    <Eye size={13} /> View
+                  </a>
+                  <button onClick={() => removeResume(r.id)}
+                    className="p-1.5 rounded-xl text-slate-400 hover:text-red-600 hover:bg-red-50 transition-colors">
+                    <Trash2 size={15} />
+                  </button>
+                </div>
+              </div>
+            ))}
           </div>
         )}
+
+        {/* Upload Drop Zone — always available so students can add more than one resume */}
+        <div
+          onDragOver={(e) => e.preventDefault()}
+          onDrop={handleDrop}
+          onClick={() => resumeRef.current?.click()}
+          className="flex flex-col items-center justify-center p-6 rounded-xl border-2 border-dashed cursor-pointer transition-all hover:bg-amber-50/40"
+          style={{ borderColor: 'var(--amber-gold)', background: 'var(--amber-pale)' }}
+        >
+          <div className="w-12 h-12 rounded-2xl flex items-center justify-center mb-2.5"
+               style={{ background: 'rgba(217,130,43,0.15)' }}>
+            <Upload size={22} style={{ color: 'var(--amber-gold)' }} />
+          </div>
+          <p className="font-bold text-slate-800 text-sm">
+            {resumeList.length > 0 ? 'Add another resume' : 'Drop your resume here or click to browse'}
+          </p>
+          <p className="text-xs text-slate-500 mt-1">Supported: PDF, DOC, DOCX · Max size: 5 MB</p>
+        </div>
         <input ref={resumeRef} type="file" accept=".pdf,.doc,.docx" className="hidden"
           onChange={(e) => handleResumeUpload(e.target.files[0])} />
-
-        {/* Replace Confirmation Modal */}
-        {replaceModal && (
-          <div className="fixed inset-0 bg-black/40 flex items-center justify-center z-50 p-4">
-            <div className="bg-white rounded-2xl shadow-2xl p-6 w-full max-w-sm border" style={{ borderColor: 'var(--border)' }}>
-              <h3 className="font-bold text-slate-900 mb-2" style={{ fontFamily: 'Cinzel,serif' }}>Replace Resume?</h3>
-              <p className="text-xs text-slate-500 mb-4">
-                Your current resume will be replaced. Make sure your new resume is up to date before uploading.
-              </p>
-              <div
-                onDragOver={(e) => e.preventDefault()}
-                onDrop={handleDrop}
-                onClick={() => newResumeRef.current?.click()}
-                className="flex flex-col items-center justify-center p-6 rounded-xl border-2 border-dashed cursor-pointer mb-4"
-                style={{ borderColor: 'var(--amber-gold)', background: 'var(--amber-pale)' }}>
-                <Upload size={20} style={{ color: 'var(--amber-gold)' }} />
-                <p className="text-xs font-semibold text-slate-700 mt-1">Click or drop new resume file</p>
-              </div>
-              <input ref={newResumeRef} type="file" accept=".pdf,.doc,.docx" className="hidden"
-                onChange={(e) => handleResumeUpload(e.target.files[0])} />
-              <button onClick={() => setReplaceModal(false)} className="btn-solid-secondary w-full py-2 text-xs">
-                Cancel
-              </button>
-            </div>
-          </div>
-        )}
       </div>
 
       {/* ── Two-Column: GPA + Skills ──────────────────────────────────── */}

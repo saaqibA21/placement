@@ -3,6 +3,8 @@ import multer from 'multer';
 import path from 'path';
 import { fileURLToPath } from 'url';
 import { readDb, writeDb } from '../database.js';
+import { extractResumeText } from '../utils/extractResumeText.js';
+import { evaluateResumeText, mapJobToRole } from '../utils/resumeScoring.js';
 
 import fs from 'fs';
 
@@ -51,30 +53,73 @@ router.get('/', (req, res) => {
   res.json({ success: true, data: db.applications || [] });
 });
 
-// POST submit new application (with optional resume file upload)
-router.post('/apply', upload.single('resume'), (req, res) => {
+// Runs the shared ATS engine against whichever resume file backs this
+// application (a freshly uploaded file, or a previously saved one picked
+// by resumeId). Never fabricates a score for a file we couldn't read.
+async function scoreApplication(job, filePath) {
+  if (!filePath) {
+    return { atsScore: null, atsReport: { note: 'No resume file was attached — automatic screening needs a PDF resume to score.' } };
+  }
+  const text = await extractResumeText(filePath);
+  if (!text) {
+    return { atsScore: null, atsReport: { note: 'Automatic ATS scoring only supports PDF resumes right now — this file could not be scored.' } };
+  }
+  const report = evaluateResumeText(text, mapJobToRole(job), job?.company);
+  return { atsScore: report.overallAtsScore, atsReport: report };
+}
+
+// POST submit new application (with optional resume file upload, or a
+// previously saved resume selected by resumeId)
+router.post('/apply', upload.single('resume'), async (req, res) => {
   const db = readDb();
-  const { jobId, studentId, studentName, rollNo, branch, cgpa, company, role, resumeName, answers } = req.body;
+  const { jobId, studentId, studentName, rollNo, branch, cgpa, company, role, resumeName, resumeId, answers } = req.body;
 
   const parsedJobId = parseInt(jobId, 10);
+  const parsedStudentId = parseInt(studentId, 10) || 1;
   const appliedDate = new Date().toLocaleDateString('en-IN', { day: '2-digit', month: 'short', year: 'numeric' });
   const job = (db.jobs || []).find((j) => j.id === parsedJobId);
   let parsedAnswers = [];
   try { parsedAnswers = answers ? JSON.parse(answers) : []; } catch { parsedAnswers = []; }
 
-  // If a physical file was uploaded via Multer
   let uploadedFileUrl = null;
   let finalResumeName = resumeName || (req.file ? req.file.originalname : `Resume_${studentName?.replace(/\s+/g, '_') || 'Student'}.pdf`);
+  let scoringFilePath = null;
+  let finalResumeId = resumeId ? parseInt(resumeId, 10) : null;
 
   if (req.file) {
+    // A fresh file was uploaded at apply-time — save it to the student's
+    // resume library too, so it's available for future applications.
     uploadedFileUrl = `/uploads/resumes/${req.file.filename}`;
     finalResumeName = req.file.originalname;
+    scoringFilePath = req.file.path;
+
+    const savedResume = {
+      id: Date.now() + 1,
+      studentId: parsedStudentId,
+      label: req.file.originalname,
+      fileName: req.file.originalname,
+      url: uploadedFileUrl,
+      filePath: req.file.path,
+      size: req.file.size,
+      uploadedAt: new Date().toISOString(),
+    };
+    db.resumes = [savedResume, ...(db.resumes || [])];
+    finalResumeId = savedResume.id;
+  } else if (finalResumeId) {
+    const saved = (db.resumes || []).find((r) => r.id === finalResumeId);
+    if (saved) {
+      scoringFilePath = saved.filePath;
+      uploadedFileUrl = saved.url;
+      finalResumeName = saved.fileName;
+    }
   }
+
+  const { atsScore, atsReport } = await scoreApplication(job, scoringFilePath);
 
   const newApp = {
     id: Date.now(),
     jobId: parsedJobId,
-    studentId: parseInt(studentId, 10) || 1,
+    studentId: parsedStudentId,
     studentName: studentName || 'Candidate',
     rollNo: rollNo || '21CS001',
     branch: branch || 'Computer Science',
@@ -87,7 +132,9 @@ router.post('/apply', upload.single('resume'), (req, res) => {
     status: 'pending',
     resumeName: finalResumeName,
     resumeUrl: uploadedFileUrl,
-    atsScore: null,
+    resumeId: finalResumeId,
+    atsScore,
+    atsReport,
     answers: parsedAnswers,
   };
 

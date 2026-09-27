@@ -10,7 +10,7 @@ import StatusBadge from '../components/StatusBadge';
 const TABS = ['All', 'Eligible', 'Applied', 'Intern', 'FTE', 'GET'];
 
 export default function Jobs() {
-  const { jobs, applyJob, user } = useApp();
+  const { jobs, applyJob, user, resumes } = useApp();
   const [search, setSearch]     = useState('');
   const [tab, setTab]           = useState('All');
   const [sort, setSort]         = useState('deadline');
@@ -19,6 +19,8 @@ export default function Jobs() {
   const [showApplyModal, setShowApplyModal] = useState(false);
   const [jobToApply, setJobToApply] = useState(null);
   const [customResume, setCustomResume] = useState(null);
+  const [selectedResumeId, setSelectedResumeId] = useState(null);
+  const [uploadingNew, setUploadingNew] = useState(false);
   const [answers, setAnswers]   = useState({});
   const [toast, setToast]       = useState('');
 
@@ -31,6 +33,8 @@ export default function Jobs() {
   const startApply = (job) => {
     setJobToApply(job);
     setCustomResume(null);
+    setSelectedResumeId(resumes?.[0]?.id || null);
+    setUploadingNew(!resumes || resumes.length === 0);
     setAnswers({});
     setShowApplyModal(true);
   };
@@ -52,8 +56,10 @@ export default function Jobs() {
 
   const submitApplication = () => {
     if (!jobToApply) return;
+    if (uploadingNew && !customResume) { showToast('Please attach a resume before applying.'); return; }
+    if (!uploadingNew && !selectedResumeId) { showToast('Please select a resume before applying.'); return; }
     const answerList = (jobToApply.questions || []).map((q) => ({ questionId: q.id, question: q.text, answer: answers[q.id] || '' }));
-    applyJob(jobToApply.id, customResume, answerList);
+    applyJob(jobToApply.id, uploadingNew ? customResume : null, answerList, uploadingNew ? null : selectedResumeId);
     if (selected?.id === jobToApply.id) {
       setSelected((prev) => ({ ...prev, applied: true }));
     }
@@ -376,32 +382,64 @@ export default function Jobs() {
 
             {/* Resume Selection */}
             <div className="space-y-2">
-              <label className="text-xs font-bold text-slate-700 uppercase tracking-wider block">
-                Resume Submission
-              </label>
-              <div className="p-4 rounded-xl border flex items-center justify-between" style={{ background: 'var(--amber-pale)', borderColor: 'var(--amber-border)' }}>
-                <div className="flex items-center gap-3 min-w-0">
-                  <div className="w-9 h-9 rounded-lg flex items-center justify-center flex-shrink-0 bg-white shadow-xs">
-                    <FileText size={18} className="text-amber-700" />
-                  </div>
-                  <div className="min-w-0">
-                    <p className="text-xs font-bold text-slate-900 truncate">
-                      {customResume?.name || `Resume_${user?.name?.replace(/\s+/g, '_') || 'Candidate'}.pdf`}
-                    </p>
-                    <p className="text-[10px] text-slate-400">
-                      {customResume ? `${customResume.size} · Uploaded Custom` : 'Verified Profile Resume'}
-                    </p>
-                  </div>
-                </div>
-                <button
-                  type="button"
-                  onClick={() => resumeInputRef.current?.click()}
-                  className="btn-solid-secondary px-3 py-1.5 text-xs flex items-center gap-1.5 flex-shrink-0"
-                >
-                  <Upload size={12} /> Upload Other
-                </button>
-                <input ref={resumeInputRef} type="file" accept=".pdf,.doc,.docx" className="hidden" onChange={handleResumeFile} />
+              <div className="flex items-center justify-between">
+                <label className="text-xs font-bold text-slate-700 uppercase tracking-wider block">
+                  Resume Submission
+                </label>
+                {resumes && resumes.length > 0 && (
+                  <button type="button" onClick={() => setUploadingNew((v) => !v)}
+                    className="text-[11px] font-semibold underline" style={{ color: 'var(--amber-gold)' }}>
+                    {uploadingNew ? 'Use a saved resume instead' : 'Upload a different resume'}
+                  </button>
+                )}
               </div>
+
+              {!uploadingNew && resumes && resumes.length > 0 ? (
+                <div className="space-y-1.5">
+                  {resumes.map((r) => (
+                    <label key={r.id}
+                      className={`flex items-center gap-3 p-3 rounded-xl border cursor-pointer transition-colors ${
+                        selectedResumeId === r.id ? 'bg-amber-50' : 'bg-white hover:bg-slate-50'
+                      }`}
+                      style={{ borderColor: selectedResumeId === r.id ? 'var(--amber-gold)' : 'var(--border)' }}>
+                      <input type="radio" name="resumePick" checked={selectedResumeId === r.id}
+                        onChange={() => setSelectedResumeId(r.id)} className="flex-shrink-0" />
+                      <FileText size={16} className="text-amber-700 flex-shrink-0" />
+                      <div className="min-w-0 flex-1">
+                        <p className="text-xs font-bold text-slate-900 truncate">{r.label || r.fileName}</p>
+                        <p className="text-[10px] text-slate-400">
+                          Uploaded {new Date(r.uploadedAt).toLocaleDateString('en-IN', { day: '2-digit', month: 'short', year: 'numeric' })}
+                        </p>
+                      </div>
+                    </label>
+                  ))}
+                  <p className="text-[10px] text-slate-400 pt-1">PDF resumes are automatically scored for this role by the placement cell's AI screening tool.</p>
+                </div>
+              ) : (
+                <div className="p-4 rounded-xl border flex items-center justify-between" style={{ background: 'var(--amber-pale)', borderColor: 'var(--amber-border)' }}>
+                  <div className="flex items-center gap-3 min-w-0">
+                    <div className="w-9 h-9 rounded-lg flex items-center justify-center flex-shrink-0 bg-white shadow-xs">
+                      <FileText size={18} className="text-amber-700" />
+                    </div>
+                    <div className="min-w-0">
+                      <p className="text-xs font-bold text-slate-900 truncate">
+                        {customResume?.name || 'No resume selected yet'}
+                      </p>
+                      <p className="text-[10px] text-slate-400">
+                        {customResume ? `${customResume.size} · will be saved to your Resume Library` : 'Upload a PDF to get an automatic AI screening score'}
+                      </p>
+                    </div>
+                  </div>
+                  <button
+                    type="button"
+                    onClick={() => resumeInputRef.current?.click()}
+                    className="btn-solid-secondary px-3 py-1.5 text-xs flex items-center gap-1.5 flex-shrink-0"
+                  >
+                    <Upload size={12} /> {customResume ? 'Change' : 'Upload'}
+                  </button>
+                  <input ref={resumeInputRef} type="file" accept=".pdf,.doc,.docx" className="hidden" onChange={handleResumeFile} />
+                </div>
+              )}
             </div>
 
             {/* Screening Questions (if the admin added any for this drive) */}

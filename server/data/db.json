@@ -567,7 +567,9 @@
       "resumeUrl": "/uploads/resumes/1788679238662-119104700-Mohamed_Saaqib_Official_Resume.pdf",
       "stageIndex": 0,
       "atsScore": null,
-      "answers": []
+      "answers": [],
+      "resumeId": null,
+      "atsReport": null
     },
     {
       "id": 1788679201316,
@@ -586,7 +588,9 @@
       "resumeUrl": null,
       "stageIndex": 0,
       "atsScore": null,
-      "answers": []
+      "answers": [],
+      "resumeId": null,
+      "atsReport": null
     },
     {
       "id": 1788679181902,
@@ -605,7 +609,9 @@
       "resumeUrl": null,
       "stageIndex": 0,
       "atsScore": null,
-      "answers": []
+      "answers": [],
+      "resumeId": null,
+      "atsReport": null
     },
     {
       "id": 101,
@@ -624,7 +630,9 @@
       "resumeUrl": null,
       "stageIndex": 0,
       "atsScore": null,
-      "answers": []
+      "answers": [],
+      "resumeId": null,
+      "atsReport": null
     },
     {
       "id": 102,
@@ -643,7 +651,9 @@
       "resumeUrl": null,
       "stageIndex": 0,
       "atsScore": null,
-      "answers": []
+      "answers": [],
+      "resumeId": null,
+      "atsReport": null
     },
     {
       "id": 103,
@@ -662,7 +672,9 @@
       "resumeUrl": null,
       "stageIndex": 0,
       "atsScore": null,
-      "answers": []
+      "answers": [],
+      "resumeId": null,
+      "atsReport": null
     }
   ],
   "notices": [
@@ -965,5 +977,6 @@
       "email": "k.karthick@jeppiaaruniversity.ac.in",
       "designation": "Assistant Placement Officer"
     }
-  ]
+  ],
+  "resumes": []
 }

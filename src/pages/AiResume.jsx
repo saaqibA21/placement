@@ -155,6 +155,17 @@ export default function AiResume() {
         )}
       </div>
 
+      {/* Transparency note: this same engine also screens live applications */}
+      <div className="flex items-start gap-2.5 p-3.5 rounded-xl border text-xs text-slate-600"
+           style={{ background: 'var(--amber-pale)', borderColor: 'var(--amber-border)' }}>
+        <UserCheck size={15} className="text-amber-700 flex-shrink-0 mt-0.5" />
+        <p>
+          <strong>Good to know:</strong> when you apply to a drive with a PDF resume, the placement cell's screening dashboard
+          automatically runs this same engine on it and shows admins an AI Score for that specific role. Running a check here
+          first — and fixing what it flags — improves how your application is triaged.
+        </p>
+      </div>
+
       {/* Target Role & Company Selector Banner */}
       <div className="card-solid p-4 sm:p-5 bg-white space-y-4" style={{ borderColor: 'var(--border)' }}>
         <p className="text-[11px] font-bold uppercase tracking-wider text-slate-400">

@@ -65,6 +65,7 @@ const SEED_DATA = {
     { id: 1, name: 'Placement Officer', email: 'placements@jeppiaaruniversity.ac.in', designation: 'Chief Placement Officer' },
     { id: 2, name: 'Mr. K. Karthick', email: 'k.karthick@jeppiaaruniversity.ac.in', designation: 'Assistant Placement Officer' },
   ],
+  resumes: [],
   students: [
     { id: 1, name: 'Saaqib Ahmed',   rollNo: '21CS101', branch: 'CS-AI&ML', cgpa: 8.9, applied: 5, offers: 1, status: 'active', email: 'saaqib@jeppiaaruniversity.ac.in', phone: '+91 98401 23456', degree: 'B.Tech', batch: '2027', gender: 'Male',   currentArrears: 0, arrearsHistory: 0, tenthPercent: 88, twelfthPercent: 91, diplomaPercent: null },
     { id: 2, name: 'Priya Sharma',   rollNo: '21CS102', branch: 'CS',       cgpa: 9.2, applied: 6, offers: 2, status: 'active', email: 'priya.s@jeppiaaruniversity.ac.in', phone: '+91 98401 23457', degree: 'B.Tech', batch: '2027', gender: 'Female', currentArrears: 0, arrearsHistory: 0, tenthPercent: 93, twelfthPercent: 95, diplomaPercent: null },
@@ -186,7 +187,9 @@ const SEED_DATA = {
       status: 'pending',
       resumeName: 'Resume_Saaqib_Ahmed.pdf',
       resumeUrl: null,
+      resumeId: null,
       atsScore: null,
+      atsReport: null,
       answers: [],
     },
     {
@@ -205,7 +208,9 @@ const SEED_DATA = {
       status: 'shortlisted',
       resumeName: 'Resume_Priya_Sharma.pdf',
       resumeUrl: null,
+      resumeId: null,
       atsScore: null,
+      atsReport: null,
       answers: [],
     },
     {
@@ -224,7 +229,9 @@ const SEED_DATA = {
       status: 'shortlisted',
       resumeName: 'Resume_Sneha_Patel.pdf',
       resumeUrl: null,
+      resumeId: null,
       atsScore: null,
+      atsReport: null,
       answers: [],
     },
   ],
@@ -312,6 +319,10 @@ const migrate = (db) => {
     db.admins = SEED_DATA.admins;
     changed = true;
   }
+  if (!db.resumes) {
+    db.resumes = [];
+    changed = true;
+  }
   if (!db.admins.some((a) => a.id === 2)) {
     db.admins = [...db.admins, SEED_DATA.admins[1]];
     changed = true;
@@ -380,9 +391,16 @@ const migrate = (db) => {
   });
 
   db.applications = (db.applications || []).map((a) => {
-    if (a.stageIndex !== undefined) return a;
+    if (a.stageIndex !== undefined && a.resumeId !== undefined && a.atsReport !== undefined) return a;
     changed = true;
-    return { ...a, stageIndex: 0, atsScore: a.atsScore ?? null, answers: a.answers ?? [] };
+    return {
+      ...a,
+      stageIndex: a.stageIndex ?? 0,
+      resumeId: a.resumeId ?? null,
+      atsScore: a.atsScore ?? null,
+      atsReport: a.atsReport ?? null,
+      answers: a.answers ?? [],
+    };
   });
 
   return { db, changed };

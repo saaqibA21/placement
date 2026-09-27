@@ -61,6 +61,7 @@ export const AppProvider = ({ children }) => {
   const [surveys, setSurveys] = useState(() => getStorageItem('jeppiaar_surveys', initSurveys));
   const [requests, setRequests] = useState(() => getStorageItem('jeppiaar_requests', initRequests));
   const [calendarEvents, setCalendarEvents] = useState(() => getStorageItem('jeppiaar_calendar', initCalendarEvents));
+  const [resumes, setResumes] = useState(() => getStorageItem('jeppiaar_resumes', []));
 
   // Sync to localStorage safely
   useEffect(() => { if (user) setStorageItem('jeppiaar_user', user); }, [user]);
@@ -74,6 +75,49 @@ export const AppProvider = ({ children }) => {
   useEffect(() => { setStorageItem('jeppiaar_surveys', surveys); }, [surveys]);
   useEffect(() => { setStorageItem('jeppiaar_requests', requests); }, [requests]);
   useEffect(() => { setStorageItem('jeppiaar_calendar', calendarEvents); }, [calendarEvents]);
+  useEffect(() => { setStorageItem('jeppiaar_resumes', resumes); }, [resumes]);
+
+  // ── Resume Library (fetched per-student once logged in) ─────────────────────
+  const refreshResumes = useCallback(async (studentId) => {
+    if (!studentId) return;
+    try {
+      const res = await api.getResumes(studentId);
+      if (res?.data) setResumes(res.data);
+    } catch (err) {
+      console.warn('Failed to load resume library:', err);
+    }
+  }, []);
+
+  useEffect(() => {
+    if (role === 'student' && user?.id) refreshResumes(user.id);
+  }, [role, user?.id, refreshResumes]);
+
+  const addResume = async (file, label) => {
+    if (!user?.id) return;
+    const formData = new FormData();
+    formData.append('resume', file);
+    formData.append('studentId', user.id);
+    formData.append('label', label || file.name);
+    try {
+      const res = await api.uploadResume(formData);
+      if (res?.data) {
+        setResumes((prev) => [res.data, ...prev]);
+        return res.data;
+      }
+    } catch (err) {
+      console.error('Failed to upload resume:', err);
+      throw err;
+    }
+  };
+
+  const removeResume = async (id) => {
+    setResumes((prev) => prev.filter((r) => r.id !== id));
+    try {
+      await api.deleteResume(id);
+    } catch (err) {
+      console.error(`Failed to delete resume ${id}:`, err);
+    }
+  };
 
   // ── Load live data from backend on startup ──────────────────────────────────
   const refreshAllData = useCallback(async () => {
@@ -262,14 +306,15 @@ export const AppProvider = ({ children }) => {
   };
 
   // ── Student Apply Flow (Student applies with resume → Admin receives live) ──
-  const applyJob = async (jobId, customResume = null, answers = []) => {
+  const applyJob = async (jobId, customResume = null, answers = [], resumeId = null) => {
     const job = jobs.find((j) => j.id === jobId);
     if (!job) return;
 
     setJobs((prev) => prev.map((j) => (j.id === jobId ? { ...j, applied: true } : j)));
 
     const activeStudent = user || students[0];
-    const resumeFileName = customResume?.name || (activeStudent?.name ? `Resume_${activeStudent.name.replace(/\s+/g, '_')}.pdf` : 'Candidate_Resume.pdf');
+    const selectedSavedResume = resumeId ? resumes.find((r) => r.id === resumeId) : null;
+    const resumeFileName = customResume?.name || selectedSavedResume?.fileName || (activeStudent?.name ? `Resume_${activeStudent.name.replace(/\s+/g, '_')}.pdf` : 'Candidate_Resume.pdf');
     const appliedDate = new Date().toLocaleDateString('en-IN', { day: '2-digit', month: 'short', year: 'numeric' });
 
     const localApp = {
@@ -287,7 +332,10 @@ export const AppProvider = ({ children }) => {
       stageIndex: 0,
       status: 'pending',
       resumeName: resumeFileName,
-      resumeUrl: customResume?.url || null,
+      resumeUrl: customResume?.url || selectedSavedResume?.url || null,
+      resumeId: resumeId || null,
+      atsScore: null,
+      atsReport: null,
       answers,
     };
 
@@ -326,6 +374,7 @@ export const AppProvider = ({ children }) => {
       formData.append('role', job.role);
       formData.append('resumeName', resumeFileName);
       formData.append('answers', JSON.stringify(answers));
+      if (resumeId) formData.append('resumeId', resumeId);
 
       if (customResume?.file) {
         formData.append('resume', customResume.file);
@@ -334,6 +383,7 @@ export const AppProvider = ({ children }) => {
       const res = await api.submitApplication(formData);
       if (res && res.data) {
         setApplications((prev) => prev.map((a) => (a.id === localApp.id ? res.data : a)));
+        if (customResume?.file) refreshResumes(activeStudent.id); // pick up the newly saved resume
         return res.data;
       }
     } catch (err) {
@@ -442,11 +492,12 @@ export const AppProvider = ({ children }) => {
         // Auth
         user, role, login, logout, loginError, setLoginError, isLoadingData, refreshAllData,
         // Data
-        jobs, notices, students, companies, applications, trackerData, surveys, requests, calendarEvents, adminStats,
+        jobs, notices, students, companies, applications, trackerData, surveys, requests, calendarEvents, resumes, adminStats,
         // Setters
         setTrackerData, setSurveys, setRequests,
         // Actions
         addJob, updateJob, deleteJob, duplicateJob, applyJob,
+        addResume, removeResume, refreshResumes,
         addNotice, updateNotice, deleteNotice,
         updateApplicationStatus,
         toggleStudentFreeze,
