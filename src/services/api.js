@@ -149,6 +149,32 @@ export const api = {
 
   // Calendar
   getCalendarEvents: () => request('/calendar'),
+
+  // AI Resume Review
+  analyzeResume: (payload) => {
+    if (payload instanceof FormData) {
+      return requestMultipart('/ai-resume/analyze', payload, 'POST');
+    }
+    return request('/ai-resume/analyze', {
+      method: 'POST',
+      body: JSON.stringify(payload),
+    });
+  },
+  getResumeBenchmarks: () => request('/ai-resume/benchmarks'),
+
+  // Company Placement Prep Hub & AI Mentor
+  getCompanyPrepList: () => request('/company-prep'),
+  getCompanyPrepDetails: (companyId) => request(`/company-prep/${companyId}`),
+  submitMockTest: (companyId, answers) =>
+    request(`/company-prep/${companyId}/mock-test`, {
+      method: 'POST',
+      body: JSON.stringify({ answers }),
+    }),
+  askAiMentor: (companyId, question) =>
+    request(`/company-prep/${companyId}/ask-mentor`, {
+      method: 'POST',
+      body: JSON.stringify({ question }),
+    }),
 };
 
 export default api;

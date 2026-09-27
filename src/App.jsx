@@ -12,6 +12,8 @@ import Survey from './pages/Survey';
 import Requests from './pages/Requests';
 import Calendar from './pages/Calendar';
 import Policy from './pages/Policy';
+import AiResume from './pages/AiResume';
+import CompanyPrep from './pages/CompanyPrep';
 import StudentLayout from './layouts/StudentLayout';
 import AdminLayout from './layouts/AdminLayout';
 import AdminDashboard from './pages/admin/AdminDashboard';
@@ -38,6 +40,8 @@ function AppRoutes() {
         <Route element={<StudentLayout />}>
           <Route path="/student/home" element={<Home />} />
           <Route path="/student/jobs" element={<Jobs />} />
+          <Route path="/student/ai-resume" element={<AiResume />} />
+          <Route path="/student/company-prep" element={<CompanyPrep />} />
           <Route path="/student/profile" element={<Profile />} />
           <Route path="/student/tracker" element={<Tracker />} />
           <Route path="/student/notice" element={<Notice />} />

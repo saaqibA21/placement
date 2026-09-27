@@ -3,6 +3,7 @@ import { useApp } from '../context/AppContext';
 import {
   Home, Briefcase, Building2, Activity, Bell, MessageSquare,
   ClipboardList, User, FileText, CalendarDays, BookOpen, LogOut,
+  Sparkles, BrainCircuit
 } from 'lucide-react';
 
 const GROUPS = [
@@ -13,6 +14,13 @@ const GROUPS = [
       { to: '/student/jobs',      icon: Briefcase,     label: 'Recruitment Drives' },
       { to: '/student/companies', icon: Building2,     label: 'Partner Companies'  },
       { to: '/student/tracker',   icon: Activity,      label: 'Round Tracker'      },
+    ],
+  },
+  {
+    label: 'Career AI & Prep Hub',
+    items: [
+      { to: '/student/ai-resume',    icon: Sparkles,     label: 'AI Resume Review'  },
+      { to: '/student/company-prep', icon: BrainCircuit, label: 'Company Prep Hub'  },
     ],
   },
   {

@@ -13,6 +13,8 @@ import trackerRoutes from './routes/tracker.js';
 import surveyRoutes from './routes/surveys.js';
 import requestRoutes from './routes/requests.js';
 import calendarRoutes from './routes/calendar.js';
+import aiResumeRoutes from './routes/aiResume.js';
+import companyPrepRoutes from './routes/companyPrep.js';
 
 const app = express();
 const PORT = process.env.PORT || 5000;
@@ -37,6 +39,8 @@ app.use('/api/tracker', trackerRoutes);
 app.use('/api/surveys', surveyRoutes);
 app.use('/api/requests', requestRoutes);
 app.use('/api/calendar', calendarRoutes);
+app.use('/api/ai-resume', aiResumeRoutes);
+app.use('/api/company-prep', companyPrepRoutes);
 
 // Health check
 app.get('/api/health', (req, res) => {
