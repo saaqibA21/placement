@@ -800,21 +800,41 @@
       "date": "Applied 06 Sept 2026",
       "rounds": [
         {
+          "scheduledAt": null,
+          "venue": null,
+          "confirmation": "none",
+          "attendance": "not_marked",
+          "checkInCode": null,
           "name": "Application & Resume Screening",
           "status": "pending",
           "date": "06 Sept 2026"
         },
         {
+          "scheduledAt": null,
+          "venue": null,
+          "confirmation": "none",
+          "attendance": "not_marked",
+          "checkInCode": null,
           "name": "Online Assessment / Aptitude",
           "status": "upcoming",
           "date": null
         },
         {
+          "scheduledAt": null,
+          "venue": null,
+          "confirmation": "none",
+          "attendance": "not_marked",
+          "checkInCode": null,
           "name": "Technical Interview Round",
           "status": "upcoming",
           "date": null
         },
         {
+          "scheduledAt": null,
+          "venue": null,
+          "confirmation": "none",
+          "attendance": "not_marked",
+          "checkInCode": null,
           "name": "HR & Final Offer Rollout",
           "status": "upcoming",
           "date": null
@@ -832,21 +852,41 @@
       "date": "Applied 06 Sept 2026",
       "rounds": [
         {
+          "scheduledAt": null,
+          "venue": null,
+          "confirmation": "none",
+          "attendance": "not_marked",
+          "checkInCode": null,
           "name": "Application & Resume Screening",
           "status": "pending",
           "date": "06 Sept 2026"
         },
         {
+          "scheduledAt": null,
+          "venue": null,
+          "confirmation": "none",
+          "attendance": "not_marked",
+          "checkInCode": null,
           "name": "Online Assessment / Aptitude",
           "status": "upcoming",
           "date": null
         },
         {
+          "scheduledAt": null,
+          "venue": null,
+          "confirmation": "none",
+          "attendance": "not_marked",
+          "checkInCode": null,
           "name": "Technical Interview Round",
           "status": "upcoming",
           "date": null
         },
         {
+          "scheduledAt": null,
+          "venue": null,
+          "confirmation": "none",
+          "attendance": "not_marked",
+          "checkInCode": null,
           "name": "HR & Final Offer Rollout",
           "status": "upcoming",
           "date": null
@@ -864,21 +904,41 @@
       "date": "Applied 06 Sept 2026",
       "rounds": [
         {
+          "scheduledAt": null,
+          "venue": null,
+          "confirmation": "none",
+          "attendance": "not_marked",
+          "checkInCode": null,
           "name": "Application & Resume Screening",
           "status": "pending",
           "date": "06 Sept 2026"
         },
         {
+          "scheduledAt": null,
+          "venue": null,
+          "confirmation": "none",
+          "attendance": "not_marked",
+          "checkInCode": null,
           "name": "Online Assessment / Aptitude",
           "status": "upcoming",
           "date": null
         },
         {
+          "scheduledAt": null,
+          "venue": null,
+          "confirmation": "none",
+          "attendance": "not_marked",
+          "checkInCode": null,
           "name": "Technical Interview Round",
           "status": "upcoming",
           "date": null
         },
         {
+          "scheduledAt": null,
+          "venue": null,
+          "confirmation": "none",
+          "attendance": "not_marked",
+          "checkInCode": null,
           "name": "HR & Final Offer Rollout",
           "status": "upcoming",
           "date": null
@@ -896,21 +956,41 @@
       "date": "Applied 28 Aug 2026",
       "rounds": [
         {
+          "scheduledAt": null,
+          "venue": null,
+          "confirmation": "none",
+          "attendance": "not_marked",
+          "checkInCode": null,
           "name": "Application & Resume Screening",
           "status": "cleared",
           "date": "29 Aug"
         },
         {
+          "scheduledAt": null,
+          "venue": null,
+          "confirmation": "none",
+          "attendance": "not_marked",
+          "checkInCode": null,
           "name": "Online Assessment / Aptitude",
           "status": "pending",
           "date": "02 Sep"
         },
         {
+          "scheduledAt": null,
+          "venue": null,
+          "confirmation": "none",
+          "attendance": "not_marked",
+          "checkInCode": null,
           "name": "Technical Interview Round",
           "status": "upcoming",
           "date": null
         },
         {
+          "scheduledAt": null,
+          "venue": null,
+          "confirmation": "none",
+          "attendance": "not_marked",
+          "checkInCode": null,
           "name": "HR & Final Offer Rollout",
           "status": "upcoming",
           "date": null

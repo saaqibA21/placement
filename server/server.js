@@ -14,6 +14,7 @@ import surveyRoutes from './routes/surveys.js';
 import requestRoutes from './routes/requests.js';
 import calendarRoutes from './routes/calendar.js';
 import resumeRoutes from './routes/resumes.js';
+import participationRoutes from './routes/participation.js';
 import aiResumeRoutes from './routes/aiResume.js';
 import companyPrepRoutes from './routes/companyPrep.js';
 
@@ -41,6 +42,7 @@ app.use('/api/surveys', surveyRoutes);
 app.use('/api/requests', requestRoutes);
 app.use('/api/calendar', calendarRoutes);
 app.use('/api/resumes', resumeRoutes);
+app.use('/api/participation', participationRoutes);
 app.use('/api/ai-resume', aiResumeRoutes);
 app.use('/api/company-prep', companyPrepRoutes);
 

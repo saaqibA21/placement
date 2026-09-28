@@ -1,7 +1,8 @@
-import { useState } from 'react';
+import { useState, useEffect } from 'react';
+import QRCode from 'qrcode';
 import { useApp } from '../../context/AppContext';
 import { API_HOST_URL } from '../../services/api';
-import { Search, Download, X, FileText, CheckCircle2, XCircle, ChevronRight, Eye, Sparkles, Info, ArrowUpDown, Trophy } from 'lucide-react';
+import { Search, Download, X, FileText, CheckCircle2, XCircle, ChevronRight, Eye, Sparkles, Info, ArrowUpDown, Trophy, CalendarClock, QrCode, UserCheck, UserX } from 'lucide-react';
 import StatusBadge from '../../components/StatusBadge';
 
 const STATUS_TABS = ['All', 'Pending', 'Shortlisted', 'Rejected'];
@@ -20,13 +21,15 @@ function ScorePill({ score }) {
 }
 
 export default function AdminResumes() {
-  const { applications, jobs, updateApplicationStatus, advanceApplication } = useApp();
+  const { applications, jobs, trackerData, updateApplicationStatus, advanceApplication, scheduleRound, markAttendance } = useApp();
   const [statusTab, setStatusTab] = useState('All');
   const [search, setSearch]   = useState('');
   const [drawer, setDrawer]   = useState(null);
   const [toast, setToast]     = useState('');
   const [sortByScore, setSortByScore] = useState(false);
   const [showInfo, setShowInfo] = useState(false);
+  const [scheduleForm, setScheduleForm] = useState({ date: '', time: '', venue: '' });
+  const [qrDataUrl, setQrDataUrl] = useState(null);
 
   const showToast = (msg) => { setToast(msg); setTimeout(() => setToast(''), 3000); };
 
@@ -41,6 +44,45 @@ export default function AdminResumes() {
     if (drawer?.id === id) setDrawer((d) => ({ ...d, status: 'rejected' }));
     showToast('Application rejected.');
   };
+
+  const trackerFor = (applicationId) => trackerData.find((t) => t.applicationId === applicationId);
+  const currentRoundFor = (app) => {
+    const entry = trackerFor(app?.id);
+    return entry ? entry.rounds[app.stageIndex ?? 0] : null;
+  };
+
+  const handleSchedule = async (applicationId) => {
+    if (!scheduleForm.date || !scheduleForm.time) { showToast('Pick a date and time first.'); return; }
+    const iso = new Date(`${scheduleForm.date}T${scheduleForm.time}`).toISOString();
+    try {
+      await scheduleRound(applicationId, iso, scheduleForm.venue);
+      showToast('Round scheduled — venue code generated.');
+      setScheduleForm({ date: '', time: '', venue: '' });
+    } catch (err) {
+      showToast(err.message || 'Failed to schedule round.');
+    }
+  };
+
+  const handleMarkAttendance = async (applicationId, attendance) => {
+    try {
+      await markAttendance(applicationId, attendance);
+      showToast(attendance === 'present' ? 'Marked present.' : attendance === 'absent' ? 'Marked absent.' : 'Attendance reset.');
+    } catch (err) {
+      showToast(err.message || 'Failed to update attendance.');
+    }
+  };
+
+  // Render a fresh QR whenever the drawer's current round has a check-in code
+  useEffect(() => {
+    const round = drawer ? currentRoundFor(applications.find((a) => a.id === drawer.id)) : null;
+    if (round?.checkInCode) {
+      const url = `${window.location.origin}/checkin/${round.checkInCode}`;
+      QRCode.toDataURL(url, { width: 160, margin: 1 }).then(setQrDataUrl).catch(() => setQrDataUrl(null));
+    } else {
+      setQrDataUrl(null);
+    }
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [drawer?.id, trackerData]);
 
   const counts = {
     All: applications.length,
@@ -263,6 +305,73 @@ export default function AdminResumes() {
                       );
                     })}
                   </div>
+                </div>
+              );
+            })()}
+
+            {/* Round Scheduling & Venue Attendance */}
+            {drawerData.status !== 'rejected' && (() => {
+              const round = currentRoundFor(drawerData);
+              if (!round) return null;
+              return (
+                <div className="p-4 rounded-xl border space-y-3" style={{ background: 'var(--canvas-bg)', borderColor: 'var(--border)' }}>
+                  <p className="text-[10px] font-bold uppercase tracking-wider text-slate-400 flex items-center gap-1.5">
+                    <CalendarClock size={12} /> {round.name} — Schedule &amp; Attendance
+                  </p>
+
+                  {!round.scheduledAt ? (
+                    <div className="space-y-2">
+                      <div className="grid grid-cols-2 gap-2">
+                        <input type="date" className="input-solid text-xs py-2" value={scheduleForm.date}
+                          onChange={(e) => setScheduleForm((f) => ({ ...f, date: e.target.value }))} />
+                        <input type="time" className="input-solid text-xs py-2" value={scheduleForm.time}
+                          onChange={(e) => setScheduleForm((f) => ({ ...f, time: e.target.value }))} />
+                      </div>
+                      <input type="text" placeholder="Venue (e.g. Seminar Hall A, or a video call link)"
+                        className="input-solid text-xs py-2" value={scheduleForm.venue}
+                        onChange={(e) => setScheduleForm((f) => ({ ...f, venue: e.target.value }))} />
+                      <button onClick={() => handleSchedule(drawerData.id)}
+                        className="btn-solid-primary w-full py-2 text-xs font-bold flex items-center justify-center gap-1.5">
+                        <CalendarClock size={13} /> Schedule This Round
+                      </button>
+                    </div>
+                  ) : (
+                    <div className="space-y-3">
+                      <div className="text-xs space-y-1">
+                        <div className="flex justify-between"><span className="text-slate-400">When</span>
+                          <span className="font-semibold text-slate-800">{new Date(round.scheduledAt).toLocaleString('en-IN', { dateStyle: 'medium', timeStyle: 'short' })}</span></div>
+                        {round.venue && <div className="flex justify-between"><span className="text-slate-400">Venue</span>
+                          <span className="font-semibold text-slate-800 text-right max-w-[180px] truncate">{round.venue}</span></div>}
+                        <div className="flex justify-between"><span className="text-slate-400">RSVP</span>
+                          <span className={`font-bold ${round.confirmation === 'confirmed' ? 'text-green-700' : round.confirmation === 'declined' ? 'text-rose-600' : 'text-slate-500'}`}>
+                            {round.confirmation === 'none' ? 'Awaiting response' : round.confirmation}
+                          </span></div>
+                        <div className="flex justify-between"><span className="text-slate-400">Attendance</span>
+                          <span className={`font-bold ${round.attendance === 'present' ? 'text-green-700' : round.attendance === 'absent' ? 'text-rose-600' : 'text-slate-500'}`}>
+                            {round.attendance === 'not_marked' ? 'Not marked' : round.attendance}
+                          </span></div>
+                      </div>
+
+                      {qrDataUrl && (
+                        <div className="flex flex-col items-center gap-1.5 p-3 rounded-xl bg-white border" style={{ borderColor: 'var(--border)' }}>
+                          <img src={qrDataUrl} alt="Venue check-in QR" className="w-28 h-28" />
+                          <p className="text-[10px] text-slate-400 flex items-center gap-1"><QrCode size={10} /> Code: <span className="font-mono font-bold text-slate-700">{round.checkInCode}</span></p>
+                          <p className="text-[9px] text-slate-400 text-center">Display at the venue — students scan with their phone camera, or type the code on their Participation page.</p>
+                        </div>
+                      )}
+
+                      <div className="flex gap-2">
+                        <button onClick={() => handleMarkAttendance(drawerData.id, 'present')}
+                          className="flex-1 py-1.5 rounded-lg text-[11px] font-bold text-white flex items-center justify-center gap-1" style={{ background: '#15803d' }}>
+                          <UserCheck size={12} /> Present
+                        </button>
+                        <button onClick={() => handleMarkAttendance(drawerData.id, 'absent')}
+                          className="flex-1 py-1.5 rounded-lg text-[11px] font-bold text-white flex items-center justify-center gap-1" style={{ background: '#be123c' }}>
+                          <UserX size={12} /> Absent
+                        </button>
+                      </div>
+                    </div>
+                  )}
                 </div>
               );
             })()}

@@ -62,6 +62,7 @@ export const AppProvider = ({ children }) => {
   const [requests, setRequests] = useState(() => getStorageItem('jeppiaar_requests', initRequests));
   const [calendarEvents, setCalendarEvents] = useState(() => getStorageItem('jeppiaar_calendar', initCalendarEvents));
   const [resumes, setResumes] = useState(() => getStorageItem('jeppiaar_resumes', []));
+  const [participation, setParticipation] = useState([]);
 
   // Sync to localStorage safely
   useEffect(() => { if (user) setStorageItem('jeppiaar_user', user); }, [user]);
@@ -119,11 +120,11 @@ export const AppProvider = ({ children }) => {
     }
   };
 
-  // ── Round Tracker (fetched scoped to the logged-in student — tracker
-  // entries carry no auth of their own, so an unscoped fetch would return
-  // every student's interview rounds mixed together) ──────────────────────
+  // ── Round Tracker. Students get it scoped to themselves (tracker entries
+  // carry no auth of their own, so an unscoped fetch would return every
+  // student's interview rounds mixed together). Admins fetch everything
+  // unscoped — they manage scheduling/attendance across all candidates. ────
   const refreshTracker = useCallback(async (studentId) => {
-    if (!studentId) return;
     try {
       const res = await api.getTracker(studentId);
       if (res?.data) setTrackerData(res.data);
@@ -134,7 +135,79 @@ export const AppProvider = ({ children }) => {
 
   useEffect(() => {
     if (role === 'student' && user?.id) refreshTracker(user.id);
+    else if (role === 'admin') refreshTracker();
   }, [role, user?.id, refreshTracker]);
+
+  // ── Participation: round confirmation RSVP + venue attendance ──────────────
+  const refreshParticipation = useCallback(async (studentId) => {
+    if (!studentId) return;
+    try {
+      const res = await api.getUpcomingParticipation(studentId);
+      if (res?.data) setParticipation(res.data);
+    } catch (err) {
+      console.warn('Failed to load participation schedule:', err);
+    }
+  }, []);
+
+  useEffect(() => {
+    if (role === 'student' && user?.id) refreshParticipation(user.id);
+  }, [role, user?.id, refreshParticipation]);
+
+  // Admin schedules a candidate's current round with a date/time + venue,
+  // and gets back a fresh venue check-in code for it.
+  const scheduleRound = async (applicationId, scheduledAt, venue) => {
+    try {
+      const res = await api.scheduleRound(applicationId, scheduledAt, venue);
+      if (role === 'admin') refreshTracker(); // pick up the new schedule/QR code in the admin's own view
+      return res?.data;
+    } catch (err) {
+      console.error(`Failed to schedule round for application ${applicationId}:`, err);
+      throw err;
+    }
+  };
+
+  // Student confirms/declines a scheduled round; refreshes both their
+  // tracker and participation views since the round lives in both.
+  const confirmRound = async (applicationId, response) => {
+    try {
+      const res = await api.confirmRound(applicationId, response);
+      if (user?.id) {
+        refreshParticipation(user.id);
+        refreshTracker(user.id);
+      }
+      return res?.data;
+    } catch (err) {
+      console.error(`Failed to record RSVP for application ${applicationId}:`, err);
+      throw err;
+    }
+  };
+
+  // Student self-checks-in with the venue code (typed, or arrived at by
+  // scanning the admin's displayed QR).
+  const checkIn = async (code) => {
+    if (!user?.id) return;
+    try {
+      const res = await api.checkIn(user.id, code);
+      refreshParticipation(user.id);
+      refreshTracker(user.id);
+      return res?.data;
+    } catch (err) {
+      console.error('Failed to check in:', err);
+      throw err;
+    }
+  };
+
+  // Admin manual attendance fallback (no scanner at the venue).
+  const markAttendance = async (applicationId, attendance) => {
+    try {
+      const res = await api.markAttendance(applicationId, attendance);
+      if (role === 'admin') refreshTracker();
+      return res?.data;
+    } catch (err) {
+      console.error(`Failed to mark attendance for application ${applicationId}:`, err);
+      throw err;
+    }
+  };
 
   // ── Load live data from backend on startup ──────────────────────────────────
   const refreshAllData = useCallback(async () => {
@@ -544,12 +617,13 @@ export const AppProvider = ({ children }) => {
         // Auth
         user, role, login, logout, loginError, setLoginError, isLoadingData, refreshAllData,
         // Data
-        jobs, notices, students, companies, applications, trackerData, surveys, requests, calendarEvents, resumes, adminStats,
+        jobs, notices, students, companies, applications, trackerData, surveys, requests, calendarEvents, resumes, participation, adminStats,
         // Setters
         setTrackerData, setSurveys, setRequests,
         // Actions
         addJob, updateJob, deleteJob, duplicateJob, applyJob,
         addResume, removeResume, refreshResumes, refreshTracker,
+        scheduleRound, confirmRound, checkIn, markAttendance, refreshParticipation,
         addNotice, updateNotice, deleteNotice,
         updateApplicationStatus, advanceApplication,
         toggleStudentFreeze,

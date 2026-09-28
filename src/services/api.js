@@ -162,6 +162,17 @@ export const api = {
   uploadResume: (formData) => requestMultipart('/resumes/upload', formData, 'POST'),
   deleteResume: (id) => request(`/resumes/${id}`, { method: 'DELETE' }),
 
+  // Participation: round confirmation RSVP + venue attendance
+  getUpcomingParticipation: (studentId) => request(`/participation/upcoming?studentId=${studentId}`),
+  scheduleRound: (applicationId, scheduledAt, venue) =>
+    request('/participation/schedule', { method: 'PATCH', body: JSON.stringify({ applicationId, scheduledAt, venue }) }),
+  confirmRound: (applicationId, response) =>
+    request('/participation/confirm', { method: 'PATCH', body: JSON.stringify({ applicationId, response }) }),
+  checkIn: (studentId, code) =>
+    request('/participation/checkin', { method: 'POST', body: JSON.stringify({ studentId, code }) }),
+  markAttendance: (applicationId, attendance) =>
+    request('/participation/mark-attendance', { method: 'PATCH', body: JSON.stringify({ applicationId, attendance }) }),
+
   // AI Resume Review
   analyzeResume: (payload) => {
     if (payload instanceof FormData) {

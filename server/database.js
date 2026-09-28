@@ -421,6 +421,24 @@ const migrate = (db) => {
     return { ...t, studentId: null, applicationId: t.applicationId ?? null };
   });
 
+  // Back-fill Participation fields (round confirmation RSVP + venue
+  // attendance) onto every round of every tracker entry.
+  db.trackerData = (db.trackerData || []).map((t) => {
+    if (t.rounds.every((r) => r.confirmation !== undefined)) return t;
+    changed = true;
+    return {
+      ...t,
+      rounds: t.rounds.map((r) => ({
+        scheduledAt: null,
+        venue: null,
+        confirmation: 'none',
+        attendance: 'not_marked',
+        checkInCode: null,
+        ...r,
+      })),
+    };
+  });
+
   return { db, changed };
 };
 

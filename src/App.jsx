@@ -14,6 +14,8 @@ import Calendar from './pages/Calendar';
 import Policy from './pages/Policy';
 import AiResume from './pages/AiResume';
 import CompanyPrep from './pages/CompanyPrep';
+import Participation from './pages/Participation';
+import CheckIn from './pages/CheckIn';
 import StudentLayout from './layouts/StudentLayout';
 import AdminLayout from './layouts/AdminLayout';
 import AdminDashboard from './pages/admin/AdminDashboard';
@@ -29,6 +31,7 @@ function AppRoutes() {
   if (!role) {
     return (
       <Routes>
+        <Route path="/checkin/:code" element={<CheckIn />} />
         <Route path="*" element={<Login />} />
       </Routes>
     );
@@ -37,6 +40,7 @@ function AppRoutes() {
   if (role === 'student') {
     return (
       <Routes>
+        <Route path="/checkin/:code" element={<CheckIn />} />
         <Route element={<StudentLayout />}>
           <Route path="/student/home" element={<Home />} />
           <Route path="/student/jobs" element={<Jobs />} />
@@ -44,6 +48,7 @@ function AppRoutes() {
           <Route path="/student/company-prep" element={<CompanyPrep />} />
           <Route path="/student/profile" element={<Profile />} />
           <Route path="/student/tracker" element={<Tracker />} />
+          <Route path="/student/participation" element={<Participation />} />
           <Route path="/student/notice" element={<Notice />} />
           <Route path="/student/companies" element={<Companies />} />
           <Route path="/student/chat" element={<Chat />} />
@@ -60,6 +65,7 @@ function AppRoutes() {
   // Admin routes
   return (
     <Routes>
+      <Route path="/checkin/:code" element={<CheckIn />} />
       <Route element={<AdminLayout />}>
         <Route path="/admin/dashboard" element={<AdminDashboard />} />
         <Route path="/admin/jobs" element={<AdminJobs />} />
