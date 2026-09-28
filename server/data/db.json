@@ -981,7 +981,7 @@
           "confirmation": "none",
           "attendance": "not_marked",
           "checkInCode": null,
-          "name": "Technical Interview Round",
+          "name": "Technical Interview",
           "status": "upcoming",
           "date": null
         },
@@ -991,7 +991,17 @@
           "confirmation": "none",
           "attendance": "not_marked",
           "checkInCode": null,
-          "name": "HR & Final Offer Rollout",
+          "name": "HR Interview",
+          "status": "upcoming",
+          "date": null
+        },
+        {
+          "scheduledAt": null,
+          "venue": null,
+          "confirmation": "none",
+          "attendance": "not_marked",
+          "checkInCode": null,
+          "name": "Offer Rollout",
           "status": "upcoming",
           "date": null
         }

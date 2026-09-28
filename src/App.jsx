@@ -21,6 +21,7 @@ import AdminLayout from './layouts/AdminLayout';
 import AdminDashboard from './pages/admin/AdminDashboard';
 import AdminJobs from './pages/admin/AdminJobs';
 import AdminResumes from './pages/admin/AdminResumes';
+import AdminBulkRounds from './pages/admin/AdminBulkRounds';
 import AdminStudents from './pages/admin/AdminStudents';
 import AdminNotices from './pages/admin/AdminNotices';
 import AdminCompanies from './pages/admin/AdminCompanies';
@@ -70,6 +71,7 @@ function AppRoutes() {
         <Route path="/admin/dashboard" element={<AdminDashboard />} />
         <Route path="/admin/jobs" element={<AdminJobs />} />
         <Route path="/admin/resumes" element={<AdminResumes />} />
+        <Route path="/admin/bulk-rounds" element={<AdminBulkRounds />} />
         <Route path="/admin/students" element={<AdminStudents />} />
         <Route path="/admin/notices" element={<AdminNotices />} />
         <Route path="/admin/companies" element={<AdminCompanies />} />

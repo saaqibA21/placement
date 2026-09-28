@@ -205,39 +205,55 @@ router.post('/apply', upload.single('resume'), async (req, res) => {
   });
 });
 
+// Shared decision logic used by the single-candidate routes below AND the
+// bulk-update route, so a round-trip Excel import behaves identically to
+// clicking through candidates one at a time in the admin UI.
+function applyAdvance(db, app) {
+  const job = (db.jobs || []).find((j) => j.id === app.jobId);
+  const pipeline = job?.pipeline || [];
+  const lastIndex = Math.max(pipeline.length - 1, 0);
+  let stageIndex = app.stageIndex ?? 0;
+  let status = 'pending';
+
+  if (stageIndex >= lastIndex) {
+    status = 'shortlisted'; // cleared the final stage -- fully selected
+  } else {
+    stageIndex += 1;
+  }
+
+  const round = pipeline[stageIndex] ? `Round ${stageIndex + 1}: ${pipeline[stageIndex].name}` : app.round;
+  const updated = { ...app, status, stageIndex, round };
+  syncTrackerForApplication(db, updated, job);
+  return updated;
+}
+
+function applyReject(db, app) {
+  const job = (db.jobs || []).find((j) => j.id === app.jobId);
+  const pipeline = job?.pipeline || [];
+  const stageIndex = app.stageIndex ?? 0;
+  const round = pipeline[stageIndex] ? `Rejected at Round ${stageIndex + 1}: ${pipeline[stageIndex].name}` : 'Application Rejected';
+  const updated = { ...app, status: 'rejected', round };
+  syncTrackerForApplication(db, updated, job);
+  return updated;
+}
+
 // PATCH application status (Reject / manually set a bucket status)
 router.patch('/:id/status', (req, res) => {
   const db = readDb();
   const id = parseInt(req.params.id, 10);
   const { status } = req.body;
 
-  let found = false;
-  let resultApp = null;
-  db.applications = (db.applications || []).map((a) => {
-    if (a.id !== id) return a;
-    found = true;
-    const job = (db.jobs || []).find((j) => j.id === a.jobId);
-    const pipeline = job?.pipeline || [];
-    let stageIndex = a.stageIndex ?? 0;
-    let round = a.round;
-
-    if (status === 'shortlisted') {
-      stageIndex = Math.min(stageIndex + 1, Math.max(pipeline.length - 1, 0));
-      round = pipeline[stageIndex] ? `Round ${stageIndex + 1}: ${pipeline[stageIndex].name}` : a.round;
-    } else if (status === 'rejected') {
-      round = pipeline[stageIndex] ? `Rejected at Round ${stageIndex + 1}: ${pipeline[stageIndex].name}` : 'Application Rejected';
-    }
-
-    resultApp = { ...a, status, stageIndex, round };
-    return resultApp;
-  });
-
-  if (!found) {
+  const idx = (db.applications || []).findIndex((a) => a.id === id);
+  if (idx === -1) {
     return res.status(404).json({ success: false, message: 'Application not found.' });
   }
 
-  const job = (db.jobs || []).find((j) => j.id === resultApp.jobId);
-  syncTrackerForApplication(db, resultApp, job);
+  const current = db.applications[idx];
+  const resultApp = status === 'shortlisted' ? applyAdvance(db, current)
+    : status === 'rejected' ? applyReject(db, current)
+    : { ...current, status };
+  db.applications[idx] = resultApp;
+
   writeDb(db);
   res.json({ success: true, data: resultApp, message: `Application ${status} successfully.` });
 });
@@ -248,40 +264,54 @@ router.patch('/:id/advance', (req, res) => {
   const db = readDb();
   const id = parseInt(req.params.id, 10);
 
-  let found = false;
-  let resultApp = null;
-  db.applications = (db.applications || []).map((a) => {
-    if (a.id !== id) return a;
-    found = true;
-    const job = (db.jobs || []).find((j) => j.id === a.jobId);
-    const pipeline = job?.pipeline || [];
-    const lastIndex = Math.max(pipeline.length - 1, 0);
-    let stageIndex = a.stageIndex ?? 0;
-    let status = 'pending';
-
-    if (stageIndex >= lastIndex) {
-      status = 'shortlisted'; // cleared the final stage -- fully selected
-    } else {
-      stageIndex += 1;
-    }
-
-    const round = pipeline[stageIndex] ? `Round ${stageIndex + 1}: ${pipeline[stageIndex].name}` : a.round;
-    resultApp = { ...a, status, stageIndex, round };
-    return resultApp;
-  });
-
-  if (!found) {
+  const idx = (db.applications || []).findIndex((a) => a.id === id);
+  if (idx === -1) {
     return res.status(404).json({ success: false, message: 'Application not found.' });
   }
 
-  const job = (db.jobs || []).find((j) => j.id === resultApp.jobId);
-  syncTrackerForApplication(db, resultApp, job);
+  const resultApp = applyAdvance(db, db.applications[idx]);
+  db.applications[idx] = resultApp;
+
   writeDb(db);
   res.json({
     success: true,
     data: resultApp,
     message: resultApp.status === 'shortlisted' ? 'Candidate marked as selected!' : 'Advanced to the next round.',
   });
+});
+
+// POST bulk-update many applications at once -- the "excel round-trip"
+// workflow: admin exports the candidates at a round, sends the sheet to the
+// company, gets it back with a Decision column filled in, and imports it
+// here. Each row becomes one entry: { applicationId, decision: 'advance' |
+// 'reject' }. Unrecognized/blank decisions should be filtered out
+// client-side before calling this, but anything else is safely skipped.
+router.post('/bulk-update', (req, res) => {
+  const db = readDb();
+  const updates = Array.isArray(req.body.updates) ? req.body.updates : [];
+  const summary = { advanced: 0, selected: 0, rejected: 0, skipped: 0, notFound: [] };
+
+  updates.forEach(({ applicationId, decision }) => {
+    const id = parseInt(applicationId, 10);
+    const idx = (db.applications || []).findIndex((a) => a.id === id);
+    if (idx === -1) { summary.notFound.push(id); return; }
+
+    if (decision === 'advance') {
+      const before = db.applications[idx];
+      const updated = applyAdvance(db, before);
+      db.applications[idx] = updated;
+      if (updated.status === 'shortlisted' && before.status !== 'shortlisted') summary.selected += 1;
+      else summary.advanced += 1;
+    } else if (decision === 'reject') {
+      db.applications[idx] = applyReject(db, db.applications[idx]);
+      summary.rejected += 1;
+    } else {
+      summary.skipped += 1;
+    }
+  });
+
+  writeDb(db);
+  res.json({ success: true, data: summary, message: 'Bulk update applied.' });
 });
 
 export default router;

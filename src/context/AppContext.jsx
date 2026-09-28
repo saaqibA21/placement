@@ -570,6 +570,23 @@ export const AppProvider = ({ children }) => {
     }
   };
 
+  // Applies a batch of decisions (from an imported Excel round sheet) in one
+  // call, then refreshes applications + the admin's tracker view so every
+  // change (including the tracker sync each one triggers server-side) shows
+  // up immediately without needing a manual page reload.
+  const bulkUpdateApplications = async (updates) => {
+    try {
+      const res = await api.bulkUpdateApplications(updates);
+      const appsRes = await api.getApplications();
+      if (appsRes?.data) setApplications(appsRes.data);
+      if (role === 'admin') refreshTracker();
+      return res?.data;
+    } catch (err) {
+      console.error('Failed to apply bulk update:', err);
+      throw err;
+    }
+  };
+
   // ── Student Actions ────────────────────────────────────────────────────────
   const toggleStudentFreeze = async (id) => {
     const target = students.find((s) => s.id === id);
@@ -625,7 +642,7 @@ export const AppProvider = ({ children }) => {
         addResume, removeResume, refreshResumes, refreshTracker,
         scheduleRound, confirmRound, checkIn, markAttendance, refreshParticipation,
         addNotice, updateNotice, deleteNotice,
-        updateApplicationStatus, advanceApplication,
+        updateApplicationStatus, advanceApplication, bulkUpdateApplications,
         toggleStudentFreeze,
         addCompany, updateCompany, deleteCompany,
       }}

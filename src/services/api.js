@@ -96,6 +96,8 @@ export const api = {
     }),
   advanceApplication: (id) =>
     request(`/applications/${id}/advance`, { method: 'PATCH' }),
+  bulkUpdateApplications: (updates) =>
+    request('/applications/bulk-update', { method: 'POST', body: JSON.stringify({ updates }) }),
 
   // Notices / Circulars
   getNotices: () => request('/notices'),

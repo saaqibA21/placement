@@ -1,7 +1,7 @@
 import { NavLink, useNavigate } from 'react-router-dom';
 import { useApp } from '../context/AppContext';
 import {
-  LayoutDashboard, Briefcase, FileSearch, Users, Megaphone, Building2, LogOut,
+  LayoutDashboard, Briefcase, FileSearch, Users, Megaphone, Building2, LogOut, FileSpreadsheet,
 } from 'lucide-react';
 
 const GROUPS = [
@@ -14,9 +14,10 @@ const GROUPS = [
   {
     label: 'Recruitment Operations',
     items: [
-      { to: '/admin/jobs',     icon: Briefcase,   label: 'Manage Drives'     },
-      { to: '/admin/resumes',  icon: FileSearch,  label: 'Resume Screening'  },
-      { to: '/admin/students', icon: Users,       label: 'Student Directory' },
+      { to: '/admin/jobs',        icon: Briefcase,       label: 'Manage Drives'        },
+      { to: '/admin/resumes',     icon: FileSearch,      label: 'Resume Screening'     },
+      { to: '/admin/bulk-rounds', icon: FileSpreadsheet, label: 'Bulk Round Management' },
+      { to: '/admin/students',    icon: Users,           label: 'Student Directory'    },
     ],
   },
   {
