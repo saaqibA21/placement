@@ -280,6 +280,8 @@ const SEED_DATA = {
   trackerData: [
     {
       id: 1,
+      applicationId: 101,
+      studentId: 1,
       company: 'Microsoft',
       initial: 'M',
       color: 'bg-emerald-700',
@@ -401,6 +403,22 @@ const migrate = (db) => {
       atsReport: a.atsReport ?? null,
       answers: a.answers ?? [],
     };
+  });
+
+  // Tracker entries created before this field existed have no studentId at
+  // all, which means every student's Tracker page showed every other
+  // student's interview rounds. Best-effort backfill by matching to the one
+  // application with the same company; leave unmatched/ambiguous legacy rows
+  // unscoped (they simply won't show for anyone) rather than guess wrong and
+  // leak one student's round status to another.
+  db.trackerData = (db.trackerData || []).map((t) => {
+    if (t.studentId !== undefined) return t;
+    changed = true;
+    const matches = (db.applications || []).filter((a) => a.company === t.company);
+    if (matches.length === 1) {
+      return { ...t, studentId: matches[0].studentId, applicationId: matches[0].id };
+    }
+    return { ...t, studentId: null, applicationId: t.applicationId ?? null };
   });
 
   return { db, changed };

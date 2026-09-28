@@ -119,6 +119,23 @@ export const AppProvider = ({ children }) => {
     }
   };
 
+  // ── Round Tracker (fetched scoped to the logged-in student — tracker
+  // entries carry no auth of their own, so an unscoped fetch would return
+  // every student's interview rounds mixed together) ──────────────────────
+  const refreshTracker = useCallback(async (studentId) => {
+    if (!studentId) return;
+    try {
+      const res = await api.getTracker(studentId);
+      if (res?.data) setTrackerData(res.data);
+    } catch (err) {
+      console.warn('Failed to load round tracker:', err);
+    }
+  }, []);
+
+  useEffect(() => {
+    if (role === 'student' && user?.id) refreshTracker(user.id);
+  }, [role, user?.id, refreshTracker]);
+
   // ── Load live data from backend on startup ──────────────────────────────────
   const refreshAllData = useCallback(async () => {
     setIsLoadingData(true);
@@ -129,7 +146,6 @@ export const AppProvider = ({ children }) => {
         studentsRes,
         companiesRes,
         appsRes,
-        trackerRes,
         surveysRes,
         requestsRes,
         calendarRes,
@@ -139,18 +155,19 @@ export const AppProvider = ({ children }) => {
         api.getStudents(),
         api.getCompanies(),
         api.getApplications(),
-        api.getTracker(),
         api.getSurveys(),
         api.getRequests(),
         api.getCalendarEvents(),
       ]);
+      // Tracker data is deliberately NOT fetched here — it must be scoped to
+      // a specific student (see refreshTracker above), otherwise every
+      // student's interview rounds would be fetched unscoped.
 
       if (jobsRes.status === 'fulfilled' && jobsRes.value?.data) setJobs(jobsRes.value.data);
       if (noticesRes.status === 'fulfilled' && noticesRes.value?.data) setNotices(noticesRes.value.data);
       if (studentsRes.status === 'fulfilled' && studentsRes.value?.data) setStudents(studentsRes.value.data);
       if (companiesRes.status === 'fulfilled' && companiesRes.value?.data) setCompanies(companiesRes.value.data);
       if (appsRes.status === 'fulfilled' && appsRes.value?.data) setApplications(appsRes.value.data);
-      if (trackerRes.status === 'fulfilled' && trackerRes.value?.data) setTrackerData(trackerRes.value.data);
       if (surveysRes.status === 'fulfilled' && surveysRes.value?.data) setSurveys(surveysRes.value.data);
       if (requestsRes.status === 'fulfilled' && requestsRes.value?.data) setRequests(requestsRes.value.data);
       if (calendarRes.status === 'fulfilled' && calendarRes.value?.data) setCalendarEvents(calendarRes.value.data);
@@ -349,6 +366,8 @@ export const AppProvider = ({ children }) => {
     ];
     const newTrackerEntry = {
       id: Date.now(),
+      applicationId: localApp.id,
+      studentId: activeStudent.id || 1,
       company: job.company,
       initial: job.company.charAt(0).toUpperCase(),
       color: 'bg-emerald-700',
@@ -433,15 +452,48 @@ export const AppProvider = ({ children }) => {
           stageIndex = Math.min(stageIndex + 1, Math.max(pipeline.length - 1, 0));
           round = pipeline[stageIndex] ? `Round ${stageIndex + 1}: ${pipeline[stageIndex].name}` : a.round;
         } else if (status === 'rejected') {
-          round = 'Application Rejected';
+          round = pipeline[stageIndex] ? `Rejected at Round ${stageIndex + 1}: ${pipeline[stageIndex].name}` : 'Application Rejected';
         }
         return { ...a, status, stageIndex, round };
       })
     );
+    // Note: this runs in the calling admin's session, which has no tracker
+    // data of its own to refresh here — the backend has already synced the
+    // affected student's tracker entry, and that student's own session picks
+    // it up via refreshTracker on their next visit.
     try {
       await api.updateApplicationStatus(id, status);
     } catch (err) {
       console.error(`Failed to update application status ${id}:`, err);
+    }
+  };
+
+  // Moves a candidate to the next stage of the job's actual hiring pipeline
+  // (or marks them fully selected if they were already at the final stage),
+  // and keeps the student's Tracker view in sync with the decision.
+  const advanceApplication = async (id) => {
+    setApplications((prev) =>
+      prev.map((a) => {
+        if (a.id !== id) return a;
+        const job = jobs.find((j) => j.id === a.jobId);
+        const pipeline = job?.pipeline || [];
+        const lastIndex = Math.max(pipeline.length - 1, 0);
+        let stageIndex = a.stageIndex ?? 0;
+        let status = 'pending';
+        if (stageIndex >= lastIndex) {
+          status = 'shortlisted';
+        } else {
+          stageIndex += 1;
+        }
+        const round = pipeline[stageIndex] ? `Round ${stageIndex + 1}: ${pipeline[stageIndex].name}` : a.round;
+        return { ...a, status, stageIndex, round };
+      })
+    );
+    try {
+      const res = await api.advanceApplication(id);
+      return res?.data;
+    } catch (err) {
+      console.error(`Failed to advance application ${id}:`, err);
     }
   };
 
@@ -497,9 +549,9 @@ export const AppProvider = ({ children }) => {
         setTrackerData, setSurveys, setRequests,
         // Actions
         addJob, updateJob, deleteJob, duplicateJob, applyJob,
-        addResume, removeResume, refreshResumes,
+        addResume, removeResume, refreshResumes, refreshTracker,
         addNotice, updateNotice, deleteNotice,
-        updateApplicationStatus,
+        updateApplicationStatus, advanceApplication,
         toggleStudentFreeze,
         addCompany, updateCompany, deleteCompany,
       }}

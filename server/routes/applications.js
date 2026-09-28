@@ -53,6 +53,35 @@ router.get('/', (req, res) => {
   res.json({ success: true, data: db.applications || [] });
 });
 
+// Keeps a student's Tracker entry in lockstep with their application's real
+// pipeline position, so admin decisions (advance / reject) show up in the
+// student's round-by-round view instead of the two collections drifting apart.
+function syncTrackerForApplication(db, app, job) {
+  const entry = (db.trackerData || []).find((t) => t.applicationId === app.id);
+  if (!entry) return;
+
+  const pipeline = (job?.pipeline && job.pipeline.length > 0) ? job.pipeline : entry.rounds.map((r) => ({ name: r.name }));
+  const today = new Date().toLocaleDateString('en-IN', { day: '2-digit', month: 'short', year: 'numeric' });
+  const fullyCleared = app.status === 'shortlisted' && app.stageIndex >= pipeline.length - 1;
+
+  entry.rounds = pipeline.map((stage, i) => {
+    const existingDate = entry.rounds[i]?.date;
+    if (fullyCleared) {
+      return { name: stage.name, status: 'cleared', date: existingDate || today };
+    }
+    if (app.status === 'rejected' && i === app.stageIndex) {
+      return { name: stage.name, status: 'rejected', date: existingDate || today };
+    }
+    if (i < app.stageIndex) {
+      return { name: stage.name, status: 'cleared', date: existingDate || today };
+    }
+    if (i === app.stageIndex && app.status !== 'rejected') {
+      return { name: stage.name, status: 'pending', date: existingDate || today };
+    }
+    return { name: stage.name, status: 'upcoming', date: null };
+  });
+}
+
 // Runs the shared ATS engine against whichever resume file backs this
 // application (a freshly uploaded file, or a previously saved one picked
 // by resumeId). Never fabricates a score for a file we couldn't read.
@@ -152,10 +181,12 @@ router.post('/apply', upload.single('resume'), async (req, res) => {
   ];
   const newTrackerEntry = {
     id: Date.now(),
+    applicationId: newApp.id,
+    studentId: parsedStudentId,
     company: company || 'Recruitment Partner',
     initial: (company || 'R').charAt(0).toUpperCase(),
     color: 'bg-emerald-700',
-    jobType: 'FTE',
+    jobType: job?.jobType || 'FTE',
     date: `Applied ${appliedDate}`,
     rounds: pipelineStages.map((stage, i) => ({
       name: stage.name,
@@ -174,13 +205,14 @@ router.post('/apply', upload.single('resume'), async (req, res) => {
   });
 });
 
-// PATCH application status (Shortlist / Reject / Advance to next round)
+// PATCH application status (Reject / manually set a bucket status)
 router.patch('/:id/status', (req, res) => {
   const db = readDb();
   const id = parseInt(req.params.id, 10);
   const { status } = req.body;
 
   let found = false;
+  let resultApp = null;
   db.applications = (db.applications || []).map((a) => {
     if (a.id !== id) return a;
     found = true;
@@ -193,18 +225,63 @@ router.patch('/:id/status', (req, res) => {
       stageIndex = Math.min(stageIndex + 1, Math.max(pipeline.length - 1, 0));
       round = pipeline[stageIndex] ? `Round ${stageIndex + 1}: ${pipeline[stageIndex].name}` : a.round;
     } else if (status === 'rejected') {
-      round = 'Application Rejected';
+      round = pipeline[stageIndex] ? `Rejected at Round ${stageIndex + 1}: ${pipeline[stageIndex].name}` : 'Application Rejected';
     }
 
-    return { ...a, status, stageIndex, round };
+    resultApp = { ...a, status, stageIndex, round };
+    return resultApp;
   });
 
   if (!found) {
     return res.status(404).json({ success: false, message: 'Application not found.' });
   }
 
+  const job = (db.jobs || []).find((j) => j.id === resultApp.jobId);
+  syncTrackerForApplication(db, resultApp, job);
   writeDb(db);
-  res.json({ success: true, message: `Application ${status} successfully.` });
+  res.json({ success: true, data: resultApp, message: `Application ${status} successfully.` });
+});
+
+// PATCH advance a candidate to the next stage of the job's real hiring
+// pipeline. Advancing past the final stage marks them fully selected.
+router.patch('/:id/advance', (req, res) => {
+  const db = readDb();
+  const id = parseInt(req.params.id, 10);
+
+  let found = false;
+  let resultApp = null;
+  db.applications = (db.applications || []).map((a) => {
+    if (a.id !== id) return a;
+    found = true;
+    const job = (db.jobs || []).find((j) => j.id === a.jobId);
+    const pipeline = job?.pipeline || [];
+    const lastIndex = Math.max(pipeline.length - 1, 0);
+    let stageIndex = a.stageIndex ?? 0;
+    let status = 'pending';
+
+    if (stageIndex >= lastIndex) {
+      status = 'shortlisted'; // cleared the final stage -- fully selected
+    } else {
+      stageIndex += 1;
+    }
+
+    const round = pipeline[stageIndex] ? `Round ${stageIndex + 1}: ${pipeline[stageIndex].name}` : a.round;
+    resultApp = { ...a, status, stageIndex, round };
+    return resultApp;
+  });
+
+  if (!found) {
+    return res.status(404).json({ success: false, message: 'Application not found.' });
+  }
+
+  const job = (db.jobs || []).find((j) => j.id === resultApp.jobId);
+  syncTrackerForApplication(db, resultApp, job);
+  writeDb(db);
+  res.json({
+    success: true,
+    data: resultApp,
+    message: resultApp.status === 'shortlisted' ? 'Candidate marked as selected!' : 'Advanced to the next round.',
+  });
 });
 
 export default router;

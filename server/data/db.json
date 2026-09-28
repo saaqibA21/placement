@@ -819,7 +819,9 @@
           "status": "upcoming",
           "date": null
         }
-      ]
+      ],
+      "studentId": null,
+      "applicationId": null
     },
     {
       "id": 1788679201316,
@@ -849,7 +851,9 @@
           "status": "upcoming",
           "date": null
         }
-      ]
+      ],
+      "studentId": null,
+      "applicationId": null
     },
     {
       "id": 1788679181902,
@@ -879,7 +883,9 @@
           "status": "upcoming",
           "date": null
         }
-      ]
+      ],
+      "studentId": 1,
+      "applicationId": 1788679181902
     },
     {
       "id": 1,
@@ -909,7 +915,9 @@
           "status": "upcoming",
           "date": null
         }
-      ]
+      ],
+      "studentId": 1,
+      "applicationId": 101
     }
   ],
   "surveys": [

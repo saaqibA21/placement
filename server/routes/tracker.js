@@ -5,7 +5,13 @@ const router = Router();
 
 router.get('/', (req, res) => {
   const db = readDb();
-  res.json({ success: true, data: db.trackerData || [] });
+  const { studentId } = req.query;
+  let list = db.trackerData || [];
+  if (studentId) {
+    const id = parseInt(studentId, 10);
+    list = list.filter((t) => t.studentId === id);
+  }
+  res.json({ success: true, data: list });
 });
 
 router.put('/', (req, res) => {

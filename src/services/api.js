@@ -94,6 +94,8 @@ export const api = {
       method: 'PATCH',
       body: JSON.stringify({ status, notes }),
     }),
+  advanceApplication: (id) =>
+    request(`/applications/${id}/advance`, { method: 'PATCH' }),
 
   // Notices / Circulars
   getNotices: () => request('/notices'),
@@ -129,7 +131,7 @@ export const api = {
     }),
 
   // Tracker
-  getTracker: () => request('/tracker'),
+  getTracker: (studentId) => request(studentId ? `/tracker?studentId=${studentId}` : '/tracker'),
   updateTracker: (trackerData) =>
     request('/tracker', {
       method: 'PUT',

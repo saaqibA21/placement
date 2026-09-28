@@ -1,7 +1,7 @@
 import { useState } from 'react';
 import { useApp } from '../../context/AppContext';
 import { API_HOST_URL } from '../../services/api';
-import { Search, Download, X, FileText, CheckCircle2, XCircle, ChevronRight, Eye, Sparkles, Info, ArrowUpDown } from 'lucide-react';
+import { Search, Download, X, FileText, CheckCircle2, XCircle, ChevronRight, Eye, Sparkles, Info, ArrowUpDown, Trophy } from 'lucide-react';
 import StatusBadge from '../../components/StatusBadge';
 
 const STATUS_TABS = ['All', 'Pending', 'Shortlisted', 'Rejected'];
@@ -20,7 +20,7 @@ function ScorePill({ score }) {
 }
 
 export default function AdminResumes() {
-  const { applications, updateApplicationStatus } = useApp();
+  const { applications, jobs, updateApplicationStatus, advanceApplication } = useApp();
   const [statusTab, setStatusTab] = useState('All');
   const [search, setSearch]   = useState('');
   const [drawer, setDrawer]   = useState(null);
@@ -30,10 +30,16 @@ export default function AdminResumes() {
 
   const showToast = (msg) => { setToast(msg); setTimeout(() => setToast(''), 3000); };
 
-  const handleUpdate = (id, newStatus) => {
-    updateApplicationStatus(id, newStatus);
-    if (drawer?.id === id) setDrawer((d) => ({ ...d, status: newStatus }));
-    showToast(`Candidate ${newStatus}!`);
+  const handleAdvance = async (id) => {
+    const res = await advanceApplication(id);
+    if (drawer?.id === id) setDrawer((d) => (res ? { ...d, ...res } : d));
+    showToast(res?.status === 'shortlisted' ? 'Candidate marked as selected!' : 'Advanced to next round.');
+  };
+
+  const handleReject = (id) => {
+    updateApplicationStatus(id, 'rejected');
+    if (drawer?.id === id) setDrawer((d) => ({ ...d, status: 'rejected' }));
+    showToast('Application rejected.');
   };
 
   const counts = {
@@ -226,6 +232,41 @@ export default function AdminResumes() {
               </div>
             </div>
 
+            {/* Hiring Pipeline Stepper */}
+            {(() => {
+              const job = jobs.find((j) => j.id === drawerData.jobId);
+              const pipeline = job?.pipeline || [];
+              if (pipeline.length === 0) return null;
+              return (
+                <div className="p-4 rounded-xl border" style={{ background: 'var(--canvas-bg)', borderColor: 'var(--border)' }}>
+                  <p className="text-[10px] font-bold uppercase tracking-wider text-slate-400 mb-3">Hiring Pipeline</p>
+                  <div className="space-y-2">
+                    {pipeline.map((stage, i) => {
+                      const stageIndex = drawerData.stageIndex ?? 0;
+                      const isRejectedHere = drawerData.status === 'rejected' && i === stageIndex;
+                      const isSelected = drawerData.status === 'shortlisted' && stageIndex >= pipeline.length - 1;
+                      const cleared = i < stageIndex || isSelected;
+                      const current = i === stageIndex && !isRejectedHere && !isSelected;
+                      return (
+                        <div key={stage.id || stage.name} className="flex items-center gap-2.5">
+                          <div className="w-5 h-5 rounded-full flex items-center justify-center text-[9px] font-bold flex-shrink-0"
+                               style={{
+                                 background: isRejectedHere ? '#be123c' : cleared ? '#15803d' : current ? 'var(--amber-gold)' : '#e2e8f0',
+                                 color: cleared || current || isRejectedHere ? '#fff' : '#94a3b8',
+                               }}>
+                            {isRejectedHere ? '✕' : cleared ? '✓' : i + 1}
+                          </div>
+                          <span className={`text-xs ${current ? 'font-bold text-slate-900' : cleared ? 'text-slate-600' : isRejectedHere ? 'text-rose-600 font-semibold' : 'text-slate-400'}`}>
+                            {stage.name}
+                          </span>
+                        </div>
+                      );
+                    })}
+                  </div>
+                </div>
+              );
+            })()}
+
             {/* Candidate Resume Card */}
             <div className="p-4 rounded-xl border space-y-2" style={{ background: 'var(--amber-pale)', borderColor: 'var(--amber-border)' }}>
               <p className="text-[10px] font-bold uppercase tracking-wider text-slate-500">Candidate Resume</p>
@@ -298,23 +339,32 @@ export default function AdminResumes() {
 
           <div className="px-5 py-4 border-t space-y-2" style={{ borderColor: 'var(--border)' }}>
             <p className="text-[10px] font-bold uppercase tracking-wider text-slate-400 mb-3">Screening Decision</p>
-            <button onClick={() => handleUpdate(drawerData.id, 'shortlisted')}
-              disabled={drawerData.status === 'shortlisted'}
-              className="w-full flex items-center justify-center gap-2 py-2.5 rounded-xl text-xs font-bold text-white transition-all disabled:opacity-40 disabled:cursor-not-allowed"
-              style={{ background: '#15803d' }}>
-              <CheckCircle2 size={14} /> Shortlist Candidate
-            </button>
-            <button onClick={() => handleUpdate(drawerData.id, 'pending')}
-              disabled={drawerData.status === 'pending'}
-              className="w-full flex items-center justify-center gap-2 py-2.5 rounded-xl text-xs font-bold transition-all btn-solid-secondary disabled:opacity-40 disabled:cursor-not-allowed">
-              Move to Next Round
-            </button>
-            <button onClick={() => handleUpdate(drawerData.id, 'rejected')}
-              disabled={drawerData.status === 'rejected'}
-              className="w-full flex items-center justify-center gap-2 py-2.5 rounded-xl text-xs font-bold text-white transition-all disabled:opacity-40 disabled:cursor-not-allowed"
-              style={{ background: '#be123c' }}>
-              <XCircle size={14} /> Reject Application
-            </button>
+            {(() => {
+              const job = jobs.find((j) => j.id === drawerData.jobId);
+              const pipeline = job?.pipeline || [];
+              const lastIndex = Math.max(pipeline.length - 1, 0);
+              const atFinalStage = (drawerData.stageIndex ?? 0) >= lastIndex;
+              const nextStageName = atFinalStage ? null : pipeline[(drawerData.stageIndex ?? 0) + 1]?.name;
+              const isRejected = drawerData.status === 'rejected';
+              const isSelected = drawerData.status === 'shortlisted' && atFinalStage;
+              return (
+                <>
+                  <button onClick={() => handleAdvance(drawerData.id)}
+                    disabled={isRejected || isSelected}
+                    className="w-full flex items-center justify-center gap-2 py-2.5 rounded-xl text-xs font-bold text-white transition-all disabled:opacity-40 disabled:cursor-not-allowed"
+                    style={{ background: '#15803d' }}>
+                    {atFinalStage ? <Trophy size={14} /> : <CheckCircle2 size={14} />}
+                    {isSelected ? 'Candidate Selected' : atFinalStage ? 'Mark as Selected' : `Advance to: ${nextStageName || 'Next Round'}`}
+                  </button>
+                  <button onClick={() => handleReject(drawerData.id)}
+                    disabled={isRejected}
+                    className="w-full flex items-center justify-center gap-2 py-2.5 rounded-xl text-xs font-bold text-white transition-all disabled:opacity-40 disabled:cursor-not-allowed"
+                    style={{ background: '#be123c' }}>
+                    <XCircle size={14} /> {isRejected ? 'Application Rejected' : 'Reject at This Stage'}
+                  </button>
+                </>
+              );
+            })()}
           </div>
         </div>
       )}
