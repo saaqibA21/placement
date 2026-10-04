@@ -7,16 +7,34 @@ import {
   HelpCircle, UserCheck, Layers, ArrowRight, Check, Copy, SlidersHorizontal
 } from 'lucide-react';
 
+const DEFAULT_CATEGORIES = [
+  'All',
+  'Self Introduction & Foundation',
+  'Strengths & Self-Awareness',
+  'Situational & Conflict Resolution',
+  'Company Fit & Motivation',
+  'Career Goals & Commitment',
+  'Workplace Adaptability & Relocation',
+  'Failure & Resilience',
+];
+
+const DEFAULT_SPEAKING_TYPES = [
+  'All',
+  'Read-Aloud & Sentence Mastery',
+  'Extempore (JAM - Just A Minute)',
+  'Story Retelling & Scenario Explanation',
+];
+
 export default function InterviewBank() {
   const [activeMode, setActiveMode] = useState('hr'); // 'hr' | 'speaking' | 'studio'
   const [hrQuestions, setHrQuestions] = useState([]);
   const [speakingAssessments, setSpeakingAssessments] = useState([]);
-  const [categories, setCategories] = useState([]);
-  const [speakingTypes, setSpeakingTypes] = useState([]);
+  const [categories, setCategories] = useState(DEFAULT_CATEGORIES);
+  const [speakingTypes, setSpeakingTypes] = useState(DEFAULT_SPEAKING_TYPES);
   const [selectedCategory, setSelectedCategory] = useState('All');
   const [selectedSpkType, setSelectedSpkType] = useState('All');
   const [search, setSearch] = useState('');
-  const [loading, setLoading] = useState(true);
+  const [loading, setLoading] = useState(false);
 
   // Expanded accordion items
   const [expandedHr, setExpandedHr] = useState({});
