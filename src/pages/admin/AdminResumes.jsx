@@ -2,7 +2,7 @@ import { useState, useEffect } from 'react';
 import QRCode from 'qrcode';
 import { useApp } from '../../context/AppContext';
 import { API_HOST_URL } from '../../services/api';
-import { Search, Download, X, FileText, CheckCircle2, XCircle, ChevronRight, Eye, Sparkles, Info, ArrowUpDown, Trophy, CalendarClock, QrCode, UserCheck, UserX } from 'lucide-react';
+import { Search, Download, X, FileText, CheckCircle2, XCircle, ChevronRight, ChevronLeft, Eye, Sparkles, Info, ArrowUpDown, Trophy, CalendarClock, QrCode, UserCheck, UserX } from 'lucide-react';
 import StatusBadge from '../../components/StatusBadge';
 
 const STATUS_TABS = ['All', 'Pending', 'Shortlisted', 'Rejected'];
@@ -122,7 +122,7 @@ export default function AdminResumes() {
   return (
     <div className="flex h-full overflow-hidden flex-col md:flex-row">
       {/* Main Panel */}
-      <div className={`flex flex-col overflow-hidden transition-all ${drawerData ? 'md:w-[55%]' : 'w-full'}`}>
+      <div className={`flex flex-col overflow-hidden transition-all ${drawerData ? 'hidden md:flex md:w-[55%]' : 'w-full'}`}>
         <div className="p-4 sm:p-6 border-b bg-white" style={{ borderColor: 'var(--border)' }}>
           <div className="flex items-center justify-between mb-4 flex-wrap gap-3">
             <div>
@@ -239,19 +239,25 @@ export default function AdminResumes() {
 
       {/* Candidate Drawer */}
       {drawerData && (
-        <div className="flex-1 border-t md:border-t-0 md:border-l overflow-y-auto bg-white flex flex-col" style={{ borderColor: 'var(--border)' }}>
-          <div className="px-5 py-4 border-b flex items-start justify-between" style={{ borderColor: 'var(--border)', background: 'var(--canvas-bg)' }}>
-            <div className="flex items-center gap-3">
-              <div className="w-10 h-10 rounded-xl flex items-center justify-center text-sm font-bold text-white shadow-xs"
+        <div className="flex-1 border-t md:border-t-0 md:border-l overflow-y-auto bg-white flex flex-col w-full" style={{ borderColor: 'var(--border)' }}>
+          <div className="px-4 sm:px-5 py-3.5 border-b flex items-center justify-between gap-2" style={{ borderColor: 'var(--border)', background: 'var(--canvas-bg)' }}>
+            <div className="flex items-center gap-2.5 min-w-0">
+              <button 
+                onClick={() => setDrawer(null)} 
+                className="md:hidden flex items-center gap-1 text-xs font-bold text-slate-600 hover:text-slate-900 bg-white border border-slate-200 px-2.5 py-1.5 rounded-lg shadow-xs mr-1"
+              >
+                <ChevronLeft size={15} /> Back
+              </button>
+              <div className="w-9 h-9 rounded-xl flex items-center justify-center text-sm font-bold text-white shadow-xs flex-shrink-0"
                    style={{ background: 'linear-gradient(135deg, #162E34 0%, #1F4047 100%)' }}>
                 {drawerData.studentName.charAt(0)}
               </div>
-              <div>
-                <p className="font-bold text-slate-900 text-sm">{drawerData.studentName}</p>
-                <p className="text-slate-400 text-xs font-mono">{drawerData.rollNo}</p>
+              <div className="min-w-0">
+                <p className="font-bold text-slate-900 text-sm truncate">{drawerData.studentName}</p>
+                <p className="text-slate-400 text-xs font-mono truncate">{drawerData.rollNo}</p>
               </div>
             </div>
-            <button onClick={() => setDrawer(null)} className="text-slate-400 hover:text-slate-600"><X size={17} /></button>
+            <button onClick={() => setDrawer(null)} className="text-slate-400 hover:text-slate-600 p-1"><X size={17} /></button>
           </div>
 
           <div className="flex-1 px-5 py-4 space-y-4">

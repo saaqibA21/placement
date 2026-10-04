@@ -310,15 +310,15 @@ export default function AdminJobs() {
                 <div className="space-y-4 text-xs">
                   <div className="p-4 rounded-xl border space-y-3" style={{ background: 'var(--canvas-bg)', borderColor: 'var(--border)' }}>
                     <p className="text-[10px] font-bold uppercase tracking-wider text-slate-400">Company & Designation</p>
-                    <input className="input-solid text-xs py-2" value={form.company}
+                    <input className="input-solid text-xs py-2 w-full" value={form.company}
                       onChange={(e) => setForm({ ...form, company: e.target.value })} placeholder="Company Name *" />
-                    <input className="input-solid text-xs py-2" value={form.role}
+                    <input className="input-solid text-xs py-2 w-full" value={form.role}
                       onChange={(e) => setForm({ ...form, role: e.target.value })} placeholder="Position / Role Title *" />
                   </div>
 
                   <div className="p-4 rounded-xl border space-y-3" style={{ background: 'var(--canvas-bg)', borderColor: 'var(--border)' }}>
                     <p className="text-[10px] font-bold uppercase tracking-wider text-slate-400">Compensation & Type</p>
-                    <div className="grid grid-cols-3 gap-3">
+                    <div className="grid grid-cols-1 sm:grid-cols-3 gap-3">
                       <input className="input-solid text-xs py-2" value={form.salary}
                         onChange={(e) => setForm({ ...form, salary: e.target.value })} placeholder="Salary (e.g. 15L)" />
                       <input className="input-solid text-xs py-2" value={form.stipend}
@@ -328,21 +328,21 @@ export default function AdminJobs() {
                         {['Intern', 'GET', 'FTE', 'PGET'].map((t) => <option key={t}>{t}</option>)}
                       </select>
                     </div>
-                    <div className="grid grid-cols-2 gap-3">
+                    <div className="grid grid-cols-1 sm:grid-cols-2 gap-3">
                       <div>
                         <label className="text-[10px] font-bold text-slate-500 block mb-1">Application Deadline</label>
-                        <input className="input-solid text-xs py-2" type="date" value={form.applyBefore}
+                        <input className="input-solid text-xs py-2 w-full" type="date" value={form.applyBefore}
                           onChange={(e) => setForm({ ...form, applyBefore: e.target.value })} />
                       </div>
                       <div>
                         <label className="text-[10px] font-bold text-slate-500 block mb-1">Campus Visit Date</label>
-                        <input className="input-solid text-xs py-2" type="date" value={form.dateOfVisit}
+                        <input className="input-solid text-xs py-2 w-full" type="date" value={form.dateOfVisit}
                           onChange={(e) => setForm({ ...form, dateOfVisit: e.target.value })} />
                       </div>
                     </div>
                   </div>
 
-                  <textarea className="input-solid h-20 text-xs py-2 resize-none" value={form.description}
+                  <textarea className="input-solid h-20 text-xs py-2 resize-none w-full" value={form.description}
                     onChange={(e) => setForm({ ...form, description: e.target.value })}
                     placeholder="Role description, prerequisites, evaluation format..." />
 
@@ -375,33 +375,33 @@ export default function AdminJobs() {
 
                   <div className="p-4 rounded-xl border space-y-3" style={{ background: 'var(--canvas-bg)', borderColor: 'var(--border)' }}>
                     <p className="text-[10px] font-bold uppercase tracking-wider text-slate-400">Academic & General Eligibility</p>
-                    <div className="grid grid-cols-3 gap-3">
+                    <div className="grid grid-cols-1 sm:grid-cols-3 gap-3">
                       <div>
                         <label className="text-[10px] font-bold text-slate-500 block mb-1">Min CGPA</label>
-                        <input className="input-solid text-xs py-2" type="number" step="0.1" value={form.eligibility.minCGPA}
+                        <input className="input-solid text-xs py-2 w-full" type="number" step="0.1" value={form.eligibility.minCGPA}
                           onChange={(e) => setElig('minCGPA', parseFloat(e.target.value) || 0)} />
                       </div>
                       <div>
                         <label className="text-[10px] font-bold text-slate-500 block mb-1">Max CGPA</label>
-                        <input className="input-solid text-xs py-2" type="number" step="0.1" value={form.eligibility.maxCGPA}
+                        <input className="input-solid text-xs py-2 w-full" type="number" step="0.1" value={form.eligibility.maxCGPA}
                           onChange={(e) => setElig('maxCGPA', parseFloat(e.target.value) || 10)} />
                       </div>
                       <div>
                         <label className="text-[10px] font-bold text-slate-500 block mb-1">Gender</label>
-                        <select className="input-solid text-xs py-2" value={form.eligibility.gender}
+                        <select className="input-solid text-xs py-2 w-full" value={form.eligibility.gender}
                           onChange={(e) => setElig('gender', e.target.value)}>
                           {['Any', 'Male', 'Female'].map((g) => <option key={g}>{g}</option>)}
                         </select>
                       </div>
                       <div>
                         <label className="text-[10px] font-bold text-slate-500 block mb-1">Max Current Arrears</label>
-                        <input className="input-solid text-xs py-2" type="number" value={form.eligibility.maxCurrentArrears ?? ''}
+                        <input className="input-solid text-xs py-2 w-full" type="number" value={form.eligibility.maxCurrentArrears ?? ''}
                           placeholder="No limit"
                           onChange={(e) => setElig('maxCurrentArrears', e.target.value === '' ? null : parseInt(e.target.value, 10))} />
                       </div>
                       <div>
                         <label className="text-[10px] font-bold text-slate-500 block mb-1">Max Arrears History</label>
-                        <input className="input-solid text-xs py-2" type="number" value={form.eligibility.maxArrearsHistory ?? ''}
+                        <input className="input-solid text-xs py-2 w-full" type="number" value={form.eligibility.maxArrearsHistory ?? ''}
                           placeholder="No limit"
                           onChange={(e) => setElig('maxArrearsHistory', e.target.value === '' ? null : parseInt(e.target.value, 10))} />
                       </div>
@@ -425,22 +425,22 @@ export default function AdminJobs() {
 
                   <div className="p-4 rounded-xl border space-y-3" style={{ background: 'var(--canvas-bg)', borderColor: 'var(--border)' }}>
                     <p className="text-[10px] font-bold uppercase tracking-wider text-slate-400">10th / 12th / Diploma Thresholds</p>
-                    <div className="grid grid-cols-3 gap-3">
+                    <div className="grid grid-cols-1 sm:grid-cols-3 gap-3">
                       <div>
                         <label className="text-[10px] font-bold text-slate-500 block mb-1">10th % Required</label>
-                        <input className="input-solid text-xs py-2" type="number" value={form.eligibility.tenthMinPercent ?? ''}
+                        <input className="input-solid text-xs py-2 w-full" type="number" value={form.eligibility.tenthMinPercent ?? ''}
                           placeholder="No requirement"
                           onChange={(e) => setElig('tenthMinPercent', e.target.value === '' ? null : parseFloat(e.target.value))} />
                       </div>
                       <div>
                         <label className="text-[10px] font-bold text-slate-500 block mb-1">12th % Required</label>
-                        <input className="input-solid text-xs py-2" type="number" value={form.eligibility.twelfthMinPercent ?? ''}
+                        <input className="input-solid text-xs py-2 w-full" type="number" value={form.eligibility.twelfthMinPercent ?? ''}
                           placeholder="No requirement"
                           onChange={(e) => setElig('twelfthMinPercent', e.target.value === '' ? null : parseFloat(e.target.value))} />
                       </div>
                       <div>
                         <label className="text-[10px] font-bold text-slate-500 block mb-1">Diploma % Required</label>
-                        <input className="input-solid text-xs py-2" type="number" value={form.eligibility.diplomaMinPercent ?? ''}
+                        <input className="input-solid text-xs py-2 w-full" type="number" value={form.eligibility.diplomaMinPercent ?? ''}
                           placeholder="No requirement"
                           onChange={(e) => setElig('diplomaMinPercent', e.target.value === '' ? null : parseFloat(e.target.value))} />
                       </div>

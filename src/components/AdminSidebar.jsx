@@ -29,11 +29,19 @@ const GROUPS = [
   },
 ];
 
-export default function AdminSidebar() {
+export default function AdminSidebar({ onClose }) {
   const { user, logout } = useApp();
   const navigate = useNavigate();
 
-  const handleLogout = () => { logout(); navigate('/'); };
+  const handleLogout = () => { 
+    if (onClose) onClose();
+    logout(); 
+    navigate('/'); 
+  };
+
+  const handleNavClick = () => {
+    if (onClose) onClose();
+  };
 
   return (
     <aside className="flex flex-col w-[235px] flex-shrink-0 h-full select-none"
@@ -42,12 +50,23 @@ export default function AdminSidebar() {
       {/* University Identity Header */}
       <div className="px-4 pt-4 pb-3 border-b border-white/10 space-y-3">
         {/* Official Logo Banner */}
-        <div className="bg-white rounded-xl p-2 shadow-sm flex items-center justify-center">
-          <img
-            src="/logo.jpg"
-            alt="Jeppiaar University Logo"
-            className="h-8 w-auto object-contain"
-          />
+        <div className="flex items-center gap-2">
+          <div className="bg-white rounded-xl p-2 shadow-sm flex-1 flex items-center justify-center">
+            <img
+              src="/logo.jpg"
+              alt="Jeppiaar University Logo"
+              className="h-8 w-auto object-contain"
+            />
+          </div>
+          {onClose && (
+            <button 
+              onClick={onClose} 
+              className="md:hidden p-2 rounded-xl text-white/70 hover:text-white hover:bg-white/10 transition-colors"
+              aria-label="Close menu"
+            >
+              <LogOut size={16} className="rotate-180" />
+            </button>
+          )}
         </div>
 
         <div className="flex items-center justify-between px-1">
@@ -85,6 +104,7 @@ export default function AdminSidebar() {
             <div className="space-y-0.5">
               {group.items.map(({ to, icon: Icon, label }) => (
                 <NavLink key={to} to={to}
+                  onClick={handleNavClick}
                   className={({ isActive }) => `nav-item-admin ${isActive ? 'active' : ''}`}>
                   <Icon size={15} />
                   <span>{label}</span>

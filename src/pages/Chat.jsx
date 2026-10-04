@@ -1,5 +1,5 @@
 import { useState } from 'react';
-import { Send, UserCheck, MessageSquare } from 'lucide-react';
+import { Send, UserCheck, MessageSquare, ChevronLeft } from 'lucide-react';
 import { useApp } from '../context/AppContext';
 
 const CONVOS = [
@@ -27,11 +27,13 @@ const MSGS = {
 
 export default function Chat() {
   const [active, setActive] = useState(CONVOS[0]);
+  const [mobileChatOpen, setMobileChatOpen] = useState(false);
   const [msgs, setMsgs]     = useState(MSGS);
   const [input, setInput]   = useState('');
 
-  const send = () => {
-    if (!input.trim()) return;
+  const send = (e) => {
+    e?.preventDefault();
+    if (!input.trim() || !active) return;
     setMsgs((prev) => ({
       ...prev,
       [active.id]: [
@@ -47,28 +49,33 @@ export default function Chat() {
     setInput('');
   };
 
+  const handleSelectConvo = (c) => {
+    setActive(c);
+    setMobileChatOpen(true);
+  };
+
   return (
     <div className="flex h-full overflow-hidden flex-col md:flex-row">
       {/* Messages List Sidebar */}
-      <div className="w-full md:w-80 bg-white border-b md:border-b-0 md:border-r flex flex-col flex-shrink-0" style={{ borderColor: '#D9E3E0' }}>
-        <div className="p-4 border-b flex items-center justify-between" style={{ borderColor: '#D9E3E0' }}>
-          <h2 className="text-sm font-bold text-gray-900" style={{ fontFamily: "'Bebas Neue',sans-serif", letterSpacing:'0.03em' }}>Placement Helpdesk</h2>
+      <div className={`w-full md:w-80 bg-white border-b md:border-b-0 md:border-r flex flex-col flex-shrink-0 ${mobileChatOpen ? 'hidden md:flex' : 'flex'}`} style={{ borderColor: 'var(--border)' }}>
+        <div className="p-4 border-b flex items-center justify-between" style={{ borderColor: 'var(--border)' }}>
+          <h2 className="text-sm font-bold text-gray-900" style={{ fontFamily: 'Cinzel,serif' }}>Placement Helpdesk</h2>
           <span className="text-[10px] font-semibold text-green-700 bg-green-50 px-2 py-0.5 rounded-full border border-green-200">
             ● Active
           </span>
         </div>
 
-        <div className="overflow-y-auto flex-1 divide-y" style={{ divideColor: '#D9E3E0' }}>
+        <div className="overflow-y-auto flex-1 divide-y" style={{ divideColor: 'var(--border)' }}>
           {CONVOS.map((c) => (
             <button
               key={c.id}
-              onClick={() => setActive(c)}
-              className={`w-full text-left p-3.5 transition-all flex items-center gap-3 ${
+              onClick={() => handleSelectConvo(c)}
+              className={`w-full text-left p-3.5 transition-all flex items-center gap-3 cursor-pointer ${
                 active?.id === c.id
-                  ? 'bg-red-50/70 border-l-4'
-                  : 'hover:bg-amber-50/40 border-l-4 border-l-transparent'
+                  ? 'bg-amber-50/70 border-l-4'
+                  : 'hover:bg-slate-50 border-l-4 border-l-transparent'
               }`}
-              style={active?.id === c.id ? { borderLeftColor: '#D9642F' } : {}}
+              style={active?.id === c.id ? { borderLeftColor: 'var(--amber-gold)' } : {}}
             >
               <div className={`w-9 h-9 rounded-xl ${c.color} text-white font-bold text-xs flex items-center justify-center flex-shrink-0`}>
                 {c.initial}
@@ -81,7 +88,7 @@ export default function Chat() {
                 <p className="text-xs text-gray-500 truncate mt-0.5">{c.lastMsg}</p>
               </div>
               {c.unread > 0 && (
-                <span className="w-4 h-4 rounded-full text-white text-[10px] font-bold flex items-center justify-center flex-shrink-0" style={{ background: '#D9642F' }}>
+                <span className="w-4 h-4 rounded-full text-white text-[10px] font-bold flex items-center justify-center flex-shrink-0" style={{ background: 'var(--amber-gold)' }}>
                   {c.unread}
                 </span>
               )}
@@ -91,15 +98,23 @@ export default function Chat() {
       </div>
 
       {/* Conversation Pane */}
-      <div className="flex-1 flex flex-col" style={{ background: '#EFF5F3' }}>
+      <div className={`flex-1 flex flex-col ${mobileChatOpen ? 'flex' : 'hidden md:flex'}`} style={{ background: 'var(--canvas-bg)' }}>
         {/* Chat Header */}
-        <div className="p-3.5 bg-white border-b flex items-center gap-3 shadow-2xs flex-shrink-0" style={{ borderColor: '#D9E3E0' }}>
-          <div className={`w-9 h-9 rounded-xl ${active?.color} text-white font-bold text-xs flex items-center justify-center`}>
-            {active?.initial}
-          </div>
-          <div>
-            <h3 className="text-xs font-bold text-gray-900">{active?.name}</h3>
-            <p className="text-[10px] text-green-600 font-medium">● Available for student placement queries</p>
+        <div className="p-3.5 bg-white border-b flex items-center justify-between shadow-2xs flex-shrink-0" style={{ borderColor: 'var(--border)' }}>
+          <div className="flex items-center gap-3 min-w-0">
+            <button 
+              onClick={() => setMobileChatOpen(false)} 
+              className="md:hidden flex items-center gap-1 text-xs font-bold text-slate-700 bg-slate-100 hover:bg-slate-200 px-2.5 py-1.5 rounded-lg"
+            >
+              <ChevronLeft size={15} /> Back
+            </button>
+            <div className={`w-8 h-8 rounded-xl ${active?.color} text-white font-bold text-xs flex items-center justify-center flex-shrink-0`}>
+              {active?.initial}
+            </div>
+            <div className="min-w-0">
+              <h3 className="text-xs font-bold text-gray-900 truncate">{active?.name}</h3>
+              <p className="text-[10px] text-green-600 font-medium truncate">● Available for student queries</p>
+            </div>
           </div>
         </div>
 
@@ -108,19 +123,19 @@ export default function Chat() {
           {(msgs[active?.id] || []).map((m) => (
             <div key={m.id} className={`flex ${m.from === 'me' ? 'justify-end' : 'justify-start'}`}>
               <div
-                className={`max-w-[80%] sm:max-w-[70%] p-3.5 rounded-2xl text-xs leading-relaxed ${
+                className={`max-w-[85%] sm:max-w-[70%] p-3.5 rounded-2xl text-xs leading-relaxed ${
                   m.from === 'me'
                     ? 'text-white rounded-br-none'
                     : 'bg-white text-gray-800 border rounded-bl-none'
                 }`}
                 style={
                   m.from === 'me'
-                    ? { background: '#D9642F' }
-                    : { borderColor: '#D9E3E0', background: '#FFFFFF' }
+                    ? { background: 'var(--amber-gold)' }
+                    : { borderColor: 'var(--border)', background: '#FFFFFF' }
                 }
               >
                 <p>{m.text}</p>
-                <span className={`text-[9px] mt-1 block font-mono ${m.from === 'me' ? 'text-white/60' : 'text-gray-400'}`}>
+                <span className={`text-[9px] block mt-1 ${m.from === 'me' ? 'text-amber-100 text-right' : 'text-gray-400'}`}>
                   {m.time}
                 </span>
               </div>
@@ -128,24 +143,25 @@ export default function Chat() {
           ))}
         </div>
 
-        {/* Message Input Box */}
-        <div className="p-3 bg-white border-t flex-shrink-0" style={{ borderColor: '#D9E3E0' }}>
-          <div className="flex items-center gap-2 max-w-4xl mx-auto">
+        {/* Input Bar */}
+        <div className="p-3 bg-white border-t flex-shrink-0" style={{ borderColor: 'var(--border)' }}>
+          <form onSubmit={send} className="flex gap-2">
             <input
               type="text"
+              placeholder={`Message ${active?.name}...`}
               value={input}
               onChange={(e) => setInput(e.target.value)}
-              onKeyDown={(e) => e.key === 'Enter' && send()}
-              placeholder="Type your placement question..."
-              className="input-solid flex-1 text-xs py-2"
+              className="input-solid flex-1 text-xs py-2.5"
             />
             <button
-              onClick={send}
-              className="btn-solid-primary px-4 py-2 flex items-center gap-1.5 text-xs font-semibold"
+              type="submit"
+              disabled={!input.trim()}
+              className="btn-solid-primary px-4 py-2.5 text-xs font-bold flex items-center gap-1.5 flex-shrink-0 disabled:opacity-50"
             >
-              Send <Send size={13} />
+              <Send size={13} />
+              <span className="hidden sm:inline">Send</span>
             </button>
-          </div>
+          </form>
         </div>
       </div>
     </div>

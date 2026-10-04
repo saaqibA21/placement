@@ -2,7 +2,7 @@ import { useState, useMemo, useRef } from 'react';
 import { useApp } from '../context/AppContext';
 import { evaluateEligibility } from '../utils/eligibility';
 import {
-  Search, X, ChevronRight, Clock, MapPin, Briefcase,
+  Search, X, ChevronRight, ChevronLeft, Clock, MapPin, Briefcase,
   CheckCircle2, XCircle, ArrowUpDown, FileText, Upload, Send, User,
 } from 'lucide-react';
 import StatusBadge from '../components/StatusBadge';
@@ -98,7 +98,7 @@ export default function Jobs() {
   return (
     <div className="flex h-full overflow-hidden flex-col md:flex-row">
       {/* Main List Panel */}
-      <div className={`flex flex-col overflow-hidden transition-all ${selectedJob ? 'md:w-[55%]' : 'w-full'}`}>
+      <div className={`flex flex-col overflow-hidden transition-all ${selectedJob ? 'hidden md:flex md:w-[55%]' : 'w-full'}`}>
         {/* Page Header */}
         <div className="px-4 sm:px-6 pt-5 pb-4 border-b bg-white" style={{ borderColor: 'var(--border)' }}>
           <h1 className="text-xl font-bold text-slate-900" style={{ fontFamily: 'Cinzel,serif' }}>
@@ -204,19 +204,25 @@ export default function Jobs() {
 
       {/* Detail Drawer */}
       {selectedJob && (
-        <div className="flex-1 flex flex-col border-t md:border-t-0 md:border-l overflow-hidden bg-white" style={{ borderColor: 'var(--border)' }}>
-          <div className="px-5 py-4 border-b flex items-start justify-between gap-3" style={{ borderColor: 'var(--border)', background: 'var(--canvas-bg)' }}>
-            <div className="flex items-center gap-3">
-              <div className="w-10 h-10 rounded-xl flex items-center justify-center text-sm font-bold text-white shadow-xs"
+        <div className="flex-1 flex flex-col border-t md:border-t-0 md:border-l overflow-hidden bg-white w-full" style={{ borderColor: 'var(--border)' }}>
+          <div className="px-4 sm:px-5 py-3.5 border-b flex items-center justify-between gap-3" style={{ borderColor: 'var(--border)', background: 'var(--canvas-bg)' }}>
+            <div className="flex items-center gap-2.5">
+              <button 
+                onClick={() => setSelected(null)} 
+                className="md:hidden flex items-center gap-1 text-xs font-bold text-slate-600 hover:text-slate-900 bg-white border border-slate-200 px-2.5 py-1.5 rounded-lg shadow-xs mr-1"
+              >
+                <ChevronLeft size={15} /> Back
+              </button>
+              <div className="w-9 h-9 rounded-xl flex items-center justify-center text-sm font-bold text-white shadow-xs flex-shrink-0"
                    style={{ background: 'linear-gradient(135deg, #162E34 0%, #1F4047 100%)' }}>
                 {selectedJob.company.charAt(0)}
               </div>
-              <div>
-                <p className="font-bold text-slate-900 text-sm">{selectedJob.company}</p>
-                <p className="text-slate-500 text-xs">{selectedJob.role}</p>
+              <div className="min-w-0">
+                <p className="font-bold text-slate-900 text-sm truncate">{selectedJob.company}</p>
+                <p className="text-slate-500 text-xs truncate">{selectedJob.role}</p>
               </div>
             </div>
-            <button onClick={() => setSelected(null)} className="text-slate-400 hover:text-slate-600"><X size={17} /></button>
+            <button onClick={() => setSelected(null)} className="text-slate-400 hover:text-slate-600 p-1"><X size={17} /></button>
           </div>
 
           <div className="flex gap-1 px-5 py-2 border-b" style={{ borderColor: 'var(--border)' }}>
