@@ -14,6 +14,7 @@ import Calendar from './pages/Calendar';
 import Policy from './pages/Policy';
 import AiResume from './pages/AiResume';
 import CompanyPrep from './pages/CompanyPrep';
+import InterviewBank from './pages/InterviewBank';
 import Participation from './pages/Participation';
 import CheckIn from './pages/CheckIn';
 import StudentLayout from './layouts/StudentLayout';
@@ -47,6 +48,7 @@ function AppRoutes() {
           <Route path="/student/jobs" element={<Jobs />} />
           <Route path="/student/ai-resume" element={<AiResume />} />
           <Route path="/student/company-prep" element={<CompanyPrep />} />
+          <Route path="/student/interview-bank" element={<InterviewBank />} />
           <Route path="/student/profile" element={<Profile />} />
           <Route path="/student/tracker" element={<Tracker />} />
           <Route path="/student/participation" element={<Participation />} />

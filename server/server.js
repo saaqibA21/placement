@@ -17,6 +17,7 @@ import resumeRoutes from './routes/resumes.js';
 import participationRoutes from './routes/participation.js';
 import aiResumeRoutes from './routes/aiResume.js';
 import companyPrepRoutes from './routes/companyPrep.js';
+import interviewBankRoutes from './routes/interviewBank.js';
 
 const app = express();
 const PORT = process.env.PORT || 5000;
@@ -45,6 +46,7 @@ app.use('/api/resumes', resumeRoutes);
 app.use('/api/participation', participationRoutes);
 app.use('/api/ai-resume', aiResumeRoutes);
 app.use('/api/company-prep', companyPrepRoutes);
+app.use('/api/interview-bank', interviewBankRoutes);
 
 // Health check
 app.get('/api/health', (req, res) => {

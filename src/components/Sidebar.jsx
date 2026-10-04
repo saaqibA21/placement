@@ -20,8 +20,9 @@ const GROUPS = [
   {
     label: 'Career AI & Prep Hub',
     items: [
-      { to: '/student/ai-resume',    icon: Sparkles,     label: 'AI Resume Review'  },
-      { to: '/student/company-prep', icon: BrainCircuit, label: 'Company Prep Hub'  },
+      { to: '/student/ai-resume',      icon: Sparkles,     label: 'AI Resume Review'       },
+      { to: '/student/company-prep',   icon: BrainCircuit, label: 'Company Prep Hub'       },
+      { to: '/student/interview-bank', icon: BookOpen,     label: 'HR & Speaking Bank'    },
     ],
   },
   {

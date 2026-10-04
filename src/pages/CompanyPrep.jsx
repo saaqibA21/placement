@@ -1,4 +1,5 @@
 import { useState, useEffect } from 'react';
+import { useNavigate } from 'react-router-dom';
 import api from '../services/api';
 import {
   Building2, BookOpen, BrainCircuit, CheckCircle2, XCircle, Clock,
@@ -16,6 +17,7 @@ const COMPANIES_LIST = [
 ];
 
 export default function CompanyPrep() {
+  const navigate = useNavigate();
   const [selectedCompanyId, setSelectedCompanyId] = useState('tcs');
   const [companyData, setCompanyData] = useState(null);
   const [loading, setLoading] = useState(true);
@@ -135,18 +137,27 @@ export default function CompanyPrep() {
   return (
     <div className="p-4 sm:p-6 max-w-6xl mx-auto space-y-6">
       {/* Page Header */}
-      <div className="border-b pb-4" style={{ borderColor: 'var(--border)' }}>
-        <div className="inline-flex items-center gap-2 px-2.5 py-1 rounded-full text-[11px] font-bold tracking-wide uppercase mb-1.5"
-             style={{ background: 'var(--amber-pale)', color: '#8C4419', border: '1px solid var(--amber-border)' }}>
-          <BrainCircuit size={13} className="text-amber-700" />
-          Campus Hiring Intelligence Hub
+      <div className="border-b pb-4 flex flex-col sm:flex-row sm:items-center justify-between gap-4" style={{ borderColor: 'var(--border)' }}>
+        <div>
+          <div className="inline-flex items-center gap-2 px-2.5 py-1 rounded-full text-[11px] font-bold tracking-wide uppercase mb-1.5"
+               style={{ background: 'var(--amber-pale)', color: '#8C4419', border: '1px solid var(--amber-border)' }}>
+            <BrainCircuit size={13} className="text-amber-700" />
+            Campus Hiring Intelligence Hub
+          </div>
+          <h1 className="text-2xl font-bold text-slate-900" style={{ fontFamily: 'Cinzel,serif' }}>
+            AI Company Placement Preparation & Study Assistant
+          </h1>
+          <p className="text-slate-500 text-xs mt-0.5">
+            Master company-specific recruitment patterns, take simulated mock assessments, and practice top coding challenges.
+          </p>
         </div>
-        <h1 className="text-2xl font-bold text-slate-900" style={{ fontFamily: 'Cinzel,serif' }}>
-          AI Company Placement Preparation & Study Assistant
-        </h1>
-        <p className="text-slate-500 text-xs mt-0.5">
-          Master company-specific recruitment patterns, take simulated mock assessments, and practice top coding challenges.
-        </p>
+
+        <button
+          onClick={() => navigate('/student/interview-bank')}
+          className="btn-solid-secondary px-4 py-2 text-xs flex items-center gap-1.5 font-bold self-start sm:self-auto flex-shrink-0"
+        >
+          <BookOpen size={13} /> HR & Speaking Bank
+        </button>
       </div>
 
       {/* Top Company Selector Bar */}

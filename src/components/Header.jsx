@@ -6,9 +6,10 @@ import { Bell, ChevronRight, LogOut, User, X, Menu } from 'lucide-react';
 const BREADCRUMB_MAP = {
   '/student/home':          ['Portal', 'Dashboard'],
   '/student/jobs':          ['Portal', 'Campus Drives'],
-  '/student/ai-resume':     ['Portal', 'AI Resume Review'],
-  '/student/company-prep':  ['Portal', 'Company Prep Hub'],
-  '/student/companies':     ['Portal', 'Partner Companies'],
+  '/student/ai-resume':      ['Portal', 'AI Resume Review'],
+  '/student/company-prep':   ['Portal', 'Company Prep Hub'],
+  '/student/interview-bank': ['Portal', 'HR & Speaking Question Bank'],
+  '/student/companies':      ['Portal', 'Partner Companies'],
   '/student/tracker':       ['Portal', 'Round Tracker'],
   '/student/participation': ['Portal', 'Participation & QR'],
   '/student/notice':        ['Portal', 'Circulars & Notices'],

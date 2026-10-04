@@ -200,6 +200,17 @@ export const api = {
       method: 'POST',
       body: JSON.stringify({ question }),
     }),
+
+  // HR & Speaking Interview Question Bank
+  getInterviewBank: (params = {}) => {
+    const query = new URLSearchParams(params).toString();
+    return request(`/interview-bank${query ? `?${query}` : ''}`);
+  },
+  evaluateSpeech: (payload) =>
+    request('/interview-bank/evaluate-speech', {
+      method: 'POST',
+      body: JSON.stringify(payload),
+    }),
 };
 
 export default api;

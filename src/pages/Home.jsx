@@ -82,6 +82,65 @@ export default function Home() {
         })}
       </div>
 
+      {/* Career AI & Placement Prep Suite */}
+      <div className="card-solid p-5 bg-white space-y-3" style={{ borderColor: 'var(--border)' }}>
+        <div className="flex items-center justify-between">
+          <div>
+            <h2 className="text-sm font-bold text-slate-900" style={{ fontFamily: 'Cinzel,serif' }}>
+              Campus Placement Preparation Suite
+            </h2>
+            <p className="text-slate-500 text-xs mt-0.5">Practice AI resume screening, company mock tests, and HR/speaking question banks</p>
+          </div>
+        </div>
+
+        <div className="grid grid-cols-1 sm:grid-cols-3 gap-3 pt-1">
+          <button
+            onClick={() => navigate('/student/ai-resume')}
+            className="p-3.5 rounded-xl border text-left hover:border-amber-400 hover:bg-amber-50/40 transition-all flex flex-col justify-between"
+            style={{ borderColor: 'var(--border)', background: 'var(--canvas-bg)' }}
+          >
+            <div>
+              <span className="text-[10px] font-bold uppercase tracking-wider text-amber-700 block">AI Resume Review</span>
+              <p className="text-xs font-bold text-slate-900 mt-1">ATS Optimization & Scoring</p>
+              <p className="text-[11px] text-slate-500 mt-1">Test your PDF resume against recruiter benchmarks.</p>
+            </div>
+            <span className="text-xs font-semibold text-amber-800 flex items-center gap-1 mt-3">
+              Review CV <ArrowRight size={11} />
+            </span>
+          </button>
+
+          <button
+            onClick={() => navigate('/student/company-prep')}
+            className="p-3.5 rounded-xl border text-left hover:border-amber-400 hover:bg-amber-50/40 transition-all flex flex-col justify-between"
+            style={{ borderColor: 'var(--border)', background: 'var(--canvas-bg)' }}
+          >
+            <div>
+              <span className="text-[10px] font-bold uppercase tracking-wider text-teal-800 block">Company Prep Hub</span>
+              <p className="text-xs font-bold text-slate-900 mt-1">Mock Assessments & Syllabus</p>
+              <p className="text-[11px] text-slate-500 mt-1">Practice TCS, Zoho, Amazon, and Infosys test patterns.</p>
+            </div>
+            <span className="text-xs font-semibold text-amber-800 flex items-center gap-1 mt-3">
+              Start Practice <ArrowRight size={11} />
+            </span>
+          </button>
+
+          <button
+            onClick={() => navigate('/student/interview-bank')}
+            className="p-3.5 rounded-xl border text-left hover:border-amber-400 hover:bg-amber-50/40 transition-all flex flex-col justify-between"
+            style={{ borderColor: 'var(--border)', background: 'var(--canvas-bg)' }}
+          >
+            <div>
+              <span className="text-[10px] font-bold uppercase tracking-wider text-emerald-800 block">HR & Speaking Bank</span>
+              <p className="text-xs font-bold text-slate-900 mt-1">STAR Method & Spoken English</p>
+              <p className="text-[11px] text-slate-500 mt-1">Audio practice, Versant read-alouds, and JAM extempore drills.</p>
+            </div>
+            <span className="text-xs font-semibold text-amber-800 flex items-center gap-1 mt-3">
+              Explore Questions <ArrowRight size={11} />
+            </span>
+          </button>
+        </div>
+      </div>
+
       {/* Two Column: Open Drives + Recent Notices */}
       <div className="grid grid-cols-1 md:grid-cols-2 gap-5">
         {/* Open Drives */}
