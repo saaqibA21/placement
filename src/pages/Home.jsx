@@ -33,7 +33,7 @@ export default function Home() {
               Jeppiaar University Placement Cell
             </div>
             <h1 className="text-2xl sm:text-3xl font-bold text-white tracking-tight" style={{ fontFamily: 'Cinzel,serif' }}>
-              Welcome back, {user?.name?.split(' ')[0]} 👋
+              Welcome back, {user?.name?.split(' ')[0]}
             </h1>
             <p className="text-slate-300 text-xs sm:text-sm">
               {user?.branch} · Batch {user?.batch} · CGPA <span className="text-amber-400 font-bold">{user?.cgpa}</span>

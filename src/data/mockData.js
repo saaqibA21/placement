@@ -328,10 +328,10 @@ Important:
 • Before filling the GForm, kindly check your email inbox, spam, promotions, and other folders carefully.
 • If you have previously applied for an Accenture Summer Internship or any other Accenture opportunity, please also check the email ID you used at that time, as the registration link may have been sent to that email ID.
 
-🚨 Registration Deadline Extended:
+Notice - Registration Deadline Extended:
 The Accenture registration deadline has been extended until 30th August, EOD. Please make use of this opportunity and complete your registration within the extended deadline.
 
-⚠️ Students who have received an "Ineligible" email or an email stating that you do not meet the eligibility criteria are requested to WAIT for further updates. Your eligibility status is based on the details submitted during registration, and further communication will be shared accordingly.`,
+Note: Students who have received an "Ineligible" email or an email stating that you do not meet the eligibility criteria are requested to WAIT for further updates. Your eligibility status is based on the details submitted during registration, and further communication will be shared accordingly.`,
   },
   {
     id: 2,
@@ -379,7 +379,7 @@ Placement Cell, Jeppier College`,
     tags: ['Reminder'],
     timeAgo: '10 hours ago',
     category: 'reminder',
-    body: `🚨 STRICT NOTICE – STELLANTIS
+    body: `STRICT NOTICE – STELLANTIS
 
 All shortlisted students are required to assemble IMMEDIATELY in the Placement Hall (Room 301).
 
@@ -426,11 +426,11 @@ Please carry all required documents.`,
 The partial shortlist for STELLANTIS has been released. Check your email for individual notification.
 
 Process Details:
-• Round 1: Application Screening ✅ Completed
-• Round 2: PPT Presentation 🔄 Ongoing
-• Round 3: Technical Interview ⏳ Upcoming
-• Round 4: HR Interview ⏳ Upcoming
-• Final: Offer Rollout ⏳ Upcoming
+• Round 1: Application Screening [Completed]
+• Round 2: PPT Presentation [Ongoing]
+• Round 3: Technical Interview [Upcoming]
+• Round 4: HR Interview [Upcoming]
+• Final: Offer Rollout [Upcoming]
 
 All selected students must be available for the entire duration of the process.`,
   },

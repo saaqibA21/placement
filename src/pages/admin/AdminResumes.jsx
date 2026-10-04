@@ -302,7 +302,7 @@ export default function AdminResumes() {
                                  background: isRejectedHere ? '#be123c' : cleared ? '#15803d' : current ? 'var(--amber-gold)' : '#e2e8f0',
                                  color: cleared || current || isRejectedHere ? '#fff' : '#94a3b8',
                                }}>
-                            {isRejectedHere ? '✕' : cleared ? '✓' : i + 1}
+                            {isRejectedHere ? <XCircle size={10} /> : cleared ? <CheckCircle2 size={10} /> : i + 1}
                           </div>
                           <span className={`text-xs ${current ? 'font-bold text-slate-900' : cleared ? 'text-slate-600' : isRejectedHere ? 'text-rose-600 font-semibold' : 'text-slate-400'}`}>
                             {stage.name}
@@ -487,7 +487,7 @@ export default function AdminResumes() {
       {toast && (
         <div className="fixed bottom-6 left-1/2 -translate-x-1/2 px-5 py-3 rounded-xl text-sm font-semibold text-white shadow-lg z-50"
              style={{ background: '#15803d' }}>
-          ✓ {toast}
+          {toast}
         </div>
       )}
     </div>

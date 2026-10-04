@@ -126,7 +126,7 @@ export default function AdminDashboard() {
               </button>
             ))}
             {applications.filter((a) => a.status === 'pending').length === 0 && (
-              <div className="p-5 text-center text-xs text-slate-400">All applications screened! ✓</div>
+              <div className="p-5 text-center text-xs text-slate-400">All applications screened</div>
             )}
           </div>
         </div>

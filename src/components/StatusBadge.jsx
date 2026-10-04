@@ -13,7 +13,7 @@ export default function StatusBadge({ status }) {
     completed:   { label: 'Completed',    cls: 'badge-solid-emerald' },
     visited:     { label: 'Visited',      cls: 'badge-solid-slate'   },
     upcoming:    { label: 'Upcoming',     cls: 'badge-solid-blue'    },
-    cleared:     { label: 'Cleared ✓',   cls: 'badge-solid-emerald' },
+    cleared:     { label: 'Cleared',     cls: 'badge-solid-emerald' },
   };
   const cfg = map[status] || { label: status, cls: 'badge-solid-slate' };
   return (

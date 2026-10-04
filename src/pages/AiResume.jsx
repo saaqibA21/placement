@@ -396,7 +396,7 @@ export default function AiResume() {
                     <div className="flex flex-wrap gap-1.5">
                       {report.matchedKeywords.map((kw) => (
                         <span key={kw} className="text-[11px] font-medium px-2.5 py-1 rounded-lg bg-green-50 text-green-800 border border-green-200 flex items-center gap-1">
-                          ✓ {kw}
+                          {kw}
                         </span>
                       ))}
                     </div>
@@ -419,7 +419,7 @@ export default function AiResume() {
                     <div className="flex flex-wrap gap-1.5">
                       {report.missingKeywords.map((kw) => (
                         <span key={kw} className="text-[11px] font-medium px-2.5 py-1 rounded-lg bg-amber-50 text-amber-900 border border-amber-200 flex items-center gap-1">
-                          + {kw}
+                          {kw}
                         </span>
                       ))}
                     </div>

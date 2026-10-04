@@ -9,7 +9,7 @@ const ROUND_BADGE = {
   pending: 'bg-amber-50 text-amber-700 border border-amber-200',
   rejected: 'bg-rose-50 text-rose-700 border border-rose-200',
 };
-const ROUND_LABEL = { cleared: 'Cleared ✓', pending: 'In Progress', rejected: 'Rejected ✕' };
+const ROUND_LABEL = { cleared: 'Cleared', pending: 'In Progress', rejected: 'Rejected' };
 
 function currentRound(rounds) {
   return rounds.find((r) => r.status === 'pending' || r.status === 'rejected') || rounds[rounds.length - 1];

@@ -286,7 +286,7 @@ export default function CompanyPrep() {
                     ))}
                   </div>
                   <p className="text-[10px] text-slate-400 pt-1 italic">
-                    ℹ️ {companyData.examPattern?.negativeMarking}
+                    {companyData.examPattern?.negativeMarking}
                   </p>
                 </div>
 
@@ -298,7 +298,7 @@ export default function CompanyPrep() {
                   <div className="flex flex-wrap gap-1.5">
                     {companyData.keyTopics.map((topic) => (
                       <span key={topic} className="text-[11px] font-semibold px-2.5 py-1 rounded-lg bg-amber-50 text-amber-900 border border-amber-200">
-                        ★ {topic}
+                        {topic}
                       </span>
                     ))}
                   </div>
@@ -354,7 +354,7 @@ export default function CompanyPrep() {
                     </div>
                   </div>
                   <p className="text-xs text-slate-600 border-t pt-2 mt-2 leading-relaxed" style={{ borderColor: 'var(--border)' }}>
-                    💡 <strong>AI Guidance:</strong> {testResult.advice}
+                    <strong>AI Guidance:</strong> {testResult.advice}
                   </p>
                 </div>
               )}

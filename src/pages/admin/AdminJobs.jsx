@@ -172,7 +172,7 @@ export default function AdminJobs() {
       {/* Toast */}
       {toast && (
         <div className="fixed bottom-6 left-1/2 -translate-x-1/2 px-5 py-3 rounded-xl text-sm font-semibold text-white shadow-lg z-50"
-             style={{ background: '#15803d' }}>✓ {toast}</div>
+             style={{ background: '#15803d' }}>{toast}</div>
       )}
 
       {/* Header */}
