@@ -64,6 +64,127 @@ export default function InterviewBank() {
   // Audio Speech Synthesis (TTS)
   const [playingId, setPlayingId] = useState(null);
 
+  // Live Speech Recognition (STT Voice Input)
+  const [isRecording, setIsRecording] = useState(false);
+  const [recordingSeconds, setRecordingSeconds] = useState(0);
+  const [micError, setMicError] = useState('');
+  const [micSupported, setMicSupported] = useState(true);
+  const recognitionRef = useRef(null);
+  const recordingIntervalRef = useRef(null);
+
+  useEffect(() => {
+    const isSupported = Boolean(
+      typeof window !== 'undefined' &&
+      (window.SpeechRecognition || window.webkitSpeechRecognition)
+    );
+    setMicSupported(isSupported);
+
+    return () => {
+      if (recognitionRef.current) {
+        try { recognitionRef.current.abort(); } catch {}
+      }
+      clearInterval(recordingIntervalRef.current);
+    };
+  }, []);
+
+  const startVoiceRecording = () => {
+    setMicError('');
+    const SpeechRecognition = window.SpeechRecognition || window.webkitSpeechRecognition;
+
+    if (!SpeechRecognition) {
+      setMicError('Live voice input is not supported in this browser. Please use Google Chrome, Edge, or Safari for voice dictation.');
+      return;
+    }
+
+    try {
+      if (recognitionRef.current) {
+        try { recognitionRef.current.abort(); } catch {}
+      }
+
+      const recognition = new SpeechRecognition();
+      recognition.continuous = true;
+      recognition.interimResults = true;
+      recognition.lang = 'en-US';
+
+      let currentFinal = practiceText ? practiceText.trim() + ' ' : '';
+
+      recognition.onstart = () => {
+        setIsRecording(true);
+        setRecordingSeconds(0);
+        clearInterval(recordingIntervalRef.current);
+        recordingIntervalRef.current = setInterval(() => {
+          setRecordingSeconds((prev) => prev + 1);
+        }, 1000);
+      };
+
+      recognition.onresult = (event) => {
+        let interimTranscript = '';
+        let newlyFinal = '';
+
+        for (let i = event.resultIndex; i < event.results.length; ++i) {
+          const item = event.results[i];
+          if (item.isFinal) {
+            newlyFinal += item[0].transcript + ' ';
+          } else {
+            interimTranscript += item[0].transcript;
+          }
+        }
+
+        if (newlyFinal) {
+          currentFinal += newlyFinal;
+        }
+
+        setPracticeText((currentFinal + interimTranscript).trimStart());
+      };
+
+      recognition.onerror = (event) => {
+        console.warn('Speech recognition error:', event.error);
+        if (event.error === 'not-allowed' || event.error === 'service-not-allowed') {
+          setMicError('Microphone permission was denied. Please click the lock or camera icon in your browser address bar to allow microphone access.');
+          stopVoiceRecording();
+        } else if (event.error === 'network') {
+          setMicError('Network issue with speech recognition service. Please check your internet connection.');
+          stopVoiceRecording();
+        } else if (event.error === 'no-speech') {
+          // Keep listening
+        }
+      };
+
+      recognition.onend = () => {
+        setIsRecording(false);
+        clearInterval(recordingIntervalRef.current);
+      };
+
+      recognitionRef.current = recognition;
+      recognition.start();
+    } catch (err) {
+      console.error('Failed to start speech recognition:', err);
+      setMicError('Microphone initialization error: ' + (err.message || 'Please verify device mic.'));
+      setIsRecording(false);
+      clearInterval(recordingIntervalRef.current);
+    }
+  };
+
+  const stopVoiceRecording = () => {
+    if (recognitionRef.current) {
+      try {
+        recognitionRef.current.stop();
+      } catch (e) {
+        try { recognitionRef.current.abort(); } catch {}
+      }
+    }
+    setIsRecording(false);
+    clearInterval(recordingIntervalRef.current);
+  };
+
+  const toggleVoiceRecording = () => {
+    if (isRecording) {
+      stopVoiceRecording();
+    } else {
+      startVoiceRecording();
+    }
+  };
+
   useEffect(() => {
     fetchBankData();
   }, [selectedCategory, selectedSpkType, search]);
@@ -149,14 +270,17 @@ export default function InterviewBank() {
   };
 
   const openPracticeStudio = (question, type = 'hr') => {
+    if (isRecording) stopVoiceRecording();
     setStudioQuestion({ ...question, studioType: type });
     setPracticeText('');
     setEvalResult(null);
+    setMicError('');
     setActiveMode('studio');
     window.scrollTo({ top: 0, behavior: 'smooth' });
   };
 
   const runAiEvaluation = async () => {
+    if (isRecording) stopVoiceRecording();
     if (!practiceText.trim() || evaluating) return;
     setEvaluating(true);
     setEvalResult(null);
@@ -760,32 +884,104 @@ export default function InterviewBank() {
               )}
             </div>
 
-            {/* Input area */}
+            {/* Mic Error Banner */}
+            {micError && (
+              <div className="p-3.5 rounded-xl border bg-rose-50 border-rose-200 text-xs text-rose-800 flex items-start gap-2">
+                <AlertTriangle size={15} className="text-rose-600 flex-shrink-0 mt-0.5" />
+                <div className="flex-1">
+                  <p className="font-bold">Microphone Note</p>
+                  <p className="mt-0.5">{micError}</p>
+                </div>
+              </div>
+            )}
+
+            {/* Input Header & Controls */}
             <div className="space-y-2">
-              <div className="flex items-center justify-between">
+              <div className="flex flex-wrap items-center justify-between gap-2">
                 <label className="text-xs font-bold text-slate-700 flex items-center gap-1.5">
                   <Mic size={14} className="text-amber-700" />
-                  Type or Dictate Your Live Response
+                  Live Voice Dictation & Text Input
                 </label>
-                <span className="text-[10px] text-slate-400 font-mono">
-                  {practiceText.split(/\s+/).filter(Boolean).length} words (Sweet spot: 70–150 words)
-                </span>
+
+                {/* Voice Dictation Button Bar */}
+                <div className="flex items-center gap-2">
+                  {studioQuestion?.sampleAnswer || studioQuestion?.idealScript ? (
+                    <button
+                      type="button"
+                      onClick={() => setPracticeText(studioQuestion.sampleAnswer || studioQuestion.idealScript)}
+                      className="text-[11px] font-semibold text-amber-800 hover:text-amber-900 underline px-1"
+                    >
+                      Load Model Answer
+                    </button>
+                  ) : null}
+
+                  {practiceText && (
+                    <button
+                      type="button"
+                      onClick={() => { setPracticeText(''); if (isRecording) stopVoiceRecording(); }}
+                      className="text-[11px] font-semibold text-slate-400 hover:text-slate-700 px-1"
+                    >
+                      Clear
+                    </button>
+                  )}
+
+                  {/* Primary Live Voice Recording Button */}
+                  <button
+                    type="button"
+                    onClick={toggleVoiceRecording}
+                    className={`px-3.5 py-1.5 rounded-xl text-xs font-bold flex items-center gap-1.5 transition-all shadow-xs ${
+                      isRecording
+                        ? 'bg-rose-600 text-white animate-pulse shadow-md ring-2 ring-rose-300'
+                        : 'bg-amber-600 hover:bg-amber-700 text-white'
+                    }`}
+                  >
+                    {isRecording ? (
+                      <>
+                        <Square size={12} className="fill-white" />
+                        <span>Stop Mic ({Math.floor(recordingSeconds / 60)}:{(recordingSeconds % 60).toString().padStart(2, '0')})</span>
+                      </>
+                    ) : (
+                      <>
+                        <Mic size={13} />
+                        <span>Speak into Mic</span>
+                      </>
+                    )}
+                  </button>
+                </div>
               </div>
+
+              {/* Active Recording Wave Banner */}
+              {isRecording && (
+                <div className="p-2.5 rounded-xl bg-rose-50 border border-rose-200 flex items-center justify-between text-xs text-rose-900 animate-fade-in">
+                  <div className="flex items-center gap-2">
+                    <span className="w-2.5 h-2.5 rounded-full bg-rose-600 animate-ping" />
+                    <span className="font-semibold">Microphone active — speak clearly into your device...</span>
+                  </div>
+                  <span className="font-mono text-[11px] font-bold text-rose-700">
+                    {Math.floor(recordingSeconds / 60)}:{(recordingSeconds % 60).toString().padStart(2, '0')}
+                  </span>
+                </div>
+              )}
 
               <textarea
                 rows={7}
                 value={practiceText}
                 onChange={(e) => setPracticeText(e.target.value)}
-                placeholder="Speak or write your answer here as you would in a real interview (e.g. Good morning, my name is Saaqib and over the past 4 years at Jeppiaar University...)..."
+                placeholder="Speak into your microphone or type your answer here as you would in a real campus interview (e.g. Good morning, my name is Saaqib and over the past four years at Jeppiaar University...)..."
                 className="input-solid w-full text-xs font-sans p-3.5 leading-relaxed resize-y"
-                style={{ background: 'var(--canvas-bg)' }}
+                style={{ background: isRecording ? '#fffbf5' : 'var(--canvas-bg)' }}
               />
+
+              <div className="flex items-center justify-between text-[10px] text-slate-400 font-mono pt-0.5">
+                <span>{practiceText.split(/\s+/).filter(Boolean).length} words (Sweet spot: 70–150 words)</span>
+                <span>{isRecording ? 'Streaming speech-to-text...' : 'Ready for microphone or keyboard input'}</span>
+              </div>
             </div>
 
             {/* Evaluation Action Button */}
             <div className="flex flex-col sm:flex-row items-center justify-between gap-3 pt-2">
               <p className="text-[11px] text-slate-400">
-                The AI engine diagnoses filler words, articulation clarity, pace estimate, and STAR structure.
+                The AI engine evaluates filler words (um, like, basically), clarity score, pacing estimate, and STAR depth.
               </p>
 
               <button
